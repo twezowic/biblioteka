@@ -4,6 +4,7 @@
 * Tomasz Wężowicz
 
 **Treść zadania**
+
 Biblioteka:
 * wyszukiwanie książęk po różnych argumentach np. Autor, Tytuł
 * dostępność w bibliotekach
@@ -14,4 +15,5 @@ Biblioteka:
 * historia wypożyczeń
 
 **Wybrana technologia**
+
 Java swing
