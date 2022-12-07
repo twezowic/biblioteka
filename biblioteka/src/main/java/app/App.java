@@ -93,8 +93,8 @@ public class App {
                 }
                 case 1->{
                     username = loginPanel.getUsername().getText();
-                    disposeSubPanel(loginPanel);
                     permissionLevel = 1;
+                    disposeSubPanel(loginPanel);
                 }
                 case 2->{
                     username = loginPanel.getUsername().getText();
