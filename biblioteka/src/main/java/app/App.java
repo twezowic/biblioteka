@@ -22,18 +22,39 @@ public class App {
         MainPanel mainPanel = new MainPanel(permissionLevel, username);
         switch(permissionLevel){
             case 0 ->{
+                mainPanel.login.setText("Login");
                 mainPanel.login.addActionListener(e -> {
                     Login();
                     mainPanel.frame.dispose();
                 });
-            }
-            case 1 ->{
                 mainPanel.getBrowseBooks().addActionListener(e -> {
                     BrowseBooks();
                     mainPanel.frame.dispose();
                 });
             }
-            case 2 ->{
+            case 1 ->{
+                mainPanel.login.setText("Logout");
+                mainPanel.getBrowseBooks().addActionListener(e -> {
+                    BrowseBooks();
+                    mainPanel.frame.dispose();
+                });
+                mainPanel.reserveBook.addActionListener(e -> {
+                    ReserveBook();
+                    mainPanel.frame.dispose();
+                });
+                mainPanel.login.addActionListener(e -> {
+                    Login();
+                    mainPanel.frame.dispose();
+                });
+
+            }
+            case 2 -> {
+                mainPanel.login.setText("Logout");
+                mainPanel.login.addActionListener(e -> {
+                    Login();
+                    mainPanel.frame.dispose();
+                });
+
                 mainPanel.getCheckOutBook().addActionListener(e -> {
                     CheckOut();
                     mainPanel.frame.dispose();
@@ -57,10 +78,15 @@ public class App {
     }
 
     private void BrowseBooks() {
-        BrowseBooksPanel browseBooksPanel = new BrowseBooksPanel();
+        BrowseBooksPanel browseBooksPanel = new BrowseBooksPanel(permissionLevel);
         browseBooksPanel.getCancelButton().addActionListener(e -> {
-        disposeSubPanel(browseBooksPanel);
-    });
+            disposeSubPanel(browseBooksPanel);
+        });
+        browseBooksPanel.reserveBook.addActionListener(e -> {
+            //ReserveBook();
+            disposeSubPanel(browseBooksPanel);
+        });
+
     }
 
     private void CheckOut() {
@@ -69,43 +95,61 @@ public class App {
             disposeSubPanel(checkOutPanel);
         });
     }
+    private void ReserveBook() {
+        CheckOutPanel checkOutPanel = new CheckOutPanel();
+        checkOutPanel.getCancelButton().addActionListener(e -> {
+            disposeSubPanel(checkOutPanel);
+        });
+    }
     private void ReturnBook() {
         ReturnBooksPanel returnBookPanel = new ReturnBooksPanel();
         returnBookPanel.getCancelButton().addActionListener(e -> {
-        disposeSubPanel(returnBookPanel);
-    });
+            disposeSubPanel(returnBookPanel);
+        });
 
     }
     private void RegisterBook() {
         RegisterBookPanel registerBookPanel = new RegisterBookPanel();
         registerBookPanel.getCancelButton().addActionListener(e -> {
-        disposeSubPanel(registerBookPanel);
-    });
+            disposeSubPanel(registerBookPanel);
+        });
 
     }
 
     private void Login() {
-        LoginPanel loginPanel = new LoginPanel();
-        loginPanel.getAcceptButton().addActionListener(e -> {
-            switch(Database.ValidateLoginData(loginPanel.getUsername().getText(), loginPanel.getPassword().getPassword())){
-                case 0->{// show window couldn't log in
-                    disposeSubPanel(loginPanel);
+        if (permissionLevel == 0) {
+            LoginPanel loginPanel = new LoginPanel();
+            loginPanel.getAcceptButton().addActionListener(e -> {
+                switch (Database.ValidateLoginData(loginPanel.getUsername().getText(), loginPanel.getPassword().getPassword())) {
+                    case 0 -> {// show window couldn't log in
+                        permissionLevel = 0;
+
+                        disposeSubPanel(loginPanel);
+                    }
+                    case 1 -> {
+                        username = loginPanel.getUsername().getText();
+                        permissionLevel = 1;
+                        disposeSubPanel(loginPanel);
+
+                    }
+                    case 2 -> {
+                        username = loginPanel.getUsername().getText();
+                        permissionLevel = 2;
+                        disposeSubPanel(loginPanel);
+                    }
                 }
-                case 1->{
-                    username = loginPanel.getUsername().getText();
-                    permissionLevel = 1;
-                    disposeSubPanel(loginPanel);
-                }
-                case 2->{
-                    username = loginPanel.getUsername().getText();
-                    permissionLevel = 2;
-                    disposeSubPanel(loginPanel);
-                }
-            }
-        });
-        loginPanel.getCancelButton().addActionListener(e -> {
-            disposeSubPanel(loginPanel);
-        });
+            });
+            loginPanel.getCancelButton().addActionListener(e -> {
+                disposeSubPanel(loginPanel);
+            });
+        }
+        else {
+
+            permissionLevel=0;
+            Run();
+
+        }
+
     }
     private void disposeSubPanel(JFrame frameToDispose)
     {
