@@ -9,6 +9,7 @@ public class BasePanel extends JFrame {
     private JButton cancelButton;
     private JButton acceptButton;
     private JPanel bottomPanel;
+    private JPanel upperPanel;
 
     private JSplitPane defaultSplitPane;
 
@@ -16,6 +17,7 @@ public class BasePanel extends JFrame {
         cancelButton = new JButton("Cancel");
         acceptButton = new JButton("Accept");
         bottomPanel = new JPanel();
+        upperPanel = new JPanel();
         defaultSplitPane = new JSplitPane();
         bottomPanel.add(cancelButton);
         bottomPanel.add(acceptButton);
@@ -25,6 +27,7 @@ public class BasePanel extends JFrame {
         defaultSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
         defaultSplitPane.setDividerSize(100);
         defaultSplitPane.setBottomComponent(bottomPanel);
+        defaultSplitPane.setTopComponent(upperPanel);
         add(defaultSplitPane);
         setSize(new Dimension(600,600));
         setBounds(400, 50, 800, 800);

@@ -44,14 +44,14 @@ public class MainPanel
             }
             case 1 -> {
                 loginLabel.setText("Currently logged in as: " + username);
-                login.setEnabled(false);
+                login.setEnabled(true);
                 reserveBook = new JButton("reserve a book");
                 centralPanel.add(reserveBook);
                 centralPanel.setLayout(new GridLayout(2, 1, 100, 100));
             }
             case 2 -> {
                 loginLabel.setText(MessageFormat.format("<html>Permission level - Employee. <br>Currently logged in as: {0}</html>", username));
-                login.setEnabled(false);
+                login.setEnabled(true);
                 checkOutBook = new JButton("Check out a book to a user");
                 returnBook = new JButton("Return a specific book to the database");
                 registerBook = new JButton("register a new book");
