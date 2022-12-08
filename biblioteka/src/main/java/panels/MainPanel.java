@@ -45,8 +45,6 @@ public class MainPanel
             case 1 -> {
                 loginLabel.setText("Currently logged in as: " + username);
                 login.setEnabled(true);
-                reserveBook = new JButton("reserve a book");
-                centralPanel.add(reserveBook);
                 centralPanel.setLayout(new GridLayout(2, 1, 100, 100));
             }
             case 2 -> {
