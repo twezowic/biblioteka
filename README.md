@@ -17,3 +17,6 @@ Biblioteka:
 **Wybrana technologia**
 
 Java swing
+
+# ![logical](logical.png)
+# ![relational](relational.png)
