@@ -78,14 +78,13 @@ public class App {
     }
 
     private void BrowseBooks() {
-        BrowseBooksPanel browseBooksPanel = new BrowseBooksPanel(permissionLevel);
-        browseBooksPanel.getCancelButton().addActionListener(e -> {
-            disposeSubPanel(browseBooksPanel);
+
+        BrowseBooksPanel2 browseBooksPanel2 = new BrowseBooksPanel2(permissionLevel);
+        browseBooksPanel2.getCancelButton().addActionListener(e -> {
+            disposeSubPanel(browseBooksPanel2);
+
         });
-        browseBooksPanel.reserveBook.addActionListener(e -> {
-            //ReserveBook();
-            disposeSubPanel(browseBooksPanel);
-        });
+
 
     }
 
@@ -151,10 +150,11 @@ public class App {
         }
 
     }
-    private void disposeSubPanel(JFrame frameToDispose)
+    private int disposeSubPanel(JFrame frameToDispose)
     {
         frameToDispose.dispose();
         Run();
+        return 1;
     }
 
     public static void main(String[] args) {
