@@ -4,6 +4,7 @@
 * Tomasz Wężowicz
 
 **Instrukcja instalacji**
+
 Aby zainstalować aplikację należy:
 1) Mieć wcześniej pobrane narzędzie maven.
 2) Przejść w terminalu do katalogu z pobranym repozytorium.
