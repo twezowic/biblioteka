@@ -120,25 +120,77 @@ class Database {
         }catch(Exception e){ System.out.println(e);}
         return books;
     }
+
+    private static String CheckTitle(String title)
+    {
+        StringBuilder modifiedTitle = new StringBuilder();
+        for (char character: title.toCharArray()) {
+            if (character == '\'')
+                modifiedTitle.append('\'');
+            modifiedTitle.append(character);
+        }
+        return modifiedTitle.toString();
+    }
     public static void AddBook(Book book)
-    //TODO  wykonywać dml
     {
-        String SQL = "INSERT INTO Books Values(";
-        SQL += book.getTitle() + ", ";
+        String SQL = "INSERT INTO Books Values(Null, '";
+        SQL += CheckTitle(book.getTitle()) + "', ";
         int authorID = CheckAuthor(book.getAuthor());
+        SQL += authorID + ", ";
+        if (book.getPages() != -1)
+            SQL +=  book.getPages()+ ", '";
+        else
+            SQL += "Null, '";
+        SQL += book.getISBN() + "', ";
+        if (book.getYear() != -1)
+            SQL += book.getYear() + ", '";
+        else
+            SQL += "Null, '";
+        SQL += book.getGenre() + "')";
 
+        try {
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+            Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
+            Statement stmt=con.createStatement();
+            stmt.executeUpdate(SQL);
+            stmt.close();
+            con.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public static int CheckAuthor(String name)
-    //TODO sprawdzać czy autor jest w bazie danych i jeżeli nie dodać o nim informację
+    public static int CheckAuthor(String fullName)
     {
-        return -1;
+        int author_id = -1;
+        String[] nameParts = fullName.split(" ");
+        String firstName = nameParts[0];
+        String lastName = nameParts[1];
+        try{
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+            Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
+            Statement stmt=con.createStatement();
+            ResultSet rs=stmt.executeQuery("select author_id from Authors where name ='" + firstName + "' and surname ='" + lastName +"'");
+            if(rs.next()) {
+                author_id = rs.getInt(1);
+            }
+            else {
+                String SQL = "INSERT INTO Authors Values(Null,  '" + firstName + "', '" + lastName + "', Null, Null)";
+                stmt.executeUpdate(SQL);
+                rs=stmt.executeQuery("select author_id from Authors where name ='" + firstName + "' and surname ='" + lastName +"'");
+                if(rs.next()) {
+                    author_id = rs.getInt(1);
+                }
+            }
+            stmt.close();
+            con.close();
+        }catch(Exception e){ System.out.println(e);}
+        return author_id;
     }
 
-    public static void AddInitialData() throws IOException
-    //TODO zmienić aby przekazywało dane do AddBook zamiast wypisywało
+    public static void AddInitialDataBooks() throws IOException
     {
-        URL url = new URL("https://www.googleapis.com/books/v1/volumes?q=dragon&maxResults=20&printType=books");
+        URL url = new URL("https://www.googleapis.com/books/v1/volumes?q=dragon&maxResults=5&printType=books");
 
         String out = new Scanner(url.openStream(), StandardCharsets.UTF_8).useDelimiter("\\A").next();
         JSONObject json = new JSONObject(out);
@@ -154,7 +206,14 @@ class Database {
                 pages = volumeInfo.getInt("pageCount");
 
             JSONArray industryIdentifiers = volumeInfo.getJSONArray("industryIdentifiers");
-            String ISBN = industryIdentifiers.getJSONObject(0).getString("identifier");
+            String ISBN = "Null";
+            for (int j = 0; j < industryIdentifiers.length(); j++) {
+                JSONObject identifier = industryIdentifiers.getJSONObject(j);
+                String type = identifier.getString("type");
+                if (type.equals("ISBN_13")) {
+                    ISBN = identifier.getString("identifier");
+                }
+            }
 
             int year=-1;
             if (volumeInfo.has("publishedDate"))
@@ -164,9 +223,6 @@ class Database {
             if (volumeInfo.has("categories"))
                 genre = volumeInfo.getJSONArray("categories").getString(0);
 
-            System.out.println(title + " by " + author + " (" + year + ")");
-            System.out.println("ISBN: " + ISBN + ", pages: " + pages);
-            System.out.println("genre: "+ genre);
             Book book = new Book(title, author, pages, ISBN, year, genre);
             AddBook(book);
         }
