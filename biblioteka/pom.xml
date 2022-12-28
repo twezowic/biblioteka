@@ -59,8 +59,17 @@
             <artifactId>ojdbc11</artifactId>
             <version>21.7.0.0</version>
         </dependency>
+         <!-- https://mvnrepository.com/artifact/org.json/json -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20220924</version>
+        </dependency>
 
-    </dependencies>
+
+
+
+ </dependencies>
 
     <properties>
         <maven.compiler.source>19</maven.compiler.source>
