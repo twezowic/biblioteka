@@ -65,7 +65,7 @@ INSERT INTO authors VALUES (3, 'Henryk', 'Sienkiewicz', '1846-05-05', 'Polska');
 INSERT INTO books VALUES (1, 'Pan Tadeusz', 1, 400, 1234567890123, 1834, 'poemat');
 INSERT INTO books VALUES (2, 'Dziady', 1, 450, 2345678901234, 1823, 'dramat');
 INSERT INTO books VALUES (3, 'Lalka', 2, 600, 3456789012345, 1890, 'powiesc');
-INSERT INTO books VALUES (4, 'Quo vadis', 2, 550, 4567890123456, 1895, 'powiesc');
+INSERT INTO books VALUES (4, 'Quo vadis', 3, 550, 4567890123456, 1895, 'powiesc');
 INSERT INTO books VALUES (5, 'W pustyni i w puszczy', 3, 250, 5678901234567, 1911, 'powiesc przygodowa');
 
 

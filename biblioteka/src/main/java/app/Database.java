@@ -1,14 +1,7 @@
 package app;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 class Database {
     static final String dbURL = "jdbc:oracle:thin:@//ora4.ii.pw.edu.pl:1521/pdb1.ii.pw.edu.pl";
@@ -50,102 +43,42 @@ class Database {
         }
         return books;
     }
-    public static ArrayList<Book> GetAllBooks()
+    private static String AddCondition(String condName, String data)
+    {
+        return condName + " like '%" + data + "%'";
+    }
+    public static ArrayList<Book> GetBooks(String title, String author, String ISBN, String genre, String library_name)
     {
         ArrayList<Book> books = new ArrayList<>();
+        String where = "where ";
+        where += AddCondition("b.title", title) + "and";
+        where += AddCondition("b.author_id", String.valueOf(CheckAuthor(author, false)))+ "and";
+        where += AddCondition("b.ISBN", ISBN)+ "and";
+        where += AddCondition("b.genre", genre)+ "and";
+        where += AddCondition("l.name", library_name);
+
         try{
             Class.forName("oracle.jdbc.driver.OracleDriver");
             Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
             Statement stmt=con.createStatement();
-            ResultSet rs=stmt.executeQuery("select b.*, a.name, a.surname from Books b join Authors a using(author_id)");
+            String sql = "select b.*, a.name, a.surname from copies c join libraries l on (c.LIBRARY_ID = l.LIBRARY_ID) join BOOKS b on (c.BOOK_ID=b.BOOK_ID) join AUTHORS a on (b.AUTHOR_ID=a.AUTHOR_ID)";
+            sql += where;
+            ResultSet rs=stmt.executeQuery(sql);
             books = GetBooksFromResult(rs);
             con.close();
         }catch(Exception e){ System.out.println(e);}
         return books;
     }
 
-    public static ArrayList<Book> GetBooksByAuthor(String name)
-    {
-        ArrayList<Book> books = new ArrayList<>();
-        try{
-            Class.forName("oracle.jdbc.driver.OracleDriver");
-            Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
-            Statement stmt=con.createStatement();
-            ResultSet rs=stmt.executeQuery("select b.*, a.name, a.surname from Books b join Authors a using(author_id) where a.name ='" + name + "' or a.surname ='" + name + "'");
-            books = GetBooksFromResult(rs);
-            con.close();
-        }catch(Exception e){ System.out.println(e);}
-        return books;
-    }
-
-    public static ArrayList<Book> GetBooksByTitle(String name)
-    {
-        ArrayList<Book> books = new ArrayList<>();
-        try{
-            Class.forName("oracle.jdbc.driver.OracleDriver");
-            Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
-            Statement stmt=con.createStatement();
-            ResultSet rs=stmt.executeQuery("select b.*, a.name, a.surname from Books b join Authors a using(author_id) where b.title ='" + name + "'");
-            books = GetBooksFromResult(rs);
-            con.close();
-        }catch(Exception e){ System.out.println(e);}
-        return books;
-    }
-
-    public static ArrayList<Book> GetBooksByISBN(String name)
-    {
-        ArrayList<Book> books = new ArrayList<>();
-        try{
-            Class.forName("oracle.jdbc.driver.OracleDriver");
-            Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
-            Statement stmt=con.createStatement();
-            ResultSet rs=stmt.executeQuery("select b.*, a.name, a.surname from Books b join Authors a using(author_id) where b.isbn ='" + name + "'");
-            books = GetBooksFromResult(rs);
-            con.close();
-        }catch(Exception e){ System.out.println(e);}
-        return books;
-    }
-
-    public static ArrayList<Book> GetBooksByLibrary(String name)
-    //TODO
-    {
-        ArrayList<Book> books = new ArrayList<>();
-        try{
-            Class.forName("oracle.jdbc.driver.OracleDriver");
-            Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
-            Statement stmt=con.createStatement();
-            ResultSet rs=stmt.executeQuery("select b.*, a.name, a.surname from Books b join Authors a using(author_id) where b.title ='" + name + "'");
-            books = GetBooksFromResult(rs);
-            con.close();
-        }catch(Exception e){ System.out.println(e);}
-        return books;
-    }
-
-    private static String CheckTitle(String title)
-    {
-        StringBuilder modifiedTitle = new StringBuilder();
-        for (char character: title.toCharArray()) {
-            if (character == '\'')
-                modifiedTitle.append('\'');
-            modifiedTitle.append(character);
-        }
-        return modifiedTitle.toString();
-    }
     public static void AddBook(Book book)
     {
         String SQL = "INSERT INTO Books Values(Null, '";
-        SQL += CheckTitle(book.getTitle()) + "', ";
-        int authorID = CheckAuthor(book.getAuthor());
+        SQL += book.getTitle() + "', ";
+        int authorID = CheckAuthor(book.getAuthor(), true);
         SQL += authorID + ", ";
-        if (book.getPages() != -1)
-            SQL +=  book.getPages()+ ", '";
-        else
-            SQL += "Null, '";
+        SQL += book.getPages()+ ", '";
         SQL += book.getISBN() + "', ";
-        if (book.getYear() != -1)
-            SQL += book.getYear() + ", '";
-        else
-            SQL += "Null, '";
+        SQL += book.getYear() + ", '";
         SQL += book.getGenre() + "')";
 
         try {
@@ -160,7 +93,11 @@ class Database {
         }
     }
 
-    public static int CheckAuthor(String fullName)
+    private static void AddAuthor(String firstName, String lastName, Statement stmt) throws SQLException {
+        String SQL = "INSERT INTO Authors Values(Null,  '" + firstName + "', '" + lastName + "', Null, Null)";
+        stmt.executeUpdate(SQL);
+    }
+    private static int CheckAuthor(String fullName, Boolean canAdd)
     {
         int author_id = -1;
         String[] nameParts = fullName.split(" ");
@@ -175,11 +112,13 @@ class Database {
                 author_id = rs.getInt(1);
             }
             else {
-                String SQL = "INSERT INTO Authors Values(Null,  '" + firstName + "', '" + lastName + "', Null, Null)";
-                stmt.executeUpdate(SQL);
-                rs=stmt.executeQuery("select author_id from Authors where name ='" + firstName + "' and surname ='" + lastName +"'");
-                if(rs.next()) {
-                    author_id = rs.getInt(1);
+                if (canAdd)
+                {
+                    AddAuthor(firstName, lastName, stmt);
+                    rs=stmt.executeQuery("select author_id from Authors where name ='" + firstName + "' and surname ='" + lastName +"'");
+                    if(rs.next()) {
+                        author_id = rs.getInt(1);
+                    }
                 }
             }
             stmt.close();
@@ -187,44 +126,56 @@ class Database {
         }catch(Exception e){ System.out.println(e);}
         return author_id;
     }
-
-    public static void AddInitialDataBooks() throws IOException
-    {
-        URL url = new URL("https://www.googleapis.com/books/v1/volumes?q=dragon&maxResults=5&printType=books");
-
-        String out = new Scanner(url.openStream(), StandardCharsets.UTF_8).useDelimiter("\\A").next();
-        JSONObject json = new JSONObject(out);
-        JSONArray items = json.getJSONArray("items");
-        for (int i = 0; i < items.length(); i++) {
-            JSONObject volumeInfo = items.getJSONObject(i).getJSONObject("volumeInfo");
-
-            String title = volumeInfo.getString("title");
-            String author = volumeInfo.getJSONArray("authors").getString(0);
-
-            int pages=-1;
-            if (volumeInfo.has("industryIdentifiers"))
-                pages = volumeInfo.getInt("pageCount");
-
-            JSONArray industryIdentifiers = volumeInfo.getJSONArray("industryIdentifiers");
-            String ISBN = "Null";
-            for (int j = 0; j < industryIdentifiers.length(); j++) {
-                JSONObject identifier = industryIdentifiers.getJSONObject(j);
-                String type = identifier.getString("type");
-                if (type.equals("ISBN_13")) {
-                    ISBN = identifier.getString("identifier");
-                }
-            }
-
-            int year=-1;
-            if (volumeInfo.has("publishedDate"))
-                year = Integer.parseInt(volumeInfo.getString("publishedDate").split("-")[0]);
-
-            String genre="Null";
-            if (volumeInfo.has("categories"))
-                genre = volumeInfo.getJSONArray("categories").getString(0);
-
-            Book book = new Book(title, author, pages, ISBN, year, genre);
-            AddBook(book);
-        }
-    }
+    
+//    private static Library getLibraryFromResult(ResultSet rs) throws SQLException {//TODO zmienić gdzie przechowuje się work_times
+//        String name, street, city;
+//        int phone;
+//        rs.next();
+//        name = rs.getString(1);
+//        phone = rs.getInt(2);
+//        street = rs.getInt(3)  + ' ' + rs.getString(4);
+//        city = rs.getString(5);
+//        return new Library(name, street, city, phone);
+//    }
+    
+//    public static Library getLibraryInfo(String name) //TODO
+//    {
+//        Library lib = null;
+//        try{
+//            Class.forName("oracle.jdbc.driver.OracleDriver");
+//            Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
+//            Statement stmt=con.createStatement();
+//            String sql = "select l.name, l.phone_number, a.street, a.street_num, a.city from LIBRARIES l join ADDRESSES a using (address_id) where l.name like '%Miejska%'";
+//            ResultSet rs=stmt.executeQuery(sql);
+//            lib = getLibraryFromResult(rs);
+//            con.close();
+//        }catch(Exception e){ System.out.println(e);}
+//        return lib;
+//    }
+//    public static void get
 }
+//TODO podział
+//użytknownik:
+//system kar - uniemożliwienie rezerwacji
+//historia wypożyczeń
+//informacja o bibliotece - sprawdzanie danych
+//rezerwacja - zarezerwowanie książki
+
+//pracownik
+//system kar - nadawania kar przy oddaniu
+//informacja o bibliotece - edytowanie danych
+//rezerwacja -
+
+//wszyscy:
+//wyszukiwarka
+
+//TODO funkcje:
+//-sprawdzanie odległości między czytelnikiem a biblitoeką
+//-edytowanie autorów, jedynie edytowanie danych o dacie i narodowości
+//-rezerwacja poprzez nadanie is_available w copies na 0 i dodanie orders i orders_history
+//-poprawić funckję przekazującą informacje o bibliotece
+//-wypożyczenie książki poprzez modyfikację orders i orders_history
+//-oddanie książki przez modyfikację orders, orders_history i ewentualnie penalties_history
+//-wyświetlanie orders_histories dla pracowników
+//-edytować penalties history aby wiedzieć czy kara jest aktualna
+//-sprwadzanie czy użytkownik posiada karę i uniemożliwianie
