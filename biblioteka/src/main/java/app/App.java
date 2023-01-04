@@ -120,10 +120,14 @@ public class App {
             LoginPanel loginPanel = new LoginPanel();
             loginPanel.getAcceptButton().addActionListener(e -> {
                 switch (Database.ValidateLoginData(loginPanel.getUsername().getText(), loginPanel.getPassword().getPassword())) {
+                //switch (2) {
                     case 0 -> {// show window couldn't log in
                         permissionLevel = 0;
-
-                        disposeSubPanel(loginPanel);
+                        loginPanel.dispose();
+                        MessagePanel messagePanel = new MessagePanel("Login falied: invalid data");
+                        messagePanel.getAcceptButton().addActionListener(f -> {
+                            disposeSubPanel(messagePanel);
+                        });
                     }
                     case 1 -> {
                         username = loginPanel.getUsername().getText();
