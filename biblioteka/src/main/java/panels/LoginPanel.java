@@ -11,15 +11,13 @@ public class LoginPanel extends BasePanel{
     private InteractiveJTextField username;
     public LoginPanel()
     {
-        JPanel upperPanel = new JPanel();
-        setBounds(100, 100, 450, 300);
+        setBounds(500, 200, 450, 300);
         getAcceptButton().setText("login");
         password = new InteractiveJPasswordField("password");
         username = new InteractiveJTextField("username");
-        upperPanel.add(username);
-        upperPanel.add(password);
-        getDefaultSplitPane().setTopComponent(upperPanel);
-        upperPanel.setLayout(new GridLayout(1,2, 200, 200));
+        getUpperPanel().add(username);
+        getUpperPanel().add(password);
+        getUpperPanel().setLayout(new GridLayout(1,2, 200, 200));
         setVisible(true);
     }
 }

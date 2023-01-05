@@ -37,6 +37,7 @@ public class InteractiveJTextField extends JTextField {
             public void mouseEntered(MouseEvent e) {
                 if(getText().equals("")) {
                     setText(defaultMessage);
+                    clearField = true;
                 }
             }
 
