@@ -4,9 +4,9 @@ import java.sql.*;
 import java.util.ArrayList;
 
 class Database {
-    static final String dbURL = "jdbc:oracle:thin:@//ora4.ii.pw.edu.pl:1521/pdb1.ii.pw.edu.pl";
-    static final String dbusername = "z32";
-    static final String dbpassword = "dprwka";
+    private static final String dbURL = "jdbc:oracle:thin:@//ora4.ii.pw.edu.pl:1521/pdb1.ii.pw.edu.pl";
+    private static final String dbusername = "z32";
+    private static final String dbpassword = "dprwka";
 
     public static int ValidateLoginData(String username, char[] password) {
         int user = 0;
@@ -27,7 +27,7 @@ class Database {
         return user;
     }
 
-    public static ArrayList<Book> GetBooksFromResult(ResultSet rs) throws SQLException {
+    private static ArrayList<Book> GetBooksFromResult(ResultSet rs) throws SQLException {
         ArrayList<Book> books = new ArrayList<>();
         String title, author, ISBN, genre;
         int pages, year;
@@ -52,7 +52,7 @@ class Database {
         ArrayList<Book> books = new ArrayList<>();
         String where = "where ";
         where += AddCondition("b.title", title) + "and";
-        where += AddCondition("b.author_id", String.valueOf(CheckAuthor(author, false)))+ "and";
+        where += "b.author_id = "  + String.valueOf(CheckAuthor(author, false)) + "and";
         where += AddCondition("b.ISBN", ISBN)+ "and";
         where += AddCondition("b.genre", genre)+ "and";
         where += AddCondition("l.name", library_name);
@@ -61,7 +61,7 @@ class Database {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
             Statement stmt=con.createStatement();
-            String sql = "select b.*, a.name, a.surname from copies c join libraries l on (c.LIBRARY_ID = l.LIBRARY_ID) join BOOKS b on (c.BOOK_ID=b.BOOK_ID) join AUTHORS a on (b.AUTHOR_ID=a.AUTHOR_ID)";
+            String sql = "select b.*, a.name, a.surname from copies c join libraries l on (c.LIBRARY_ID = l.LIBRARY_ID) join BOOKS b on (c.BOOK_ID=b.BOOK_ID) join AUTHORS a on (b.AUTHOR_ID=a.AUTHOR_ID) ";
             sql += where;
             ResultSet rs=stmt.executeQuery(sql);
             books = GetBooksFromResult(rs);
@@ -126,6 +126,25 @@ class Database {
         }catch(Exception e){ System.out.println(e);}
         return author_id;
     }
+    public static ArrayList<String> getGenres()
+    {
+        ArrayList<String> genres = new ArrayList<>();
+        String genre;
+        try{
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+            Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
+            Statement stmt=con.createStatement();
+            String sql = "select distinct genre from books;";
+            ResultSet rs=stmt.executeQuery(sql);
+            while(rs.next())
+            {
+                genre = rs.getString(1);
+                genres.add(genre);
+            }
+            con.close();
+        }catch(Exception e){ System.out.println(e);}
+        return genres;
+    }
     
 //    private static Library getLibraryFromResult(ResultSet rs) throws SQLException {//TODO zmienić gdzie przechowuje się work_times
 //        String name, street, city;
@@ -170,12 +189,13 @@ class Database {
 //wyszukiwarka
 
 //TODO funkcje:
-//-sprawdzanie odległości między czytelnikiem a biblitoeką
-//-edytowanie autorów, jedynie edytowanie danych o dacie i narodowości
-//-rezerwacja poprzez nadanie is_available w copies na 0 i dodanie orders i orders_history
-//-poprawić funckję przekazującą informacje o bibliotece
-//-wypożyczenie książki poprzez modyfikację orders i orders_history
-//-oddanie książki przez modyfikację orders, orders_history i ewentualnie penalties_history
-//-wyświetlanie orders_histories dla pracowników
-//-edytować penalties history aby wiedzieć czy kara jest aktualna
-//-sprwadzanie czy użytkownik posiada karę i uniemożliwianie
+//-sprawdzanie odległości między czytelnikiem a biblitoeką TODO
+//-edytowanie autorów, jedynie edytowanie danych o dacie i narodowości TODO
+//-rezerwacja poprzez nadanie is_available w copies na 0 i dodanie orders i orders_history TODO
+//-poprawić funckję przekazującą informacje o bibliotece TODO
+//-wypożyczenie książki poprzez modyfikację orders i orders_history i nadanie 1 dla is_available TODO
+//-oddanie książki przez modyfikację orders, orders_history i ewentualnie penalties_history TODO
+//-wyświetlanie orders_histories dla pracowników TODO
+//-edytować penalties history aby wiedzieć czy kara jest aktualna TODO
+//-sprwadzanie czy użytkownik posiada karę i uniemożliwianie TODO
+//-otrzymywanie gatunków różnych
