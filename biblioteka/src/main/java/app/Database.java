@@ -134,7 +134,7 @@ class Database {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
             Statement stmt=con.createStatement();
-            String sql = "select distinct genre from books;";
+            String sql = "select distinct genre from books";
             ResultSet rs=stmt.executeQuery(sql);
             while(rs.next())
             {
@@ -145,33 +145,125 @@ class Database {
         }catch(Exception e){ System.out.println(e);}
         return genres;
     }
-    
-//    private static Library getLibraryFromResult(ResultSet rs) throws SQLException {//TODO zmienić gdzie przechowuje się work_times
-//        String name, street, city;
-//        int phone;
-//        rs.next();
-//        name = rs.getString(1);
-//        phone = rs.getInt(2);
-//        street = rs.getInt(3)  + ' ' + rs.getString(4);
-//        city = rs.getString(5);
-//        return new Library(name, street, city, phone);
-//    }
-    
-//    public static Library getLibraryInfo(String name) //TODO
-//    {
-//        Library lib = null;
-//        try{
-//            Class.forName("oracle.jdbc.driver.OracleDriver");
-//            Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
-//            Statement stmt=con.createStatement();
-//            String sql = "select l.name, l.phone_number, a.street, a.street_num, a.city from LIBRARIES l join ADDRESSES a using (address_id) where l.name like '%Miejska%'";
-//            ResultSet rs=stmt.executeQuery(sql);
-//            lib = getLibraryFromResult(rs);
-//            con.close();
-//        }catch(Exception e){ System.out.println(e);}
-//        return lib;
-//    }
-//    public static void get
+
+    public static Boolean isPenalty(int userID)
+    {
+        try{
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+            Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
+            Statement stmt=con.createStatement();
+            String sql = "select count(*) from users where USER_ID =" + String.valueOf(userID);
+            ResultSet rs=stmt.executeQuery(sql);
+            rs.next();
+            return rs.getInt(1) != 0;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private static double getDistance(int address1, int address2)//TODO
+    {
+        double distance=0;
+        try{
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+            Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
+            Statement stmt=con.createStatement();
+            String sql = "select * from ADDRESSES where ADDRESS_ID in (" + String.valueOf(address1) + " ," +String.valueOf(address2);
+            ResultSet rs=stmt.executeQuery(sql);
+            while (rs.next())
+            {
+                distance = 0;
+            }
+            return distance;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Library getLibraryInfo(String name)
+    {
+        Library lib = null;
+        String street, city;
+        WorkTime workTimes;
+        ArrayList<String> opens = null;
+        ArrayList<String> closere = null;
+        int phone, libID;
+        try{
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+            Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
+            Statement stmt=con.createStatement();
+
+            String sql = "select l.library_id, l.phone_number, a.street, a.street_num, a.city from LIBRARIES l join ADDRESSES a using (address_id) where l.name like '%Miejska%'";
+            ResultSet rs=stmt.executeQuery(sql);
+            rs.next();
+            libID = rs.getInt(1);
+            phone = rs.getInt(2);
+            street = rs.getInt(3)  + ' ' + rs.getString(4);
+            city = rs.getString(5);
+
+            sql = "select w.OPENING, w.CLOSING from WORK_TIMES w join LIBRARIES l using (library_id) where library_id = " + String.valueOf(libID);
+            rs=stmt.executeQuery(sql);
+            while(rs.next())
+            {
+                opens.add(rs.getString(1));
+                closere.add(rs.getString(2));
+            }
+            workTimes = new WorkTime(opens, closere);
+            lib = new Library(name, street, city, phone, workTimes);
+            con.close();
+        }catch(Exception e){ System.out.println(e);}
+        return lib;
+    }
+    public static void modifyAuthor(int authorID, String date, String nationality)
+    {
+        try{
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+            Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
+            Statement stmt=con.createStatement();
+            String update = "UPDATE authors" +
+                    "SET birth_date =" + date + ", nationality = '" + nationality + "'" +
+                    "WHERE author_id="+String.valueOf(authorID);
+            stmt.executeUpdate(update);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private static ArrayList<Order> GetOrdersFromResult(ResultSet rs) throws SQLException {
+        ArrayList<Order> orders = new ArrayList<>();
+        String status,dateBorrow, dateReturn,bookTitle;
+        while(rs.next()) {
+            status = rs.getString(1);
+            dateBorrow = rs.getString(2);
+            dateReturn = rs.getString(3);
+            bookTitle = rs.getString(4);
+            Order order = new Order(status,dateBorrow, dateReturn,bookTitle);
+            orders.add(order);
+        }
+        return orders;
+    }
+    public static ArrayList<Order> getOrders(int userID)
+    {
+        ArrayList<Order> orders = new ArrayList<>();
+        try{
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+            Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
+            Statement stmt=con.createStatement();
+            String sql = "select oh.status, o.DATE_BORROW, o.DATE_RETURN, b.TITLE from ORDERS_HISTORY oh join orders o using(order_id) join COPIES c using (copy_id) join BOOKS b using (book_id)";
+            if (userID != -1) {
+                sql += "where oh.user_id =" + String.valueOf(userID);
+            }
+            ResultSet rs=stmt.executeQuery(sql);
+            orders = GetOrdersFromResult(rs);
+            con.close();
+        }catch(Exception e){ System.out.println(e);}
+        return orders;
+    }
+
 }
 //TODO podział
 //użytknownik:
@@ -189,13 +281,12 @@ class Database {
 //wyszukiwarka
 
 //TODO funkcje:
-//-sprawdzanie odległości między czytelnikiem a biblitoeką TODO
-//-edytowanie autorów, jedynie edytowanie danych o dacie i narodowości TODO
+
 //-rezerwacja poprzez nadanie is_available w copies na 0 i dodanie orders i orders_history TODO
-//-poprawić funckję przekazującą informacje o bibliotece TODO
 //-wypożyczenie książki poprzez modyfikację orders i orders_history i nadanie 1 dla is_available TODO
 //-oddanie książki przez modyfikację orders, orders_history i ewentualnie penalties_history TODO
-//-wyświetlanie orders_histories dla pracowników TODO
+
+//-sprawdzanie odległości między czytelnikiem a biblitoeką TODO
 //-edytować penalties history aby wiedzieć czy kara jest aktualna TODO
-//-sprwadzanie czy użytkownik posiada karę i uniemożliwianie TODO
-//-otrzymywanie gatunków różnych
+
+// może stworzyć funkcję która wykonuje sql, update,insert itd.
