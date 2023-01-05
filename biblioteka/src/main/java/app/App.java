@@ -1,10 +1,8 @@
 package app;
-import lib.BasePanel;
+
 import panels.*;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class App {
     // permission level 0 - not logged in
@@ -161,8 +159,9 @@ public class App {
         return 1;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args){
         new App();
+//        Database a = new Database();
     }
 
 
