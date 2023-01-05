@@ -1,4 +1,4 @@
-package app;
+package classes;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
