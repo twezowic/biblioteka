@@ -103,6 +103,19 @@ public class App {
         returnBookPanel.getCancelButton().addActionListener(e -> {
             disposeSubPanel(returnBookPanel);
         });
+        returnBookPanel.getInputUsername().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                returnBookPanel.setSearchDataText(returnBookPanel.getInputUsername().getText());
+                //returnBookPanelfillResultTable(Database.returnBookPanel.getInputUsername().getText());
+            }
+        });
+        returnBookPanel.getAcceptButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //Database.removeBook0
+            }
+        });
 
     }
     private void RegisterBook() {
