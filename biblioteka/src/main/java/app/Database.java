@@ -284,7 +284,7 @@ class Database {
         return orders;
     }
 
-    public static void orderBook(int userID, int copyID)//TODO check
+    public static void orderBook(int userID, int copyID) //TODO check
     {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -299,7 +299,7 @@ class Database {
                 orderID = (int) generatedKeys.getLong(1);
             }
             String SQLOrderHistory = "INSERT INTO Orders_History Values(Null, "
-                    + orderID + ", " + userID + ", Null)";
+                    + orderID + ", " + userID + ", 'Rezerwacja')";
             stmt.executeUpdate(SQLOrderHistory);
             String updateCopies = "UPDATE Copies" +
                     "SET is_available =0" +
@@ -311,35 +311,64 @@ class Database {
             throw new RuntimeException(e);
         }
     }
-    public static void borrowBook()
+    public static void borrowBook(int orderID) //TODO check
     {
-
+        try {
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+            Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
+            Statement stmt=con.createStatement();
+            String SQLOrder = "UPDATE OF Orders " +
+                    "set date_borrow = TO_CHAR(SYSDATE, 'DD-MM-YYYY')" +
+                    "where order_id = " + orderID;
+            stmt.executeUpdate(SQLOrder);
+            String SQLOrderHistory = "Update of Orders_History " +
+                    "set status = 'Wypozyczona'" +
+                    "where order_id = " + orderID;
+            stmt.executeUpdate(SQLOrderHistory);
+            stmt.close();
+            con.close();
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
-    public static void returnBook(int userID, int orderID, int penaltyID)
+    public static void returnBook(int orderID, int penaltyID) //TODO implement
     {
-
+        try {
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+            Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
+            Statement stmt=con.createStatement();
+            String SQLOrder = "UPDATE OF Orders " +
+                    "set date_return = TO_CHAR(SYSDATE, 'DD-MM-YYYY')" +
+                    "where order_id = " + orderID;
+            stmt.executeUpdate(SQLOrder);
+            String SQLOrderHistory = "Update of Orders_History " +
+                    "set status = 'Zwrocona'" +
+                    "where order_id = " + orderID;
+            stmt.executeUpdate(SQLOrderHistory);
+            String SQL = "Select o.copy_id, oh.user_id " +
+                    "from ORDERS_HISTORY oh join orders o using (order_id) " +
+                    "where oh.order_id = " + orderID;
+            ResultSet rs = stmt.executeQuery(SQL);
+            rs.next();
+            int copyID = rs.getInt(1);
+            int userID = rs.getInt(2);
+            rs.close();
+            String updateCopies = "UPDATE Copies" +
+                    "SET is_available =0" +
+                    "WHERE copy_id="+ copyID;
+            stmt.executeUpdate(updateCopies);
+            if (penaltyID != -1)
+            {
+                String SQLPenaltiesHistory = "INSERT INTO Penalties_history Values(Null, "
+                        + penaltyID + ", " + userID + ")";
+                stmt.executeUpdate(SQLOrderHistory);
+            }
+            stmt.close();
+            con.close();
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 
-//TODO podział
-
-//użytknownik:
-//system kar - uniemożliwienie rezerwacji
-//historia wypożyczeń
-//informacja o bibliotece - sprawdzanie danych
-//rezerwacja - zarezerwowanie książki
-
-//pracownik
-//system kar - nadawania kar przy oddaniu
-//informacja o bibliotece - edytowanie danych
-//rezerwacja -
-
-//wszyscy:
-//wyszukiwarka
-
-//-wypozyczenie ksiazki
-//-oddanie książki przez modyfikację orders, orders_history i ewentualnie penalties_history i nadanie 1 dla is_available TODO implementacja
-//-edytować penalties history aby wiedzieć czy kara jest aktualna TODO implementacja
-
-//TODO implement refactor check
-//dac private na początek
+//-edytować penalties history aby wiedzieć czy kara jest aktualna TODO change
