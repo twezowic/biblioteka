@@ -22,8 +22,7 @@ class Database {
             throw new RuntimeException(e);
         }
     }
-
-    private static void DML(String dml) //TODO check
+    private static void DML(String dml)
     {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -70,14 +69,14 @@ class Database {
         }
         return orders;
     }
-    private static void AddAuthor(String firstName, String lastName) throws SQLException //TODO check
+    private static void AddAuthor(String firstName, String lastName) throws SQLException
     {
         String insert = "INSERT INTO Authors Values(Null, '"
                 + firstName + "', '"
                 + lastName + "', Null, Null)";
         DML(insert);
     }
-    private static int CheckAuthor(String fullName, Boolean canAdd) //TODO check dla canAdd = true
+    private static int CheckAuthor(String fullName, Boolean canAdd)
     {
         int author_id = -1;
         String[] nameParts = fullName.split(" ");
@@ -170,7 +169,7 @@ class Database {
         }catch(Exception e){ System.out.println(e);}
         return books;
     }
-    public static void AddBook(Book book) // TODO check
+    public static void addBook(Book book)
     {
         String insert = "INSERT INTO Books Values(Null, '" +
                 book.getTitle() + "', " +
@@ -181,7 +180,6 @@ class Database {
                 book.getGenre() + "')";
         DML(insert);
     }
-
     public static ArrayList<String> getGenres() // TODO check
     {
         ArrayList<String> genres = new ArrayList<>();
@@ -200,7 +198,6 @@ class Database {
         }
         return genres;
     }
-
     public static Boolean isPenalty(int userID) //TODO check
     {
         String SQL = "select count(*) from penalties_history where USER_ID =" + userID + " and is_paid = 0";
@@ -216,7 +213,6 @@ class Database {
             throw new RuntimeException(e);
         }
     }
-
     public static Library getLibraryInfo(String name) // TODO check
     {
         Library lib = null;
@@ -253,14 +249,13 @@ class Database {
         }
         return lib;
     }
-    public static void modifyAuthor(int authorID, String date, String nationality) //TODO check
+    public static void modifyAuthor(int authorID, String date, String nationality)
     {
-        String update = "UPDATE authors" +
-                "SET birth_date =" + date + ", nationality = '" + nationality + "'" +
+        String update = "UPDATE authors " +
+                "SET birth_date = TO_DATE('" + date + "', 'DD-MM-YYYY'), nationality = '" + nationality + "' " +
                 "WHERE author_id="+ authorID;
         DML(update);
     }
-
     public static ArrayList<Order> getOrders(int userID) // TODO check
     {
         ArrayList<Order> orders = new ArrayList<>();
@@ -280,7 +275,6 @@ class Database {
         }
         return orders;
     }
-
     public static void orderBook(int userID, int copyID) //TODO check
     {
         try {
