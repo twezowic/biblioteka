@@ -1,13 +1,8 @@
 package app;
 
-import classes.Book;
-import classes.Library;
-import classes.Order;
-import classes.WorkTime;
-
 import java.sql.*;
 import java.util.ArrayList;
-
+import classes.*;
 class Database {
     private static final String dbURL = "jdbc:oracle:thin:@//ora4.ii.pw.edu.pl:1521/pdb1.ii.pw.edu.pl";
     private static final String dbusername = "z32";
