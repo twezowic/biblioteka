@@ -1,8 +1,12 @@
 package app;
 
+import classes.Book;
+import classes.Library;
+import classes.Order;
+import classes.WorkTime;
+
 import java.sql.*;
 import java.util.ArrayList;
-import classes.*;
 class Database {
     private static final String dbURL = "jdbc:oracle:thin:@//ora4.ii.pw.edu.pl:1521/pdb1.ii.pw.edu.pl";
     private static final String dbusername = "z32";
@@ -10,13 +14,13 @@ class Database {
 
     private static Connection con;
     private static Statement stmt;
-    private static ResultSet Select(String SQL)
+    private static ResultSet Select(String sql)
     {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             con = DriverManager.getConnection(dbURL, dbusername, dbpassword);
             stmt = con.createStatement();
-            return stmt.executeQuery(SQL);
+            return stmt.executeQuery(sql);
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -202,7 +206,7 @@ class Database {
 
     public static Boolean isPenalty(int userID) //TODO check
     {
-        String SQL = "select count(*) from users where USER_ID =" + userID;
+        String SQL = "select count(*) from penalties_history where USER_ID =" + userID + " and is_paid = 0";
         try{
             ResultSet rs = Select(SQL);
             rs.next();
@@ -222,15 +226,16 @@ class Database {
         WorkTime workTimes;
         ArrayList<String> opening = new ArrayList<>();
         ArrayList<String> closing = new ArrayList<>();
-        String SQL = "select l.library_id, l.phone_number, a.street, a.street_num, a.city " +
+        String SQL = "select l.library_id, l.name, l.phone_number, a.street, a.street_num, a.city " +
                 "from LIBRARIES l join ADDRESSES a using (address_id) where " +AddCondition("l.name", name);
         try {
             ResultSet rs = Select(SQL);
             rs.next();
             int libID = rs.getInt(1);
-            int phone = rs.getInt(2);
-            String street = rs.getInt(3) + ' ' + rs.getString(4);
-            String city = rs.getString(5);
+            String libName = rs.getString(2);
+            int phone = rs.getInt(3);
+            String street = rs.getString(4) + ' ' + rs.getInt(5);
+            String city = rs.getString(6);
             rs.close();
             stmt.close();
             con.close();
@@ -242,7 +247,7 @@ class Database {
                 closing.add(rs.getString(2));
             }
             workTimes = new WorkTime(opening, closing);
-            lib = new Library(name, street, city, phone, workTimes);
+            lib = new Library(libName, street, city, phone, workTimes);
             rs.close();
             stmt.close();
             con.close();
@@ -326,7 +331,7 @@ class Database {
             throw new RuntimeException(e);
         }
     }
-    public static void returnBook(int orderID, int penaltyID) //TODO implement
+    public static void returnBook(int orderID, int penaltyID) //TODO check
     {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -355,8 +360,8 @@ class Database {
             if (penaltyID != -1)
             {
                 String SQLPenaltiesHistory = "INSERT INTO Penalties_history Values(Null, "
-                        + penaltyID + ", " + userID + ")";
-                stmt.executeUpdate(SQLOrderHistory);
+                        + penaltyID + ", " + userID + ", 0)";
+                stmt.executeUpdate(SQLPenaltiesHistory);
             }
             stmt.close();
             con.close();
@@ -365,5 +370,3 @@ class Database {
         }
     }
 }
-
-//-edytować penalties history aby wiedzieć czy kara jest aktualna TODO change
