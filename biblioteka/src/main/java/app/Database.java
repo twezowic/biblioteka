@@ -1,10 +1,5 @@
 package app;
 
-import classes.Book;
-import classes.Library;
-import classes.Order;
-import classes.WorkTime;
-
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -32,7 +27,7 @@ class Database {
         return user;
     }
 
-    private static ArrayList<Book> GetBooksFromResult(ResultSet rs) throws SQLException {
+    public static ArrayList<Book> GetBooksFromResult(ResultSet rs) throws SQLException {
         ArrayList<Book> books = new ArrayList<>();
         String title, author, ISBN, genre;
         int pages, year;
