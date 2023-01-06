@@ -1,9 +1,10 @@
 package panels;
 
-import app.Book;
+import classes.Order;
 import lib.BasePanel;
 import lib.InteractiveJTextField;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -12,55 +13,39 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 @Getter
 public class ReturnBooksPanel extends BasePanel {
     private JTextField searchData;
-    private InteractiveJTextField inputUsername;
+    private InteractiveJTextField inputUserID;
     private JTable resultTable;
+    private DefaultTableModel resultTableModel;
     public ReturnBooksPanel() {
-        inputUsername = new InteractiveJTextField("Type the username of the person, whose books you want to return");
+        inputUserID = new InteractiveJTextField("Type the user ID of the person, whose books you want to return, only numbers allowed!");
         searchData = new JTextField();
-        DefaultTableModel model = new DefaultTableModel() {
+        resultTableModel = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        JTable resultTable = new JTable(model);
-        inputUsername.setPreferredSize(new Dimension(100, 100));
+        resultTable = new JTable(resultTableModel);
+        inputUserID.setPreferredSize(new Dimension(100, 100));
         searchData.setPreferredSize(new Dimension(100, 100));
         //resultTable.setPreferredSize(new Dimension(500, 500));
         searchData.setEditable(false);
+        getAcceptButton().setEnabled(false);
+        getAcceptButton().setText("Set the selected book as returned to the library");
+        resultTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        fillResultTableColumnNames();
 
-        //DefaultTableModel model = (DefaultTableModel) resultTable.getModel();
-        model.addColumn("title");
-        model.addColumn("author");
-        model.addColumn("pages");
-        model.addColumn("ISBN");
-        model.addColumn("year");
-        model.addColumn("genre");
-
-        model.addRow(new Object[]{"Column 1", "column2", "column3"});
-        model.addRow(new Object[]{"aaa", "aaa", "aaa"});
-        model.addRow(new Object[]{"bbb", "bbb", "bbb"});
-        //
-        resultTable.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
-            public void valueChanged(ListSelectionEvent event) {
-                if (!event.getValueIsAdjusting()) {//This line prevents double events
-                    System.out.println(resultTable.getValueAt(resultTable.getSelectedRow(), 0).toString());
-
-                }
-                // do some actions here, for example
-                // print first column value from selected row
-                }
-        });
         //
         JScrollPane scrollPane = new JScrollPane(resultTable);
         scrollPane.setPreferredSize(new Dimension(500, 500));
 
-        getUpperPanel().add(inputUsername);
+        getUpperPanel().add(inputUserID);
         getUpperPanel().add(searchData);
         //getUpperPanel().add(resultTable);
         getUpperPanel().add(scrollPane);
@@ -71,15 +56,29 @@ public class ReturnBooksPanel extends BasePanel {
 
     }
 
-    public void fillResultTable(ArrayList<Book> usersBooks) {
-        for (Book book: usersBooks)
-        {
 
+    public void fillResultTable(ArrayList<Order> usersOrders) {
+        //Class c = Order.class;
+        //Field[] fields = c.getDeclaredFields();
+        for (Order order: usersOrders)
+        {
+            //fields[0].get(order);
+
+            resultTableModel.addRow(new Object[]{order.getStatus(), order.getDateBorrow(), order.getDateReturn(), order.getBookTitle()});
         }
     }
 
     public void setSearchDataText(String username)
     {
-        searchData.setText("searching for user: " + username);
+        searchData.setText("your typed user ID: " + username);
+    }
+
+    private void fillResultTableColumnNames()
+    {
+        Field[] fields = Order.class.getDeclaredFields();
+        for(Field field: fields)
+        {
+            resultTableModel.addColumn(field.getName());
+        }
     }
 }

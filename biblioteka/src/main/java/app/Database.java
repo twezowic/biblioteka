@@ -2,7 +2,7 @@ package app;
 
 import java.sql.*;
 import java.util.ArrayList;
-
+import classes.*;
 class Database {
     private static final String dbURL = "jdbc:oracle:thin:@//ora4.ii.pw.edu.pl:1521/pdb1.ii.pw.edu.pl";
     private static final String dbusername = "z32";
@@ -27,7 +27,7 @@ class Database {
         return user;
     }
 
-    public static ArrayList<Book> GetBooksFromResult(ResultSet rs) throws SQLException {
+    private static ArrayList<Book> GetBooksFromResult(ResultSet rs) throws SQLException {
         ArrayList<Book> books = new ArrayList<>();
         String title, author, ISBN, genre;
         int pages, year;
@@ -262,6 +262,10 @@ class Database {
             con.close();
         }catch(Exception e){ System.out.println(e);}
         return orders;
+    }
+    public static void returnBook(int userID, int orderID, int penaltyID)
+    {
+
     }
 
 }

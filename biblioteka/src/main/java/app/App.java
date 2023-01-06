@@ -3,6 +3,11 @@ package app;
 import panels.*;
 
 import javax.swing.*;
+import javax.xml.crypto.Data;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Scanner;
+import java.util.Vector;
 
 public class App {
     // permission level 0 - not logged in
@@ -78,51 +83,49 @@ public class App {
     private void BrowseBooks() {
 
         BrowseBooksPanel2 browseBooksPanel2 = new BrowseBooksPanel2(permissionLevel);
-        browseBooksPanel2.getCancelButton().addActionListener(e -> {
-            disposeSubPanel(browseBooksPanel2);
-
-        });
+        browseBooksPanel2.getCancelButton().addActionListener(e -> disposeSubPanel(browseBooksPanel2));
 
 
     }
 
     private void CheckOut() {
         CheckOutPanel checkOutPanel = new CheckOutPanel();
-        checkOutPanel.getCancelButton().addActionListener(e -> {
-            disposeSubPanel(checkOutPanel);
-        });
+        checkOutPanel.getCancelButton().addActionListener(e -> disposeSubPanel(checkOutPanel));
     }
     private void ReserveBook() {
         CheckOutPanel checkOutPanel = new CheckOutPanel();
-        checkOutPanel.getCancelButton().addActionListener(e -> {
-            disposeSubPanel(checkOutPanel);
-        });
+        checkOutPanel.getCancelButton().addActionListener(e -> disposeSubPanel(checkOutPanel));
     }
     private void ReturnBook() {
         ReturnBooksPanel returnBookPanel = new ReturnBooksPanel();
-        returnBookPanel.getCancelButton().addActionListener(e -> {
-            disposeSubPanel(returnBookPanel);
-        });
-        returnBookPanel.getInputUsername().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                returnBookPanel.setSearchDataText(returnBookPanel.getInputUsername().getText());
-                //returnBookPanelfillResultTable(Database.returnBookPanel.getInputUsername().getText());
+        returnBookPanel.getCancelButton().addActionListener(e -> disposeSubPanel(returnBookPanel));
+        returnBookPanel.getInputUserID().addActionListener(e -> {
+            String userID = returnBookPanel.getInputUserID().getText().trim();
+            Scanner sc = new Scanner(userID);
+            if(sc.hasNextInt()){
+                returnBookPanel.setSearchDataText(userID);
+                returnBookPanel.getAcceptButton().setEnabled(true);
+                returnBookPanel.fillResultTable(Database.getOrders(Integer.parseInt(userID)));
+            }
+            else{
+                returnBookPanel.setEnabled(false);
+                MessagePanel notNumber = new MessagePanel("The User ID has to be a number");
+                notNumber.getAcceptButton().addActionListener(f -> {
+                    notNumber.dispose();
+                    returnBookPanel.setEnabled(true);});
             }
         });
-        returnBookPanel.getAcceptButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //Database.removeBook0
-            }
+        returnBookPanel.getAcceptButton().addActionListener(e -> {
+            Vector selected = returnBookPanel.getResultTableModel().getDataVector().
+                    elementAt(returnBookPanel.getResultTable().convertRowIndexToModel(returnBookPanel.getResultTable().
+                            getSelectedRow()));
+            //Database.returnBook(Integer.parseInt(returnBookPanel.getInputUserID().getText()), 1, calculatePenalty());
         });
 
     }
     private void RegisterBook() {
         RegisterBookPanel registerBookPanel = new RegisterBookPanel();
-        registerBookPanel.getCancelButton().addActionListener(e -> {
-            disposeSubPanel(registerBookPanel);
-        });
+        registerBookPanel.getCancelButton().addActionListener(e -> disposeSubPanel(registerBookPanel));
 
     }
 
@@ -136,9 +139,7 @@ public class App {
                         permissionLevel = 0;
                         loginPanel.dispose();
                         MessagePanel messagePanel = new MessagePanel("Login falied: invalid data");
-                        messagePanel.getAcceptButton().addActionListener(f -> {
-                            disposeSubPanel(messagePanel);
-                        });
+                        messagePanel.getAcceptButton().addActionListener(f -> disposeSubPanel(messagePanel));
                     }
                     case 1 -> {
                         username = loginPanel.getUsername().getText();
@@ -153,9 +154,7 @@ public class App {
                     }
                 }
             });
-            loginPanel.getCancelButton().addActionListener(e -> {
-                disposeSubPanel(loginPanel);
-            });
+            loginPanel.getCancelButton().addActionListener(e -> disposeSubPanel(loginPanel));
         }
         else {
 
@@ -170,6 +169,11 @@ public class App {
         frameToDispose.dispose();
         Run();
         return 1;
+    }
+
+    private int calculatePenalty() //@TODO
+    {
+        return 0;
     }
 
     public static void main(String[] args){
