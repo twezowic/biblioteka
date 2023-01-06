@@ -9,6 +9,6 @@ import java.util.ArrayList;
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 @Getter
 public class WorkTime {
-    ArrayList<String> open;
-    ArrayList<String> close;
+    ArrayList<String> opening;
+    ArrayList<String> closing;
 }
