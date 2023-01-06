@@ -1,9 +1,6 @@
 package app;
 
-import classes.Book;
-import classes.Library;
-import classes.Order;
-import classes.WorkTime;
+import classes.*;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -113,7 +110,7 @@ class Database {
         return author_id;
     }
 
-    private static double getDistance(int address1, int address2)//TODO implementacja
+    private static double getDistance(int address1, int address2)//TODO implement
     {
         double distance=0;
         try{
@@ -256,7 +253,7 @@ class Database {
         }
         return lib;
     }
-    public static void modifyAuthor(int authorID, String date, String nationality) //TODO refactor check
+    public static void modifyAuthor(int authorID, String date, String nationality) //TODO check
     {
         String update = "UPDATE authors" +
                 "SET birth_date =" + date + ", nationality = '" + nationality + "'" +
@@ -357,7 +354,7 @@ class Database {
                     "SET is_available =0" +
                     "WHERE copy_id="+ copyID;
             stmt.executeUpdate(updateCopies);
-            if (penaltyID != -1)
+            if (penaltyID != 0)
             {
                 String SQLPenaltiesHistory = "INSERT INTO Penalties_history Values(Null, "
                         + penaltyID + ", " + userID + ", 0)";
@@ -368,5 +365,27 @@ class Database {
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+    public static ArrayList<Penalty> getPenalties()
+    {
+        ArrayList<Penalty> penalties = new ArrayList<>();
+        String SQL = "select * from penalties";
+        try {
+            ResultSet rs = Select(SQL);
+            while (rs.next()) {
+                int penaltyID = rs.getInt(1);
+                String name = rs.getString(2);
+                String description = rs.getString(3);
+                int value = rs.getInt(4);
+                Penalty penalty = new Penalty(penaltyID, name, description, value);
+                penalties.add(penalty);
+            }
+            rs.close();
+            stmt.close();
+            con.close();
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+        return penalties;
     }
 }
