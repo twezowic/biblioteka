@@ -7,6 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor(access= AccessLevel.PUBLIC)
 @Getter
 public class Order {
+    int OrderID;
     String status;
     String dateBorrow;
     String dateReturn;

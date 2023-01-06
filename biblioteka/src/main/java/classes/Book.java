@@ -7,6 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor(access= AccessLevel.PUBLIC)
 @Getter
 public class Book {
+    int bookID;
     String title;
     String author;
     int pages;

@@ -23,7 +23,7 @@ class Database {
         }
     }
 
-    private static void DML(String dml)
+    private static void DML(String dml) //TODO check
     {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -40,31 +40,32 @@ class Database {
     {
         return condName + " like '%" + data + "%'";
     }
-    private static ArrayList<Book> GetBooksFromResult(ResultSet rs) throws SQLException //TODO check
+    private static ArrayList<Book> GetBooksFromResult(ResultSet rs) throws SQLException
     {
         ArrayList<Book> books = new ArrayList<>();
         while(rs.next()) {
+            int bookID = rs.getInt(1);
             String title = rs.getString(2);
             String author = rs.getString(8) + ' ' + rs.getString(9);
             int pages = rs.getInt(4);
             String ISBN = rs.getString(5);
             int year = rs.getInt(6);
             String genre = rs.getString(7);
-            Book book = new Book(title, author, pages, ISBN, year, genre);
+            Book book = new Book(bookID, title, author, pages, ISBN, year, genre);
             books.add(book);
         }
         return books;
     }
-
     private static ArrayList<Order> GetOrdersFromResult(ResultSet rs) throws SQLException //TODO check
     {
         ArrayList<Order> orders = new ArrayList<>();
         while(rs.next()) {
-            String status = rs.getString(1);
-            String dateBorrow = rs.getString(2);
-            String dateReturn = rs.getString(3);
-            String bookTitle = rs.getString(4);
-            Order order = new Order(status,dateBorrow, dateReturn,bookTitle);
+            int orderID = rs.getInt(1);
+            String status = rs.getString(2);
+            String dateBorrow = rs.getString(3);
+            String dateReturn = rs.getString(4);
+            String bookTitle = rs.getString(5);
+            Order order = new Order(orderID, status,dateBorrow, dateReturn,bookTitle);
             orders.add(order);
         }
         return orders;
@@ -76,7 +77,7 @@ class Database {
                 + lastName + "', Null, Null)";
         DML(insert);
     }
-    private static int CheckAuthor(String fullName, Boolean canAdd) //TODO check nie dziala
+    private static int CheckAuthor(String fullName, Boolean canAdd) //TODO check dla canAdd = true
     {
         int author_id = -1;
         String[] nameParts = fullName.split(" ");
@@ -109,7 +110,6 @@ class Database {
         }
         return author_id;
     }
-
     private static double getDistance(int address1, int address2)//TODO implement
     {
         double distance=0;
@@ -146,19 +146,20 @@ class Database {
         } catch(Exception e){ System.out.println(e);}
         return user;
     }
-
-    public static ArrayList<Book> GetBooks(String title, String author, String ISBN, String genre, String library_name) //TODO check overload?
+    public static ArrayList<Book> getBooks(String title, String author, String ISBN, String genre, String library_name)
     {
         ArrayList<Book> books = new ArrayList<>();
-        String SQL = "select b.*, a.name, a.surname +" +
+        String SQL = "select b.*, a.name, a.surname " +
                 " from copies c join libraries l on (c.LIBRARY_ID = l.LIBRARY_ID)" +
                 " join BOOKS b on (c.BOOK_ID=b.BOOK_ID)" +
                 " join AUTHORS a on (b.AUTHOR_ID=a.AUTHOR_ID) " +
-                "where " +
-                AddCondition("b.title", title) + "and" +
-                "b.author_id = "  + CheckAuthor(author, false) + "and" +
-                AddCondition("b.ISBN", ISBN)+ "and" +
-                AddCondition("b.genre", genre)+ "and" +
+                "where " + AddCondition("b.title", title) + " and " ;
+        int authorID = CheckAuthor(author, false);
+        if (authorID != -1) {
+            SQL += "b.author_id = " + authorID + "and ";
+        }
+        SQL +=  AddCondition("b.ISBN", ISBN)+ "and " +
+                AddCondition("b.genre", genre)+ "and " +
                 AddCondition("l.name", library_name);
         try{
             ResultSet rs = Select(SQL);
@@ -169,7 +170,6 @@ class Database {
         }catch(Exception e){ System.out.println(e);}
         return books;
     }
-
     public static void AddBook(Book book) // TODO check
     {
         String insert = "INSERT INTO Books Values(Null, '" +
@@ -244,7 +244,7 @@ class Database {
                 closing.add(rs.getString(2));
             }
             workTimes = new WorkTime(opening, closing);
-            lib = new Library(libName, street, city, phone, workTimes);
+            lib = new Library(libID, libName, street, city, phone, workTimes);
             rs.close();
             stmt.close();
             con.close();
@@ -264,7 +264,7 @@ class Database {
     public static ArrayList<Order> getOrders(int userID) // TODO check
     {
         ArrayList<Order> orders = new ArrayList<>();
-        String SQL ="select oh.status, o.DATE_BORROW, o.DATE_RETURN, b.TITLE " +
+        String SQL ="select o.order_id, oh.status, o.DATE_BORROW, o.DATE_RETURN, b.TITLE " +
                 "from ORDERS_HISTORY oh join orders o using(order_id) join COPIES c using (copy_id) join BOOKS b using (book_id)";
         if (userID != -1) {
             SQL += "where oh.user_id =" + userID;
@@ -387,5 +387,12 @@ class Database {
             System.out.println(e);
         }
         return penalties;
+    }
+    public static void payPenalty(int penaltyHistoryID) //TODO check
+    {
+        String Update = "Update of penalties_history" +
+                "set is_paid = 1" +
+                "where penalty_history_ID = " + penaltyHistoryID;
+        DML(Update);
     }
 }
