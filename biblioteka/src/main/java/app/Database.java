@@ -180,7 +180,7 @@ class Database {
                 book.getGenre() + "')";
         DML(insert);
     }
-    public static ArrayList<String> getGenres() // TODO check
+    public static ArrayList<String> getGenres()
     {
         ArrayList<String> genres = new ArrayList<>();
         String SQL = "select distinct genre from books";
@@ -198,7 +198,7 @@ class Database {
         }
         return genres;
     }
-    public static Boolean isPenalty(int userID) //TODO check
+    public static Boolean isPenalty(int userID)
     {
         String SQL = "select count(*) from penalties_history where USER_ID =" + userID + " and is_paid = 0";
         try{
@@ -213,7 +213,7 @@ class Database {
             throw new RuntimeException(e);
         }
     }
-    public static Library getLibraryInfo(String name) // TODO check
+    public static Library getLibraryInfo(String name)
     {
         Library lib = null;
         WorkTime workTimes;
@@ -256,11 +256,13 @@ class Database {
                 "WHERE author_id="+ authorID;
         DML(update);
     }
-    public static ArrayList<Order> getOrders(int userID) // TODO check
+    public static ArrayList<Order> getOrders(int userID)
     {
         ArrayList<Order> orders = new ArrayList<>();
         String SQL ="select o.order_id, oh.status, o.DATE_BORROW, o.DATE_RETURN, b.TITLE " +
-                "from ORDERS_HISTORY oh join orders o using(order_id) join COPIES c using (copy_id) join BOOKS b using (book_id)";
+                "from ORDERS_HISTORY oh join orders o on(oh.order_id=o.order_id) " +
+                "join COPIES c on (c.copy_id=o.order_id) " +
+                "join BOOKS b on (c.book_id=b.book_id)";
         if (userID != -1) {
             SQL += "where oh.user_id =" + userID;
         }
@@ -275,7 +277,7 @@ class Database {
         }
         return orders;
     }
-    public static void orderBook(int userID, int copyID) //TODO check
+    public static void orderBook(int userID, int copyID)
     {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -285,15 +287,17 @@ class Database {
                     + copyID + ", Null, Null)";
             int orderID = 0;
             stmt.executeUpdate(SQLOrder);
-            ResultSet generatedKeys = stmt.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                orderID = (int) generatedKeys.getLong(1);
+
+            ResultSet rs = stmt.executeQuery("select order_id from orders order by order_Id desc fetch next 1 rows only");
+            if (rs.next()) {
+                orderID = rs.getInt(1);
             }
+            rs.close();
             String SQLOrderHistory = "INSERT INTO Orders_History Values(Null, "
                     + orderID + ", " + userID + ", 'Rezerwacja')";
             stmt.executeUpdate(SQLOrderHistory);
-            String updateCopies = "UPDATE Copies" +
-                    "SET is_available =0" +
+            String updateCopies = "UPDATE Copies " +
+                    "SET is_available =0 " +
                     "WHERE copy_id="+ copyID;
             stmt.executeUpdate(updateCopies);
             stmt.close();
@@ -302,18 +306,18 @@ class Database {
             throw new RuntimeException(e);
         }
     }
-    public static void borrowBook(int orderID) //TODO check
+    public static void borrowBook(int orderID)
     {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
             Statement stmt=con.createStatement();
-            String SQLOrder = "UPDATE OF Orders " +
-                    "set date_borrow = TO_CHAR(SYSDATE, 'DD-MM-YYYY')" +
+            String SQLOrder = "UPDATE Orders " +
+                    "set date_borrow = TO_DATE(TO_CHAR(SYSDATE, 'DD-MM-YYYY'), 'DD-MM-YYYY') " +
                     "where order_id = " + orderID;
             stmt.executeUpdate(SQLOrder);
-            String SQLOrderHistory = "Update of Orders_History " +
-                    "set status = 'Wypozyczona'" +
+            String SQLOrderHistory = "Update Orders_History " +
+                    "set status = 'Wypozyczona' " +
                     "where order_id = " + orderID;
             stmt.executeUpdate(SQLOrderHistory);
             stmt.close();
@@ -322,30 +326,30 @@ class Database {
             throw new RuntimeException(e);
         }
     }
-    public static void returnBook(int orderID, int penaltyID) //TODO check
+    public static void returnBook(int orderID, int penaltyID)
     {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
             Statement stmt=con.createStatement();
-            String SQLOrder = "UPDATE OF Orders " +
-                    "set date_return = TO_CHAR(SYSDATE, 'DD-MM-YYYY')" +
+            String SQLOrder = "UPDATE Orders " +
+                    "set date_return = TO_DATE(TO_CHAR(SYSDATE, 'DD-MM-YYYY'), 'DD-MM-YYYY') " +
                     "where order_id = " + orderID;
             stmt.executeUpdate(SQLOrder);
-            String SQLOrderHistory = "Update of Orders_History " +
+            String SQLOrderHistory = "Update Orders_History " +
                     "set status = 'Zwrocona'" +
                     "where order_id = " + orderID;
             stmt.executeUpdate(SQLOrderHistory);
             String SQL = "Select o.copy_id, oh.user_id " +
-                    "from ORDERS_HISTORY oh join orders o using (order_id) " +
+                    "from ORDERS_HISTORY oh join orders o on (oh.order_id=o.order_id) " +
                     "where oh.order_id = " + orderID;
             ResultSet rs = stmt.executeQuery(SQL);
             rs.next();
             int copyID = rs.getInt(1);
             int userID = rs.getInt(2);
             rs.close();
-            String updateCopies = "UPDATE Copies" +
-                    "SET is_available =0" +
+            String updateCopies = "UPDATE Copies " +
+                    "SET is_available =1" +
                     "WHERE copy_id="+ copyID;
             stmt.executeUpdate(updateCopies);
             if (penaltyID != 0)
@@ -382,11 +386,13 @@ class Database {
         }
         return penalties;
     }
-    public static void payPenalty(int penaltyHistoryID) //TODO check
+    public static void payPenalty(int userID)
     {
-        String Update = "Update of penalties_history" +
-                "set is_paid = 1" +
-                "where penalty_history_ID = " + penaltyHistoryID;
+        String Update = "Update penalties_history " +
+                "set is_paid = 1 " +
+                "where user_id = " + userID;
         DML(Update);
     }
 }
+
+// zwracanie copy_id dla orderBook TODO implement
