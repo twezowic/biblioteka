@@ -1,5 +1,6 @@
 package app;
 
+import classes.Library;
 import panels.*;
 
 import javax.swing.*;
@@ -88,7 +89,18 @@ public class App {
         ViewLibInfoPanel viewLibInfo = new ViewLibInfoPanel();
         viewLibInfo.getCancelButton().addActionListener(e -> disposeSubPanel(viewLibInfo));
         viewLibInfo.getAcceptButton().addActionListener(e -> {
-            viewLibInfo.fillLibraryInfo(Database.getLibraryInfo(viewLibInfo.getLibraryName().getText()));
+            viewLibInfo.getStatusInfo().setText("Waiting for the Data from the database");
+            viewLibInfo.getStatusInfo().paintImmediately(viewLibInfo.getStatusInfo().getVisibleRect());
+
+            Library answer = Database.getLibraryInfo(viewLibInfo.getLibraryName().getText());
+            if(answer == null){
+                handleMessagePanel(viewLibInfo, "No library with such name in the database!");
+            }
+            else{
+                viewLibInfo.fillLibraryInfo(answer);
+            }
+            viewLibInfo.getStatusInfo().setText("Status: Waiting for Input");
+
         });
     }
     private void ReserveBook() { // @TODO probably will be removed with browseBooksPanel inheriting it's purpose
@@ -107,17 +119,14 @@ public class App {
                 returnBookPanel.fillResultTable(Database.getOrders(Integer.parseInt(userID)));
             }
             else{
-                returnBookPanel.setEnabled(false);
-                MessagePanel notNumber = new MessagePanel("The User ID has to be a number");
-                notNumber.getAcceptButton().addActionListener(f -> {
-                    notNumber.dispose();
-                    returnBookPanel.setEnabled(true);});
+                handleMessagePanel(returnBookPanel,"The User ID has to be a number");
             }
         });
         returnBookPanel.getAcceptButton().addActionListener(e -> {
             Vector selected = returnBookPanel.getResultTableModel().getDataVector().
                     elementAt(returnBookPanel.getResultTable().convertRowIndexToModel(returnBookPanel.getResultTable().
                             getSelectedRow()));
+            calculatePenalty();
             //Database.returnBook(Integer.parseInt(returnBookPanel.getInputUserID().getText()), 1, calculatePenalty());
         });
 
@@ -136,9 +145,7 @@ public class App {
                 switch (2) {
                     case 0 -> {// show window couldn't log in
                         permissionLevel = 0;
-                        loginPanel.dispose();
-                        MessagePanel messagePanel = new MessagePanel("Login falied: invalid data");
-                        messagePanel.getAcceptButton().addActionListener(f -> disposeSubPanel(messagePanel));
+                        handleMessagePanel(loginPanel, "Login falied: invalid data");
                     }
                     case 1 -> {
                         username = loginPanel.getUsername().getText();
@@ -172,6 +179,7 @@ public class App {
 
     private int calculatePenalty() //@TODO
     {
+        ChoosePenaltyPanel choosePenaltyPanel = new ChoosePenaltyPanel(Database.getPenalties());
         return 0;
     }
 
@@ -179,6 +187,13 @@ public class App {
         new App();
 //        Database a = new Database();
     }
-
+    private void handleMessagePanel(JFrame callingPanel, String textToShow)
+    {
+        callingPanel.setEnabled(false);
+        MessagePanel notNumber = new MessagePanel(textToShow);
+        notNumber.getAcceptButton().addActionListener(f -> {
+            notNumber.dispose();
+            callingPanel.setEnabled(true);});
+    }
 
 }
