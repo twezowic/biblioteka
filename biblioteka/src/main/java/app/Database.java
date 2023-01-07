@@ -1,8 +1,9 @@
 package app;
 
+import classes.*;
+
 import java.sql.*;
 import java.util.ArrayList;
-import classes.*;
 class Database {
     private static final String dbURL = "jdbc:oracle:thin:@//ora4.ii.pw.edu.pl:1521/pdb1.ii.pw.edu.pl";
     private static final String dbusername = "z32";
@@ -10,18 +11,17 @@ class Database {
 
     private static Connection con;
     private static Statement stmt;
-    private static ResultSet Select(String SQL)
+    private static ResultSet Select(String sql)
     {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             con = DriverManager.getConnection(dbURL, dbusername, dbpassword);
             stmt = con.createStatement();
-            return stmt.executeQuery(SQL);
+            return stmt.executeQuery(sql);
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
-
     private static void DML(String dml)
     {
         try {
@@ -39,43 +39,44 @@ class Database {
     {
         return condName + " like '%" + data + "%'";
     }
-    private static ArrayList<Book> GetBooksFromResult(ResultSet rs) throws SQLException //TODO check
+    private static ArrayList<Book> GetBooksFromResult(ResultSet rs) throws SQLException
     {
         ArrayList<Book> books = new ArrayList<>();
         while(rs.next()) {
+            int bookID = rs.getInt(1);
             String title = rs.getString(2);
             String author = rs.getString(8) + ' ' + rs.getString(9);
             int pages = rs.getInt(4);
             String ISBN = rs.getString(5);
             int year = rs.getInt(6);
             String genre = rs.getString(7);
-            Book book = new Book(title, author, pages, ISBN, year, genre);
+            Book book = new Book(bookID, title, author, pages, ISBN, year, genre);
             books.add(book);
         }
         return books;
     }
-
     private static ArrayList<Order> GetOrdersFromResult(ResultSet rs) throws SQLException //TODO check
     {
         ArrayList<Order> orders = new ArrayList<>();
         while(rs.next()) {
-            String status = rs.getString(1);
-            String dateBorrow = rs.getString(2);
-            String dateReturn = rs.getString(3);
-            String bookTitle = rs.getString(4);
-            Order order = new Order(status,dateBorrow, dateReturn,bookTitle);
+            int orderID = rs.getInt(1);
+            String status = rs.getString(2);
+            String dateBorrow = rs.getString(3);
+            String dateReturn = rs.getString(4);
+            String bookTitle = rs.getString(5);
+            Order order = new Order(orderID, status,dateBorrow, dateReturn,bookTitle);
             orders.add(order);
         }
         return orders;
     }
-    private static void AddAuthor(String firstName, String lastName) throws SQLException //TODO check
+    private static void AddAuthor(String firstName, String lastName) throws SQLException
     {
         String insert = "INSERT INTO Authors Values(Null, '"
                 + firstName + "', '"
                 + lastName + "', Null, Null)";
         DML(insert);
     }
-    private static int CheckAuthor(String fullName, Boolean canAdd) //TODO check nie dziala
+    private static int CheckAuthor(String fullName, Boolean canAdd)
     {
         int author_id = -1;
         String[] nameParts = fullName.split(" ");
@@ -108,8 +109,7 @@ class Database {
         }
         return author_id;
     }
-
-    private static double getDistance(int address1, int address2)//TODO implementacja
+    private static double getDistance(int address1, int address2)//TODO implement
     {
         double distance=0;
         try{
@@ -145,19 +145,20 @@ class Database {
         } catch(Exception e){ System.out.println(e);}
         return user;
     }
-
-    public static ArrayList<Book> GetBooks(String title, String author, String ISBN, String genre, String library_name) //TODO check overload?
+    public static ArrayList<Book> getBooks(String title, String author, String ISBN, String genre, String library_name)
     {
         ArrayList<Book> books = new ArrayList<>();
-        String SQL = "select b.*, a.name, a.surname +" +
+        String SQL = "select b.*, a.name, a.surname " +
                 " from copies c join libraries l on (c.LIBRARY_ID = l.LIBRARY_ID)" +
                 " join BOOKS b on (c.BOOK_ID=b.BOOK_ID)" +
                 " join AUTHORS a on (b.AUTHOR_ID=a.AUTHOR_ID) " +
-                "where " +
-                AddCondition("b.title", title) + "and" +
-                "b.author_id = "  + CheckAuthor(author, false) + "and" +
-                AddCondition("b.ISBN", ISBN)+ "and" +
-                AddCondition("b.genre", genre)+ "and" +
+                "where " + AddCondition("b.title", title) + " and " ;
+        int authorID = CheckAuthor(author, false);
+        if (authorID != -1) {
+            SQL += "b.author_id = " + authorID + "and ";
+        }
+        SQL +=  AddCondition("b.ISBN", ISBN)+ "and " +
+                AddCondition("b.genre", genre)+ "and " +
                 AddCondition("l.name", library_name);
         try{
             ResultSet rs = Select(SQL);
@@ -168,8 +169,7 @@ class Database {
         }catch(Exception e){ System.out.println(e);}
         return books;
     }
-
-    public static void AddBook(Book book) // TODO check
+    public static void addBook(Book book)
     {
         String insert = "INSERT INTO Books Values(Null, '" +
                 book.getTitle() + "', " +
@@ -180,8 +180,7 @@ class Database {
                 book.getGenre() + "')";
         DML(insert);
     }
-
-    public static ArrayList<String> getGenres() // TODO check
+    public static ArrayList<String> getGenres()
     {
         ArrayList<String> genres = new ArrayList<>();
         String SQL = "select distinct genre from books";
@@ -199,10 +198,9 @@ class Database {
         }
         return genres;
     }
-
-    public static Boolean isPenalty(int userID) //TODO check
+    public static Boolean isPenalty(int userID)
     {
-        String SQL = "select count(*) from users where USER_ID =" + userID;
+        String SQL = "select count(*) from penalties_history where USER_ID =" + userID + " and is_paid = 0";
         try{
             ResultSet rs = Select(SQL);
             rs.next();
@@ -215,22 +213,22 @@ class Database {
             throw new RuntimeException(e);
         }
     }
-
-    public static Library getLibraryInfo(String name) // TODO check
+    public static Library getLibraryInfo(String name)
     {
         Library lib = null;
         WorkTime workTimes;
         ArrayList<String> opening = new ArrayList<>();
         ArrayList<String> closing = new ArrayList<>();
-        String SQL = "select l.library_id, l.phone_number, a.street, a.street_num, a.city " +
+        String SQL = "select l.library_id, l.name, l.phone_number, a.street, a.street_num, a.city " +
                 "from LIBRARIES l join ADDRESSES a using (address_id) where " +AddCondition("l.name", name);
         try {
             ResultSet rs = Select(SQL);
             rs.next();
             int libID = rs.getInt(1);
-            int phone = rs.getInt(2);
-            String street = rs.getInt(3) + ' ' + rs.getString(4);
-            String city = rs.getString(5);
+            String libName = rs.getString(2);
+            int phone = rs.getInt(3);
+            String street = rs.getString(4) + ' ' + rs.getInt(5);
+            String city = rs.getString(6);
             rs.close();
             stmt.close();
             con.close();
@@ -242,7 +240,7 @@ class Database {
                 closing.add(rs.getString(2));
             }
             workTimes = new WorkTime(opening, closing);
-            lib = new Library(name, street, city, phone, workTimes);
+            lib = new Library(libID, libName, street, city, phone, workTimes);
             rs.close();
             stmt.close();
             con.close();
@@ -251,19 +249,20 @@ class Database {
         }
         return lib;
     }
-    public static void modifyAuthor(int authorID, String date, String nationality) //TODO refactor check
+    public static void modifyAuthor(int authorID, String date, String nationality)
     {
-        String update = "UPDATE authors" +
-                "SET birth_date =" + date + ", nationality = '" + nationality + "'" +
+        String update = "UPDATE authors " +
+                "SET birth_date = TO_DATE('" + date + "', 'DD-MM-YYYY'), nationality = '" + nationality + "' " +
                 "WHERE author_id="+ authorID;
         DML(update);
     }
-
-    public static ArrayList<Order> getOrders(int userID) // TODO check
+    public static ArrayList<Order> getOrders(int userID)
     {
         ArrayList<Order> orders = new ArrayList<>();
-        String SQL ="select oh.status, o.DATE_BORROW, o.DATE_RETURN, b.TITLE " +
-                "from ORDERS_HISTORY oh join orders o using(order_id) join COPIES c using (copy_id) join BOOKS b using (book_id)";
+        String SQL ="select o.order_id, oh.status, o.DATE_BORROW, o.DATE_RETURN, b.TITLE " +
+                "from ORDERS_HISTORY oh join orders o on(oh.order_id=o.order_id) " +
+                "join COPIES c on (c.copy_id=o.order_id) " +
+                "join BOOKS b on (c.book_id=b.book_id)";
         if (userID != -1) {
             SQL += "where oh.user_id =" + userID;
         }
@@ -278,8 +277,7 @@ class Database {
         }
         return orders;
     }
-
-    public static void orderBook(int userID, int copyID)//TODO check
+    public static void orderBook(int userID, int copyID)
     {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -289,15 +287,17 @@ class Database {
                     + copyID + ", Null, Null)";
             int orderID = 0;
             stmt.executeUpdate(SQLOrder);
-            ResultSet generatedKeys = stmt.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                orderID = (int) generatedKeys.getLong(1);
+
+            ResultSet rs = stmt.executeQuery("select order_id from orders order by order_Id desc fetch next 1 rows only");
+            if (rs.next()) {
+                orderID = rs.getInt(1);
             }
+            rs.close();
             String SQLOrderHistory = "INSERT INTO Orders_History Values(Null, "
-                    + orderID + ", " + userID + ", Null)";
+                    + orderID + ", " + userID + ", 'Rezerwacja')";
             stmt.executeUpdate(SQLOrderHistory);
-            String updateCopies = "UPDATE Copies" +
-                    "SET is_available =0" +
+            String updateCopies = "UPDATE Copies " +
+                    "SET is_available =0 " +
                     "WHERE copy_id="+ copyID;
             stmt.executeUpdate(updateCopies);
             stmt.close();
@@ -306,35 +306,93 @@ class Database {
             throw new RuntimeException(e);
         }
     }
-    public static void borrowBook()
+    public static void borrowBook(int orderID)
     {
-
+        try {
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+            Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
+            Statement stmt=con.createStatement();
+            String SQLOrder = "UPDATE Orders " +
+                    "set date_borrow = TO_DATE(TO_CHAR(SYSDATE, 'DD-MM-YYYY'), 'DD-MM-YYYY') " +
+                    "where order_id = " + orderID;
+            stmt.executeUpdate(SQLOrder);
+            String SQLOrderHistory = "Update Orders_History " +
+                    "set status = 'Wypozyczona' " +
+                    "where order_id = " + orderID;
+            stmt.executeUpdate(SQLOrderHistory);
+            stmt.close();
+            con.close();
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
-    public static void returnBook(int userID, int orderID, int penaltyID)
+    public static void returnBook(int orderID, int penaltyID)
     {
-
+        try {
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+            Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
+            Statement stmt=con.createStatement();
+            String SQLOrder = "UPDATE Orders " +
+                    "set date_return = TO_DATE(TO_CHAR(SYSDATE, 'DD-MM-YYYY'), 'DD-MM-YYYY') " +
+                    "where order_id = " + orderID;
+            stmt.executeUpdate(SQLOrder);
+            String SQLOrderHistory = "Update Orders_History " +
+                    "set status = 'Zwrocona'" +
+                    "where order_id = " + orderID;
+            stmt.executeUpdate(SQLOrderHistory);
+            String SQL = "Select o.copy_id, oh.user_id " +
+                    "from ORDERS_HISTORY oh join orders o on (oh.order_id=o.order_id) " +
+                    "where oh.order_id = " + orderID;
+            ResultSet rs = stmt.executeQuery(SQL);
+            rs.next();
+            int copyID = rs.getInt(1);
+            int userID = rs.getInt(2);
+            rs.close();
+            String updateCopies = "UPDATE Copies " +
+                    "SET is_available =1" +
+                    "WHERE copy_id="+ copyID;
+            stmt.executeUpdate(updateCopies);
+            if (penaltyID != 0)
+            {
+                String SQLPenaltiesHistory = "INSERT INTO Penalties_history Values(Null, "
+                        + penaltyID + ", " + userID + ", 0)";
+                stmt.executeUpdate(SQLPenaltiesHistory);
+            }
+            stmt.close();
+            con.close();
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static ArrayList<Penalty> getPenalties()
+    {
+        ArrayList<Penalty> penalties = new ArrayList<>();
+        String SQL = "select * from penalties";
+        try {
+            ResultSet rs = Select(SQL);
+            while (rs.next()) {
+                int penaltyID = rs.getInt(1);
+                String name = rs.getString(2);
+                String description = rs.getString(3);
+                int value = rs.getInt(4);
+                Penalty penalty = new Penalty(penaltyID, name, description, value);
+                penalties.add(penalty);
+            }
+            rs.close();
+            stmt.close();
+            con.close();
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+        return penalties;
+    }
+    public static void payPenalty(int userID)
+    {
+        String Update = "Update penalties_history " +
+                "set is_paid = 1 " +
+                "where user_id = " + userID;
+        DML(Update);
     }
 }
 
-//TODO podział
-
-//użytknownik:
-//system kar - uniemożliwienie rezerwacji
-//historia wypożyczeń
-//informacja o bibliotece - sprawdzanie danych
-//rezerwacja - zarezerwowanie książki
-
-//pracownik
-//system kar - nadawania kar przy oddaniu
-//informacja o bibliotece - edytowanie danych
-//rezerwacja -
-
-//wszyscy:
-//wyszukiwarka
-
-//-wypozyczenie ksiazki
-//-oddanie książki przez modyfikację orders, orders_history i ewentualnie penalties_history i nadanie 1 dla is_available TODO implementacja
-//-edytować penalties history aby wiedzieć czy kara jest aktualna TODO implementacja
-
-//TODO implement refactor check
-//dac private na początek
+// zwracanie copy_id dla orderBook TODO implement

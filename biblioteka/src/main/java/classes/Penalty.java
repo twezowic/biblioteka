@@ -6,11 +6,9 @@ import lombok.Getter;
 
 @AllArgsConstructor(access= AccessLevel.PUBLIC)
 @Getter
-public class Library {
-    int libraryID;
+public class Penalty {
+    int penaltyID;
     String name;
-    String street;
-    String city;
-    int phone;
-    WorkTime WorkTimes;
+    String description;
+    int value;
 }
