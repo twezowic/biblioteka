@@ -3,9 +3,6 @@ package app;
 import panels.*;
 
 import javax.swing.*;
-import javax.xml.crypto.Data;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Scanner;
 import java.util.Vector;
 
@@ -23,13 +20,20 @@ public class App {
     public void Run()
     {
         MainPanel mainPanel = new MainPanel(permissionLevel, username);
+        // panels for every permission level
+
+        mainPanel.getViewLibrariesInfo().addActionListener(e -> {
+            ViewLibInfo();
+            mainPanel.frame.dispose();
+        });
+        mainPanel.login.addActionListener(e -> {
+            Login();
+            mainPanel.frame.dispose();
+        });
+        //
         switch(permissionLevel){
             case 0 ->{
                 mainPanel.login.setText("Login");
-                mainPanel.login.addActionListener(e -> {
-                    Login();
-                    mainPanel.frame.dispose();
-                });
                 mainPanel.getBrowseBooks().addActionListener(e -> {
                     BrowseBooks();
                     mainPanel.frame.dispose();
@@ -41,10 +45,10 @@ public class App {
                     BrowseBooks();
                     mainPanel.frame.dispose();
                 });
-                mainPanel.reserveBook.addActionListener(e -> {
-                    ReserveBook();
-                    mainPanel.frame.dispose();
-                });
+//                mainPanel.reserveBook.addActionListener(e -> {
+//                    ReserveBook();
+//                    mainPanel.frame.dispose();
+//                });
                 mainPanel.login.addActionListener(e -> {
                     Login();
                     mainPanel.frame.dispose();
@@ -53,15 +57,7 @@ public class App {
             }
             case 2 -> {
                 mainPanel.login.setText("Logout");
-                mainPanel.login.addActionListener(e -> {
-                    Login();
-                    mainPanel.frame.dispose();
-                });
 
-                mainPanel.getCheckOutBook().addActionListener(e -> {
-                    CheckOut();
-                    mainPanel.frame.dispose();
-                });
                 mainPanel.getReturnBook().addActionListener(e -> {
                     ReturnBook();
                     mainPanel.frame.dispose();
@@ -88,13 +84,16 @@ public class App {
 
     }
 
-    private void CheckOut() {
-        CheckOutPanel checkOutPanel = new CheckOutPanel();
-        checkOutPanel.getCancelButton().addActionListener(e -> disposeSubPanel(checkOutPanel));
+    private void ViewLibInfo() {
+        ViewLibInfoPanel viewLibInfo = new ViewLibInfoPanel();
+        viewLibInfo.getCancelButton().addActionListener(e -> disposeSubPanel(viewLibInfo));
+        viewLibInfo.getAcceptButton().addActionListener(e -> {
+            viewLibInfo.fillLibraryInfo(Database.getLibraryInfo(viewLibInfo.getLibraryName().getText()));
+        });
     }
-    private void ReserveBook() {
-        CheckOutPanel checkOutPanel = new CheckOutPanel();
-        checkOutPanel.getCancelButton().addActionListener(e -> disposeSubPanel(checkOutPanel));
+    private void ReserveBook() { // @TODO probably will be removed with browseBooksPanel inheriting it's purpose
+        //ViewLibInfoPanel ViewLibInfoPanel = new ViewLibInfoPanel();
+        //ViewLibInfoPanel.getCancelButton().addActionListener(e -> disposeSubPanel(ViewLibInfoPanel));
     }
     private void ReturnBook() {
         ReturnBooksPanel returnBookPanel = new ReturnBooksPanel();
@@ -133,8 +132,8 @@ public class App {
         if (permissionLevel == 0) {
             LoginPanel loginPanel = new LoginPanel();
             loginPanel.getAcceptButton().addActionListener(e -> {
-                switch (Database.ValidateLoginData(loginPanel.getUsername().getText(), loginPanel.getPassword().getPassword())) {
-                //switch (2) {
+                //switch (Database.ValidateLoginData(loginPanel.getUsername().getText(), loginPanel.getPassword().getPassword())) {
+                switch (2) {
                     case 0 -> {// show window couldn't log in
                         permissionLevel = 0;
                         loginPanel.dispose();
