@@ -4,10 +4,7 @@ import classes.Library;
 import panels.*;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Scanner;
-import java.util.Vector;
 
 public class App {
     // permission level 0 - not logged in
