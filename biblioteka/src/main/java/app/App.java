@@ -4,6 +4,8 @@ import classes.Library;
 import panels.*;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Scanner;
 import java.util.Vector;
 
@@ -123,13 +125,36 @@ public class App {
             }
         });
         returnBookPanel.getAcceptButton().addActionListener(e -> {
-            Vector selected = returnBookPanel.getResultTableModel().getDataVector().
-                    elementAt(returnBookPanel.getResultTable().convertRowIndexToModel(returnBookPanel.getResultTable().
-                            getSelectedRow()));
-            calculatePenalty();
-            //Database.returnBook(Integer.parseInt(returnBookPanel.getInputUserID().getText()), 1, calculatePenalty());
+            int orderID = returnBookPanel.getOrderIdVec().elementAt(returnBookPanel.getResultTable().getSelectedRow());
+            returnBookPanel.getOrderIdVec().remove(returnBookPanel.getResultTable().getSelectedRow());
+
+            finalizeReturnBook(returnBookPanel, orderID);
+            //Database.returnBook(Integer.parseInt(returnBookPanel.getInputUserID().getText()), 1, finalizeReturnBook());
         });
 
+    }
+    private void finalizeReturnBook(ReturnBooksPanel returnBookPanel, int orderID) //@TODO
+    {
+        returnBookPanel.setEnabled(false);
+        ChoosePenaltyPanel choosePenaltyPanel = new ChoosePenaltyPanel(Database.getPenalties());
+        choosePenaltyPanel.getCancelButton().addActionListener(e -> {
+            choosePenaltyPanel.dispose();
+            returnBookPanel.setEnabled(true);
+        });
+        choosePenaltyPanel.getAcceptButton().addActionListener(e -> {
+            returnBookPanel.getResultTableModel().removeRow(returnBookPanel.getResultTable().getSelectedRow());
+            Database.returnBook(orderID, 0);
+            choosePenaltyPanel.dispose();
+            returnBookPanel.setEnabled(true);
+        });
+        choosePenaltyPanel.getAddPenaltyButton().addActionListener(e -> {
+            returnBookPanel.getResultTableModel().removeRow(returnBookPanel.getResultTable().getSelectedRow());
+            int chosenPenaltyID = choosePenaltyPanel.getPenaltyIDVec().elementAt(
+                    choosePenaltyPanel.getPenaltyBox().getSelectedIndex());
+            Database.returnBook(orderID, chosenPenaltyID);
+            choosePenaltyPanel.dispose();
+            returnBookPanel.setEnabled(true);
+        });
     }
     private void RegisterBook() {
         RegisterBookPanel registerBookPanel = new RegisterBookPanel();
@@ -177,11 +202,7 @@ public class App {
         return 1;
     }
 
-    private int calculatePenalty() //@TODO
-    {
-        ChoosePenaltyPanel choosePenaltyPanel = new ChoosePenaltyPanel(Database.getPenalties());
-        return 0;
-    }
+
 
     public static void main(String[] args){
         new App();
