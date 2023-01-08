@@ -252,11 +252,11 @@ class Database {
         {
             if (userID != 1)
             {
-                SQL += " and oh.status = Wypozyczona";
+                SQL += " and oh.status = 'Wypozyczona'";
             }
             else
             {
-                SQL += "where oh.status = Wypozyczona";
+                SQL += "where oh.status = 'Wypozyczona'";
             }
         }
         try {
