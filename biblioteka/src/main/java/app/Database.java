@@ -55,7 +55,7 @@ class Database {
         }
         return books;
     }
-    private static ArrayList<Order> GetOrdersFromResult(ResultSet rs) throws SQLException //TODO check
+    private static ArrayList<Order> GetOrdersFromResult(ResultSet rs) throws SQLException
     {
         ArrayList<Order> orders = new ArrayList<>();
         while(rs.next()) {
@@ -108,24 +108,6 @@ class Database {
             System.out.println(e);
         }
         return author_id;
-    }
-    private static double getDistance(int address1, int address2)//TODO implement
-    {
-        double distance=0;
-        try{
-            Class.forName("oracle.jdbc.driver.OracleDriver");
-            Connection con=DriverManager.getConnection(dbURL, dbusername, dbpassword);
-            Statement stmt=con.createStatement();
-            String sql = "select * from ADDRESSES where ADDRESS_ID in (" + address1 + " ," + address2;
-            ResultSet rs=stmt.executeQuery(sql);
-            while (rs.next())
-            {
-                distance = 0;
-            }
-            return distance;
-        } catch (SQLException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
     }
     public static int ValidateLoginData(String username, char[] password) {
         int user = 0;
@@ -393,6 +375,63 @@ class Database {
                 "where user_id = " + userID;
         DML(Update);
     }
+    public static ArrayList<Integer> getAvailableCopies(int bookID, int libraryID) throws SQLException {
+        ArrayList<Integer> copies = new ArrayList<>();
+        String sql = "select copy_id from books join COPIES using (book_id) " +
+                "where IS_AVAILABLE = 1 and book_id = " + bookID;
+        if (libraryID != 0)
+        {
+            sql += "  and  LIBRARY_ID = " +libraryID;
+        }
+        ResultSet rs = Select(sql);
+        while (rs.next())
+        {
+            copies.add(rs.getInt(1));
+        }
+        rs.close();
+        stmt.close();
+        con.close();
+        return copies;
+    }
+    public static void registerUser(User user) {
+        String insertData = "Insert into Users_data Values(Null, '" + user.getLogin() +
+                "', '" + user.getPassword() + "', 0)";
+        String sql = "Select user_data_id from users_data order by " +
+                "user_data_id desc fetch next 1 rows only";
+        try {
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+            Connection con = DriverManager.getConnection(dbURL, dbusername, dbpassword);
+            Statement stmt = con.createStatement();
+            stmt.executeUpdate(insertData);
+            ResultSet rs = stmt.executeQuery(sql);
+            rs.next();
+            int userdataID = rs.getInt(1);
+            rs.close();
+            String insertUser = "Insert into Users Values(Null, "+
+                    userdataID + ", '" + user.getName() + "', '"
+                    + user.getSurname() + "')";
+            stmt.executeUpdate(insertUser);
+            stmt.close();
+            con.close();
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 
-// zwracanie copy_id dla orderBook TODO implement
+//TODO dodawanie kopii do biblioteki
+
+
+// tables wyświetlanie, dodawanie, modyfikacja, operacje
+//address - tylko dla biblioteki do wyświetlania
+//authors - automatyczne dodawanie, i modyfikacja
+//books - wyświetlanie, dodawanie
+//copies - dodawanie, rezerwacja
+//libraries - wyświetlanie, brak dodawania
+//orders
+//orders_history
+//penalties - wyswietlanie
+//penalties_history -
+//users - logowanie, dodawanie
+//users_data - logowanie, dodawanie
+//work_times - dla bibliotek

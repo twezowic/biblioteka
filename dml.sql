@@ -12,16 +12,12 @@ DELETE FROM libraries;
 DELETE FROM addresses;
 
 
-INSERT INTO addresses VALUES (Null, 'Piotrkowska', 100, 'Lodz', 51.776832, 19.456764);
-INSERT INTO addresses VALUES (Null,'Warszawska', 50, 'Warszawa', 52.229841, 21.012229);
-INSERT INTO addresses VALUES (Null,'Lubelska', 25, 'Bialystok', 53.132489, 23.168899);
-INSERT INTO addresses VALUES (Null,'Krakowska', 110, 'Krakow', 50.049683, 19.944544);
-INSERT INTO addresses VALUES (Null,'Gdanska', 35, 'Gdansk', 54.352025, 18.646638);
-INSERT INTO addresses VALUES (Null,'Piotrkowska', 20, 'Lodz', 51.78, 19.456764);
-INSERT INTO addresses VALUES (Null,'Warszawska', 10, 'Warszawa', 52.23, 21.012229);
-INSERT INTO addresses VALUES (Null,'Lubelska', 100, 'Bialystok', 53.14, 23.168899);
-INSERT INTO addresses VALUES (Null,'Krakowska', 5, 'Krakow', 50.05, 19.944544);
-INSERT INTO addresses VALUES (Null,'Gdanska', 75, 'Gdansk', 54.36, 18.646638);
+INSERT INTO addresses VALUES (Null, 'Piotrkowska', 100, 'Lodz');
+INSERT INTO addresses VALUES (Null,'Warszawska', 50, 'Warszawa');
+INSERT INTO addresses VALUES (Null,'Lubelska', 25, 'Bialystok');
+INSERT INTO addresses VALUES (Null,'Krakowska', 110, 'Krakow');
+INSERT INTO addresses VALUES (Null,'Gdanska', 35, 'Gdansk');
+
 
 INSERT INTO libraries VALUES (Null, 'Biblioteka Miejska', 1, 123456789);
 INSERT INTO libraries VALUES (Null, 'Biblioteka Narodowa', 2, 987654321);
@@ -103,11 +99,11 @@ INSERT INTO users_data VALUES (Null, 'admin1', 'admin1', 1);
 INSERT INTO users_data VALUES (Null, 'admin2', 'admin2', 1);
 
 
-INSERT INTO USERS VALUES (Null, 1, 'Jan', 'Kowalski', 6);
-INSERT INTO USERS VALUES (Null, 2, 'Anna', 'Nowak', 7);
-INSERT INTO USERS VALUES (Null, 3, 'Tomasz', 'Wisniewski', 8);
-INSERT INTO USERS VALUES (Null, 4, 'Joanna', 'Kwiatkowska', 9);
-INSERT INTO USERS VALUES (Null, 5, 'Piotr', 'Lewandowski', 10);
+INSERT INTO USERS VALUES (Null, 1, 'Jan', 'Kowalski');
+INSERT INTO USERS VALUES (Null, 2, 'Anna', 'Nowak');
+INSERT INTO USERS VALUES (Null, 3, 'Tomasz', 'Wisniewski');
+INSERT INTO USERS VALUES (Null, 4, 'Joanna', 'Kwiatkowska');
+INSERT INTO USERS VALUES (Null, 5, 'Piotr', 'Lewandowski');
 
 
 INSERT INTO penalties VALUES (1, 'Nieodebranie ksiazki', 'Nieodebranie ksiazki z biblioteki po uplywie terminu', 2);
