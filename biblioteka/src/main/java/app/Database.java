@@ -238,7 +238,7 @@ class Database {
                 "WHERE author_id="+ authorID;
         DML(update);
     }
-    public static ArrayList<Order> getOrders(int userID)
+    public static ArrayList<Order> getOrders(int userID, Boolean isBorrowed)
     {
         ArrayList<Order> orders = new ArrayList<>();
         String SQL ="select o.order_id, oh.status, o.DATE_BORROW, o.DATE_RETURN, b.TITLE " +
@@ -247,6 +247,17 @@ class Database {
                 "join BOOKS b on (c.book_id=b.book_id)";
         if (userID != -1) {
             SQL += "where oh.user_id =" + userID;
+        }
+        if (isBorrowed)
+        {
+            if (userID != 1)
+            {
+                SQL += " and oh.status = Wypozyczona";
+            }
+            else
+            {
+                SQL += "where oh.status = Wypozyczona";
+            }
         }
         try {
             ResultSet rs = Select(SQL);

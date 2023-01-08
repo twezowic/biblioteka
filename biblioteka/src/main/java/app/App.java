@@ -20,6 +20,7 @@ public class App {
     public void Run()
     {
         MainPanel mainPanel = new MainPanel(permissionLevel, username);
+        mainPanel.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // panels for every permission level
 
         mainPanel.getViewLibrariesInfo().addActionListener(e -> {
@@ -115,7 +116,7 @@ public class App {
             if(sc.hasNextInt()){
                 returnBookPanel.setSearchDataText(userID);
                 returnBookPanel.getAcceptButton().setEnabled(true);
-                returnBookPanel.fillResultTable(Database.getOrders(Integer.parseInt(userID)));
+                returnBookPanel.fillResultTable(Database.getOrders(Integer.parseInt(userID), true));
             }
             else{
                 handleMessagePanel(returnBookPanel,"The User ID has to be a number");
