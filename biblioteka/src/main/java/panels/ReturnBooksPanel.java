@@ -16,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Vector;
 
 @Getter
 public class ReturnBooksPanel extends BasePanel {
@@ -23,9 +24,11 @@ public class ReturnBooksPanel extends BasePanel {
     private InteractiveJTextField inputUserID;
     private JTable resultTable;
     private DefaultTableModel resultTableModel;
+    private Vector<Integer> orderIdVec;
     public ReturnBooksPanel() {
         inputUserID = new InteractiveJTextField("Type the user ID of the person, whose books you want to return, only numbers allowed!");
         searchData = new JTextField();
+        orderIdVec = new Vector<>();
         resultTableModel = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -64,7 +67,7 @@ public class ReturnBooksPanel extends BasePanel {
         for (Order order: usersOrders)
         {
             //fields[0].get(order);
-
+            orderIdVec.add(order.getOrderID());
             resultTableModel.addRow(new Object[]{order.getStatus(), order.getDateBorrow(), order.getDateReturn(), order.getBookTitle()});
         }
     }
