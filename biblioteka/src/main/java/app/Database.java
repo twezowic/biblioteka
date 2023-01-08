@@ -250,7 +250,7 @@ class Database {
         }
         if (isBorrowed)
         {
-            if (userID != 1)
+            if (userID != -1)
             {
                 SQL += " and oh.status = 'Wypozyczona'";
             }
