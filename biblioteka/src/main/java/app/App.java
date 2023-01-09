@@ -1,10 +1,13 @@
 package app;
 
+import classes.Book;
 import classes.Library;
 import panels.*;
 
 import javax.swing.*;
 import java.util.Scanner;
+
+import static app.Database.addBook;
 
 public class App {
     // permission level 0 - not logged in
@@ -157,7 +160,19 @@ public class App {
     private void RegisterBook() {
         RegisterBookPanel registerBookPanel = new RegisterBookPanel();
         registerBookPanel.getCancelButton().addActionListener(e -> disposeSubPanel(registerBookPanel));
+        registerBookPanel.getAcceptButton().addActionListener(e -> {
 
+            Book book =new Book(Integer.valueOf(registerBookPanel.getBookIdInput().getText()),
+                    registerBookPanel.getBookTitleInput().getText(),
+                    registerBookPanel.getBookAutorInput().getText(),
+                    Integer.valueOf(registerBookPanel.getBookPagesInput().getText()),
+                    registerBookPanel.getBookISBNInput().getText(),
+                    Integer.valueOf(registerBookPanel.getBookYearInput().getText()),
+                    registerBookPanel.getBookGenreInput().getText());
+            //addBook(book);
+            disposeSubPanel(registerBookPanel);
+
+        });
     }
 
     private void Login() {
