@@ -191,13 +191,13 @@ public class App {
         registerBookPanel.getCancelButton().addActionListener(e -> disposeSubPanel(registerBookPanel));
         registerBookPanel.getAcceptButton().addActionListener(e -> {
 
-            Book book =new Book(Integer.valueOf(registerBookPanel.getBookIdInput().getText()),
-                    registerBookPanel.getBookTitleInput().getText(),
-                    registerBookPanel.getBookAutorInput().getText(),
-                    Integer.valueOf(registerBookPanel.getBookPagesInput().getText()),
-                    registerBookPanel.getBookISBNInput().getText(),
-                    Integer.valueOf(registerBookPanel.getBookYearInput().getText()),
-                    registerBookPanel.getBookGenreInput().getText());
+//            Book book =new Book(Integer.valueOf(registerBookPanel.getBookIdInput().getText()),
+//                    registerBookPanel.getBookTitleInput().getText(),
+//                    registerBookPanel.getBookAutorInput().getText(),
+//                    Integer.valueOf(registerBookPanel.getBookPagesInput().getText()),
+//                    registerBookPanel.getBookISBNInput().getText(),
+//                    Integer.valueOf(registerBookPanel.getBookYearInput().getText()),
+//                    registerBookPanel.getBookGenreInput().getText());
             //addBook(book);
             disposeSubPanel(registerBookPanel);
 
