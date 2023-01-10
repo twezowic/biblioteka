@@ -39,6 +39,7 @@ public class ReturnBooksPanel extends BasePanel {
             }
         };
         resultTable = new JTable(resultTableModel);
+        resultTable.getTableHeader().setReorderingAllowed(false);
         inputUserID.setPreferredSize(new Dimension(100, 100));
         searchData.setPreferredSize(new Dimension(100, 100));
         searchData.setEditable(false);
