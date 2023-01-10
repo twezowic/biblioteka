@@ -106,10 +106,9 @@ INSERT INTO USERS VALUES (Null, 4, 'Joanna', 'Kwiatkowska');
 INSERT INTO USERS VALUES (Null, 5, 'Piotr', 'Lewandowski');
 
 
-INSERT INTO penalties VALUES (1, 'Nieodebranie ksiazki', 'Nieodebranie ksiazki z biblioteki po uplywie terminu', 2);
-INSERT INTO penalties VALUES(2, 'Opoznienie w zwrocie', 'Opoznienie w zwrocie ksiazki', 5);
-INSERT INTO penalties VALUES(3, 'Zniszczenie ksiazki', 'Zniszczenie ksiazki podczas wypozyczenia', 20);
-INSERT INTO penalties VALUES(4, 'Brak zwrotu ksiazki', 'Ksiazka nie zostala zwrocona po uplywie 2 tygodni od terminu oddania', 50);
+INSERT INTO penalties VALUES(1, 'Opoznienie w zwrocie', 'Opoznienie w zwrocie ksiazki', 5);
+INSERT INTO penalties VALUES(2, 'Zniszczenie ksiazki', 'Zniszczenie ksiazki podczas wypozyczenia', 20);
+INSERT INTO penalties VALUES(3, 'Brak zwrotu ksiazki', 'Ksiazka nie zostala zwrocona po uplywie 2 tygodni od terminu oddania', 50);
 
 
 COMMIT;
