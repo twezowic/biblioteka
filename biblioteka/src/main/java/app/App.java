@@ -8,8 +8,6 @@ import panels.*;
 import javax.swing.*;
 import java.util.Scanner;
 
-import static app.Database.addBook;
-import static app.Database.payPenalty;
 
 public class App {
     // permission level 0 - not logged in
@@ -95,28 +93,21 @@ public class App {
 
         });
         browseBookPanel3.getPayButton().addActionListener(e->{
-            payPenalty(userId);
+            Database.payPenalty(userId);
         });
 
     }
 
     private void ViewLibInfo() {
         ViewLibInfoPanel viewLibInfo = new ViewLibInfoPanel();
-        viewLibInfo.getCancelButton().addActionListener(e -> disposeSubPanel(viewLibInfo));
-        viewLibInfo.getAcceptButton().addActionListener(e -> {
+        viewLibInfo.getChooseLibrary().addActionListener(e -> {
             viewLibInfo.getStatusInfo().setText("Waiting for the Data from the database");
             viewLibInfo.getStatusInfo().paintImmediately(viewLibInfo.getStatusInfo().getVisibleRect());
-
-            Library answer = Database.getLibraryInfo(viewLibInfo.getLibraryName().getText());
-            if(answer == null){
-                handleMessagePanel(viewLibInfo, "No library with such name in the database!");
-            }
-            else{
-                viewLibInfo.fillLibraryInfo(answer);
-            }
-            viewLibInfo.getStatusInfo().setText("Status: Waiting for Input");
-
+            Library answer = Database.getLibraryInfo(viewLibInfo.getChooseLibrary().getSelectedItem().toString());
+            viewLibInfo.fillLibraryInfo(answer);
+            viewLibInfo.getStatusInfo().setText("Status: Waiting for change");
         });
+        viewLibInfo.getCancelButton().addActionListener(e -> disposeSubPanel(viewLibInfo));
     }
     private void Register(){
         RegisterUserPanel registerPanel = new RegisterUserPanel();
@@ -212,10 +203,16 @@ public class App {
                     registerBookPanel.getBookISBNInput().getText(),
                     Integer.valueOf(registerBookPanel.getBookYearInput().getText()),
                     registerBookPanel.getBookGenreInput().getText());
-            addBook(book);
+            Database.addBook(book);
             disposeSubPanel(registerBookPanel);
 
         });
+    }
+
+    private void ModifyAuthor()
+    {
+        ModifyAuthorPanel modifyAuthorPanel = new ModifyAuthorPanel();
+        modifyAuthorPanel.getCancelButton().addActionListener(e -> disposeSubPanel(modifyAuthorPanel));
     }
 
     private void Login() {
@@ -261,6 +258,10 @@ public class App {
 
 
     public static void main(String[] args){
+//        if (args.length != 0 && args[0] == "reset")
+//        {
+//            Database.initializeData();
+//        }
         try {
             // Set cross-platform Java L&F (also called "Metal")
             UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
@@ -286,4 +287,29 @@ public class App {
 
 //TODO dodać do wszystkich ekranów kokńczenie aplikacji oraz to:
 // mainPanel.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-//TODO guziczek na rejestrowie i okienko na to samo
+//TODO zmienić
+//library_info:
+//nie wykonywanie akcji gdy nie zmienimy biblioteki
+//
+//wyszukiwanie książek
+//-nie wszyskie okna się wyświetlają
+//-guzik search nie jest widoczny na małym oknie
+//-dodać wiersz pokazującą co jest w danej kolumnie
+//-użyć getGenres do book genre
+//-nie powinno dać się rezerwować bez zalogowania
+//-nie potrzebne są po dwa okna na każdą cechę?
+//-chyba lepiej bibliotekę dać już dla kopii którą się wybiera
+//
+//logowanie/rejestrowanie
+//-tworzyć nowe okno i wyświetlać na poprzednim
+//
+//prawie wszystkie:
+//-dodać żeby wyświetlało się na pełny ekran
+//
+//dodawanie książki:
+//-usunąć bookID, jest generowany automatycznie tworzyć klasę z id = 0
+//
+//zwracanie książki:
+//-zablokować suwanie kolumn
+//i poza tym nie modyfikujemy nigdzie autora
+//a mamy taką funkcję i można by to dodać do pracownika

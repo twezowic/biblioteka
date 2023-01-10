@@ -1,19 +1,14 @@
 package panels;
 
 import classes.Order;
-import classes.Book;
 import lib.BasePanel;
 import lib.InteractiveJTextField;
 import lib.Settings;
 import lombok.Getter;
-import lombok.SneakyThrows;
+
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

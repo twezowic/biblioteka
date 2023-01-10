@@ -26,7 +26,6 @@ public class Database {
             throw new RuntimeException(e);
         }
     }
-
     private static void DML(String dml) {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -39,11 +38,9 @@ public class Database {
             throw new RuntimeException(e);
         }
     }
-
     private static String AddCondition(String condName, String data) {
         return condName + " like '%" + data + "%'";
     }
-
     private static ArrayList<Book> GetBooksFromResult(ResultSet rs) throws SQLException {
         ArrayList<Book> books = new ArrayList<>();
         while (rs.next()) {
@@ -59,7 +56,6 @@ public class Database {
         }
         return books;
     }
-
     private static ArrayList<Order> GetOrdersFromResult(ResultSet rs) throws SQLException {
         ArrayList<Order> orders = new ArrayList<>();
         while (rs.next()) {
@@ -73,14 +69,12 @@ public class Database {
         }
         return orders;
     }
-
     private static void AddAuthor(String firstName, String lastName) throws SQLException {
         String insert = "INSERT INTO Authors Values(Null, '"
                 + firstName + "', '"
                 + lastName + "', Null, Null)";
         DML(insert);
     }
-
     private static int CheckAuthor(String fullName, Boolean canAdd) {
         int author_id = -1;
         String[] nameParts = fullName.split(" ");
@@ -112,7 +106,6 @@ public class Database {
         }
         return author_id;
     }
-
     public static int ValidateLoginData(String username, char[] password) {
         int user = 0;
         try {
@@ -133,7 +126,6 @@ public class Database {
         }
         return user;
     }
-
     public static ArrayList<Book> getBooks(String title, String author, String ISBN, String genre, String library_name) {
         ArrayList<Book> books = new ArrayList<>();
         String SQL = "select distinct b.*, a.name, a.surname " +
@@ -159,7 +151,6 @@ public class Database {
         }
         return books;
     }
-
     public static void addBook(Book book) {
         String insert = "INSERT INTO Books Values(Null, '" +
                 book.getTitle() + "', " +
@@ -170,7 +161,6 @@ public class Database {
                 book.getGenre() + "')";
         DML(insert);
     }
-
     public static ArrayList<String> getGenres() {
         ArrayList<String> genres = new ArrayList<>();
         String SQL = "select distinct genre from books";
@@ -188,7 +178,6 @@ public class Database {
         }
         return genres;
     }
-
     public static Boolean isPenalty(int userID) {
         String SQL = "select count(*) from penalties_history where USER_ID =" + userID + " and is_paid = 0";
         try {
@@ -203,7 +192,6 @@ public class Database {
             throw new RuntimeException(e);
         }
     }
-
     public static Library getLibraryInfo(String name) {
         Library lib = null;
         WorkTime workTimes;
@@ -239,14 +227,12 @@ public class Database {
         }
         return lib;
     }
-
-    public static void modifyAuthor(int authorID, String date, String nationality) {
+    public static void modifyAuthor(String name, String date, String nationality) {
         String update = "UPDATE authors " +
                 "SET birth_date = TO_DATE('" + date + "', 'DD-MM-YYYY'), nationality = '" + nationality + "' " +
-                "WHERE author_id=" + authorID;
+                "WHERE name || ' ' || surname='" + name  + "'";
         DML(update);
     }
-
     public static ArrayList<Order> getOrders(int userID, Boolean isBorrowed) {
         ArrayList<Order> orders = new ArrayList<>();
         String SQL = "select o.order_id, oh.status, o.DATE_BORROW, o.DATE_RETURN, b.TITLE " +
@@ -274,7 +260,6 @@ public class Database {
         }
         return orders;
     }
-
     public static void orderBook(int userID, int copyID) {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -303,14 +288,13 @@ public class Database {
             throw new RuntimeException(e);
         }
     }
-
     public static void borrowBook(int orderID) {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             Connection con = DriverManager.getConnection(dbURL, dbusername, dbpassword);
             Statement stmt = con.createStatement();
             String SQLOrder = "UPDATE Orders " +
-                    "set date_borrow = TO_DATE(TO_CHAR(SYSDATE, 'DD-MM-YYYY'), 'DD-MM-YYYY') " +
+                    "set date_borrow = SYSDATE " +
                     "where order_id = " + orderID;
             stmt.executeUpdate(SQLOrder);
             String SQLOrderHistory = "Update Orders_History " +
@@ -323,14 +307,13 @@ public class Database {
             throw new RuntimeException(e);
         }
     }
-
     public static void returnBook(int orderID, int penaltyID) {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             Connection con = DriverManager.getConnection(dbURL, dbusername, dbpassword);
             Statement stmt = con.createStatement();
             String SQLOrder = "UPDATE Orders " +
-                    "set date_return = TO_DATE(TO_CHAR(SYSDATE, 'DD-MM-YYYY'), 'DD-MM-YYYY') " +
+                    "set date_return = SYSDATE " +
                     "where order_id = " + orderID;
             stmt.executeUpdate(SQLOrder);
             String SQLOrderHistory = "Update Orders_History " +
@@ -360,7 +343,6 @@ public class Database {
             throw new RuntimeException(e);
         }
     }
-
     public static ArrayList<Penalty> getPenalties() {
         ArrayList<Penalty> penalties = new ArrayList<>();
         String SQL = "select * from penalties";
@@ -382,14 +364,12 @@ public class Database {
         }
         return penalties;
     }
-
     public static void payPenalty(int userID) {
         String Update = "Update penalties_history " +
                 "set is_paid = 1 " +
                 "where user_id = " + userID;
         DML(Update);
     }
-
     public static ArrayList<Copy> getAvailableCopies(int bookID) throws SQLException { //TODO dodać obsługę wyjątków brak dostępnych kopii
         ArrayList<Copy> copies = new ArrayList<>();
         String sql = "select c.copy_id, l.name from COPIES c join libraries l on (c.library_id=l.library_id)" +
@@ -405,8 +385,8 @@ public class Database {
         con.close();
         return copies;
     }
-
     public static void registerUser(User user) {
+        String check = "Select * from users_data where login = '" + user.getLogin() + "'";
         String insertData = "Insert into Users_data Values(Null, '" + user.getLogin() +
                 "', '" + user.getPassword() + "', 0)";
         String sql = "Select user_data_id from users_data order by " +
@@ -414,9 +394,15 @@ public class Database {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             Connection con = DriverManager.getConnection(dbURL, dbusername, dbpassword);
-            Statement stmt = con.createStatement();
+            stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(check);
+            if (rs.next())
+            {
+                throw new Exception("Użytkownik o podanej nazwie już istnieje.");
+            }
+            rs.close();
             stmt.executeUpdate(insertData);
-            ResultSet rs = stmt.executeQuery(sql);
+            rs = stmt.executeQuery(sql);
             rs.next();
             int userdataID = rs.getInt(1);
             rs.close();
@@ -428,9 +414,10 @@ public class Database {
             con.close();
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
-
     public static void initializeData() {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -468,11 +455,43 @@ public class Database {
             throw new RuntimeException(e);
         }
     }
+    public static String[] getLibrariesNames()
+    {
+        ArrayList<String> libraries = new ArrayList<>();
+        String sql = "Select name from libraries";
+        try {
+            ResultSet rs = Select(sql);
+            while (rs.next()) {
+                libraries.add(rs.getString(1));
+            }
+            rs.close();
+            stmt.close();
+            con.close();
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+        return libraries.toArray(new String[libraries.size()]);
+    }
+    public static String[] getAuthors()
+    {
+        ArrayList<String> authors = new ArrayList<>();
+        String sql = "select name || ' ' || surname from AUTHORS;";
+        try {
+            ResultSet rs = Select(sql);
+            while (rs.next()) {
+                authors.add(rs.getString(1));
+            }
+            rs.close();
+            stmt.close();
+            con.close();
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+        return authors.toArray(new String[authors.size()]);
+    }
 }
 
 //TODO dodawanie kopii do biblioteki
-
-
 // tables wyświetlanie, dodawanie, modyfikacja, operacje
 //address - tylko dla biblioteki do wyświetlania
 //authors - automatyczne dodawanie, i modyfikacja
