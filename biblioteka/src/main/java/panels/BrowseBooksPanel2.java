@@ -3,11 +3,13 @@ package panels;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
+import javax.swing.table.DefaultTableModel;
 import lombok.Getter;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeListener;
+import java.beans.VetoableChangeListener;
 
 @Getter
 public class BrowseBooksPanel2 extends JFrame{
@@ -31,7 +33,7 @@ private String autorstr="";
 private String titlestr="";
 private String Libreryid="0";
     public BrowseBooksPanel2(int PermisionLevel){
-
+        
         add(panel1);
         if (PermisionLevel==1) {
             reservButton.setVisible(true);
@@ -77,6 +79,7 @@ private String Libreryid="0";
                 setpole();
             }
         });
+
     }
 
     private  void setpole() {
@@ -104,10 +107,5 @@ private String Libreryid="0";
     }
 
 
-   /* private void createUIComponents() {
-        DefaultTableModel model =new DefaultTableModel();
-        JTable table1 =new JTable(model);
-        panel1.add(table1);
 
-    }*/
 }
