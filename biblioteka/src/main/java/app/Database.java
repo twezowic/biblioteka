@@ -8,7 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
-class Database {
+public class Database {
     private static final String dbURL = "jdbc:oracle:thin:@//ora4.ii.pw.edu.pl:1521/pdb1.ii.pw.edu.pl";
     private static final String dbusername = "z32";
     private static final String dbpassword = "dprwka";

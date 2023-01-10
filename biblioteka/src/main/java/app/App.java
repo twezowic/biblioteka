@@ -1,5 +1,6 @@
 package app;
 
+import classes.Book;
 import classes.Library;
 import classes.User;
 import panels.*;
@@ -7,6 +8,7 @@ import panels.*;
 import javax.swing.*;
 import java.util.Scanner;
 
+import static app.Database.addBook;
 import static app.Database.payPenalty;
 
 public class App {
@@ -203,14 +205,14 @@ public class App {
         registerBookPanel.getCancelButton().addActionListener(e -> disposeSubPanel(registerBookPanel));
         registerBookPanel.getAcceptButton().addActionListener(e -> {
 
-//            Book book =new Book(Integer.valueOf(registerBookPanel.getBookIdInput().getText()),
-//                    registerBookPanel.getBookTitleInput().getText(),
-//                    registerBookPanel.getBookAutorInput().getText(),
-//                    Integer.valueOf(registerBookPanel.getBookPagesInput().getText()),
-//                    registerBookPanel.getBookISBNInput().getText(),
-//                    Integer.valueOf(registerBookPanel.getBookYearInput().getText()),
-//                    registerBookPanel.getBookGenreInput().getText());
-            //addBook(book);
+            Book book =new Book(Integer.valueOf(registerBookPanel.getBookIdInput().getText()),
+                    registerBookPanel.getBookTitleInput().getText(),
+                    registerBookPanel.getBookAutorInput().getText(),
+                    Integer.valueOf(registerBookPanel.getBookPagesInput().getText()),
+                    registerBookPanel.getBookISBNInput().getText(),
+                    Integer.valueOf(registerBookPanel.getBookYearInput().getText()),
+                    registerBookPanel.getBookGenreInput().getText());
+            addBook(book);
             disposeSubPanel(registerBookPanel);
 
         });
