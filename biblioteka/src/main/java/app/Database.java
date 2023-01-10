@@ -8,7 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
-class Database {
+public class Database {
     private static final String dbURL = "jdbc:oracle:thin:@//ora4.ii.pw.edu.pl:1521/pdb1.ii.pw.edu.pl";
     private static final String dbusername = "z32";
     private static final String dbpassword = "dprwka";
@@ -136,7 +136,7 @@ class Database {
 
     public static ArrayList<Book> getBooks(String title, String author, String ISBN, String genre, String library_name) {
         ArrayList<Book> books = new ArrayList<>();
-        String SQL = "select b.*, a.name, a.surname " +
+        String SQL = "select distinct b.*, a.name, a.surname " +
                 " from copies c join libraries l on (c.LIBRARY_ID = l.LIBRARY_ID)" +
                 " join BOOKS b on (c.BOOK_ID=b.BOOK_ID)" +
                 " join AUTHORS a on (b.AUTHOR_ID=a.AUTHOR_ID) " +
@@ -390,16 +390,15 @@ class Database {
         DML(Update);
     }
 
-    public static ArrayList<Integer> getAvailableCopies(int bookID, int libraryID) throws SQLException {
-        ArrayList<Integer> copies = new ArrayList<>();
-        String sql = "select copy_id from books join COPIES using (book_id) " +
-                "where IS_AVAILABLE = 1 and book_id = " + bookID;
-        if (libraryID != 0) {
-            sql += "  and  LIBRARY_ID = " + libraryID;
-        }
+    public static ArrayList<Copy> getAvailableCopies(int bookID) throws SQLException { //TODO dodać obsługę wyjątków brak dostępnych kopii
+        ArrayList<Copy> copies = new ArrayList<>();
+        String sql = "select c.copy_id, l.name from COPIES c join libraries l on (c.library_id=l.library_id)" +
+                "where c.IS_AVAILABLE = 1 and c.book_id = " + bookID;
         ResultSet rs = Select(sql);
         while (rs.next()) {
-            copies.add(rs.getInt(1));
+            int copy_id = rs.getInt(1);
+            String libraryName = rs.getString(2);
+            copies.add(new Copy(copy_id, libraryName));
         }
         rs.close();
         stmt.close();

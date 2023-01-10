@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.util.Scanner;
 
 import static app.Database.addBook;
+import static app.Database.payPenalty;
 
 public class App {
     // permission level 0 - not logged in
@@ -82,8 +83,21 @@ public class App {
     }
 
     private void BrowseBooks() {
-        BrowseBooksPanel2 browseBooksPanel2 = new BrowseBooksPanel2(permissionLevel);
-        browseBooksPanel2.getCancelButton().addActionListener(e -> disposeSubPanel(browseBooksPanel2));
+        userId=0;
+        BrowseBookPanel3 browseBookPanel3 = new BrowseBookPanel3(userId);
+        browseBookPanel3.getCancelButton().addActionListener(e -> disposeSubPanel(browseBookPanel3));
+        browseBookPanel3.getSearchButton().addActionListener(e -> {
+            browseBookPanel3.fillLibraryInfo();
+
+        });
+        browseBookPanel3.getAcceptButton().addActionListener(e -> {
+            browseBookPanel3.reserv(userId);
+
+        });
+        browseBookPanel3.getPayButton().addActionListener(e->{
+            payPenalty(userId);
+        });
+
     }
 
     private void ViewLibInfo() {
@@ -191,14 +205,14 @@ public class App {
         registerBookPanel.getCancelButton().addActionListener(e -> disposeSubPanel(registerBookPanel));
         registerBookPanel.getAcceptButton().addActionListener(e -> {
 
-//            Book book =new Book(Integer.valueOf(registerBookPanel.getBookIdInput().getText()),
-//                    registerBookPanel.getBookTitleInput().getText(),
-//                    registerBookPanel.getBookAutorInput().getText(),
-//                    Integer.valueOf(registerBookPanel.getBookPagesInput().getText()),
-//                    registerBookPanel.getBookISBNInput().getText(),
-//                    Integer.valueOf(registerBookPanel.getBookYearInput().getText()),
-//                    registerBookPanel.getBookGenreInput().getText());
-            //addBook(book);
+            Book book =new Book(Integer.valueOf(registerBookPanel.getBookIdInput().getText()),
+                    registerBookPanel.getBookTitleInput().getText(),
+                    registerBookPanel.getBookAutorInput().getText(),
+                    Integer.valueOf(registerBookPanel.getBookPagesInput().getText()),
+                    registerBookPanel.getBookISBNInput().getText(),
+                    Integer.valueOf(registerBookPanel.getBookYearInput().getText()),
+                    registerBookPanel.getBookGenreInput().getText());
+            addBook(book);
             disposeSubPanel(registerBookPanel);
 
         });
@@ -268,3 +282,8 @@ public class App {
     }
 
 }
+
+
+//TODO dodać do wszystkich ekranów kokńczenie aplikacji oraz to:
+// mainPanel.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+//TODO guziczek na rejestrowie i okienko na to samo
