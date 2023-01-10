@@ -1,14 +1,11 @@
 package app;
 
-import classes.Book;
 import classes.Library;
 import classes.User;
 import panels.*;
 
 import javax.swing.*;
 import java.util.Scanner;
-
-import static app.Database.addBook;
 
 public class App {
     // permission level 0 - not logged in
@@ -292,3 +289,8 @@ public class App {
     }
 
 }
+
+
+//TODO dodać do wszystkich ekranów kokńczenie aplikacji oraz to:
+// mainPanel.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+//TODO guziczek na rejestrowie i okienko na to samo
