@@ -2,6 +2,7 @@ package app;
 
 import classes.Book;
 import classes.Library;
+import classes.User;
 import panels.*;
 
 import javax.swing.*;
@@ -16,23 +17,21 @@ public class App {
     private int permissionLevel = 0;
     private int userId = 0;
     private String username = "";
-
     public App(){
         Run();
     }
     public void Run()
     {
         MainPanel mainPanel = new MainPanel(permissionLevel, username);
-        mainPanel.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // panels for every permission level
 
         mainPanel.getViewLibrariesInfo().addActionListener(e -> {
             ViewLibInfo();
-            mainPanel.frame.dispose();
+            mainPanel.dispose();
         });
         mainPanel.login.addActionListener(e -> {
             Login();
-            mainPanel.frame.dispose();
+            mainPanel.dispose();
         });
         //
         switch(permissionLevel){
@@ -40,14 +39,18 @@ public class App {
                 mainPanel.login.setText("Login");
                 mainPanel.getBrowseBooks().addActionListener(e -> {
                     BrowseBooks();
-                    mainPanel.frame.dispose();
+                    mainPanel.dispose();
+                });
+                mainPanel.getRegisterButton().addActionListener(e -> {
+                    Register();
+                    mainPanel.dispose();
                 });
             }
             case 1 ->{
                 mainPanel.login.setText("Logout");
                 mainPanel.getBrowseBooks().addActionListener(e -> {
                     BrowseBooks();
-                    mainPanel.frame.dispose();
+                    mainPanel.dispose();
                 });
 //                mainPanel.reserveBook.addActionListener(e -> {
 //                    ReserveBook();
@@ -55,7 +58,7 @@ public class App {
 //                });
                 mainPanel.login.addActionListener(e -> {
                     Login();
-                    mainPanel.frame.dispose();
+                    mainPanel.dispose();
                 });
 
             }
@@ -64,28 +67,23 @@ public class App {
 
                 mainPanel.getReturnBook().addActionListener(e -> {
                     ReturnBook();
-                    mainPanel.frame.dispose();
+                    mainPanel.dispose();
                 });
                 mainPanel.getRegisterBook().addActionListener(e -> {
                     RegisterBook();
-                    mainPanel.frame.dispose();
+                    mainPanel.dispose();
                 });
                 mainPanel.getBrowseBooks().addActionListener(e -> {
                     BrowseBooks();
-                    mainPanel.frame.dispose();
+                    mainPanel.dispose();
                 });
             }
         }
-
-
     }
 
     private void BrowseBooks() {
-
         BrowseBooksPanel2 browseBooksPanel2 = new BrowseBooksPanel2(permissionLevel);
         browseBooksPanel2.getCancelButton().addActionListener(e -> disposeSubPanel(browseBooksPanel2));
-
-
     }
 
     private void ViewLibInfo() {
@@ -106,6 +104,22 @@ public class App {
 
         });
     }
+    private void Register(){
+        RegisterUserPanel registerPanel = new RegisterUserPanel();
+        registerPanel.getCancelButton().addActionListener(e -> disposeSubPanel(registerPanel));
+        registerPanel.getAcceptButton().addActionListener(e -> {
+            User newUser = new User(registerPanel.getPersonsName().getText(), registerPanel.getSurname().getText(),
+                    registerPanel.getLogin().getText(), registerPanel.getPassword().getText());
+            try {
+                Database.registerUser(newUser);
+            }
+            catch (RuntimeException exc)
+            {
+                handleMessagePanel(registerPanel, "Could not a new user account!");
+            }
+            disposeSubPanel(registerPanel);
+        });
+    }
     private void ReserveBook() { // @TODO probably will be removed with browseBooksPanel inheriting it's purpose
         //ViewLibInfoPanel ViewLibInfoPanel = new ViewLibInfoPanel();
         //ViewLibInfoPanel.getCancelButton().addActionListener(e -> disposeSubPanel(ViewLibInfoPanel));
@@ -114,6 +128,7 @@ public class App {
         ReturnBooksPanel returnBookPanel = new ReturnBooksPanel();
         returnBookPanel.getCancelButton().addActionListener(e -> disposeSubPanel(returnBookPanel));
         returnBookPanel.getInputUserID().addActionListener(e -> {
+            returnBookPanel.getResultTableModel().setRowCount(0);
             String userID = returnBookPanel.getInputUserID().getText().trim();
             Scanner sc = new Scanner(userID);
             if(sc.hasNextInt()){
@@ -122,19 +137,23 @@ public class App {
                 returnBookPanel.fillResultTable(Database.getOrders(Integer.parseInt(userID), true));
             }
             else{
+                returnBookPanel.getAcceptButton().setEnabled(false);
                 handleMessagePanel(returnBookPanel,"The User ID has to be a number");
             }
         });
         returnBookPanel.getAcceptButton().addActionListener(e -> {
-            int orderID = returnBookPanel.getOrderIdVec().elementAt(returnBookPanel.getResultTable().getSelectedRow());
-            returnBookPanel.getOrderIdVec().remove(returnBookPanel.getResultTable().getSelectedRow());
+            int selectedRow = returnBookPanel.getResultTable().getSelectedRow();
+            int orderID = (Integer)returnBookPanel.getResultTableModel().getValueAt(selectedRow, returnBookPanel.getResultTable().getColumn("OrderID").getModelIndex());
+            //returnBookPanel.getResultTable().getSelectedRows();
+            //int orderID = returnBookPanel.getOrderIdVec().elementAt(returnBookPanel.getResultTable().getSelectedRow());
+            //returnBookPanel.getOrderIdVec().remove(returnBookPanel.getResultTable().getSelectedRow());
 
-            finalizeReturnBook(returnBookPanel, orderID);
+            finalizeReturnBook(returnBookPanel, orderID, selectedRow);
             //Database.returnBook(Integer.parseInt(returnBookPanel.getInputUserID().getText()), 1, finalizeReturnBook());
         });
 
     }
-    private void finalizeReturnBook(ReturnBooksPanel returnBookPanel, int orderID) //@TODO
+    private void finalizeReturnBook(ReturnBooksPanel returnBookPanel, int orderID, int selectedRow) //@TODO
     {
         returnBookPanel.setEnabled(false);
         ChoosePenaltyPanel choosePenaltyPanel = new ChoosePenaltyPanel(Database.getPenalties());
@@ -145,6 +164,11 @@ public class App {
         choosePenaltyPanel.getAcceptButton().addActionListener(e -> {
             returnBookPanel.getResultTableModel().removeRow(returnBookPanel.getResultTable().getSelectedRow());
             Database.returnBook(orderID, 0);
+            returnBookPanel.getResultTableModel().removeRow(selectedRow);
+            if(returnBookPanel.getResultTableModel().getRowCount() == 0)
+            {
+                returnBookPanel.getAcceptButton().setEnabled(false);
+            }
             choosePenaltyPanel.dispose();
             returnBookPanel.setEnabled(true);
         });
@@ -153,6 +177,11 @@ public class App {
             int chosenPenaltyID = choosePenaltyPanel.getPenaltyIDVec().elementAt(
                     choosePenaltyPanel.getPenaltyBox().getSelectedIndex());
             Database.returnBook(orderID, chosenPenaltyID);
+            returnBookPanel.getResultTableModel().removeRow(selectedRow);
+            if(returnBookPanel.getResultTableModel().getRowCount() == 0)
+            {
+                returnBookPanel.getAcceptButton().setEnabled(false);
+            }
             choosePenaltyPanel.dispose();
             returnBookPanel.setEnabled(true);
         });
@@ -162,13 +191,13 @@ public class App {
         registerBookPanel.getCancelButton().addActionListener(e -> disposeSubPanel(registerBookPanel));
         registerBookPanel.getAcceptButton().addActionListener(e -> {
 
-            Book book =new Book(Integer.valueOf(registerBookPanel.getBookIdInput().getText()),
-                    registerBookPanel.getBookTitleInput().getText(),
-                    registerBookPanel.getBookAutorInput().getText(),
-                    Integer.valueOf(registerBookPanel.getBookPagesInput().getText()),
-                    registerBookPanel.getBookISBNInput().getText(),
-                    Integer.valueOf(registerBookPanel.getBookYearInput().getText()),
-                    registerBookPanel.getBookGenreInput().getText());
+//            Book book =new Book(Integer.valueOf(registerBookPanel.getBookIdInput().getText()),
+//                    registerBookPanel.getBookTitleInput().getText(),
+//                    registerBookPanel.getBookAutorInput().getText(),
+//                    Integer.valueOf(registerBookPanel.getBookPagesInput().getText()),
+//                    registerBookPanel.getBookISBNInput().getText(),
+//                    Integer.valueOf(registerBookPanel.getBookYearInput().getText()),
+//                    registerBookPanel.getBookGenreInput().getText());
             //addBook(book);
             disposeSubPanel(registerBookPanel);
 
@@ -183,7 +212,7 @@ public class App {
                 switch (2) {
                     case 0 -> {// show window couldn't log in
                         permissionLevel = 0;
-                        handleMessagePanel(loginPanel, "Login falied: invalid data");
+                        handleMessagePanel(loginPanel, "Login failed: invalid data");
                     }
                     case 1 -> {
                         username = loginPanel.getUsername().getText();
@@ -218,8 +247,40 @@ public class App {
 
 
     public static void main(String[] args){
-        new App();
+
+//        Database.orderBook(1, 1);
+        Database.borrowBook(1);
+        Database.borrowBook(2);
+        Database.borrowBook(3);
+        UIManager.LookAndFeelInfo[] looks = UIManager.getInstalledLookAndFeels();
+        for(UIManager.LookAndFeelInfo look : looks)
+        {
+            System.out.println(look);
+        }
+        //com.seaglasslookandfeel.SeaGlassLookAndFeel.
 //        Database a = new Database();
+//        try {
+//            // Set cross-platform Java L&F (also called "Metal")
+//            UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
+//        }
+//        catch (UnsupportedLookAndFeelException e) {
+//            System.out.println("aha");
+//            // handle exception
+//        }
+//        catch (ClassNotFoundException e) {
+//            System.out.println("bha");
+//            // handle exception
+//        }
+//        catch (InstantiationException e) {
+//            System.out.println("cha");
+//            // handle exception
+//        }
+//        catch (IllegalAccessException e) {
+//            System.out.println("dha");
+//            // handle exception
+//        }
+
+        new App();
     }
     private void handleMessagePanel(JFrame callingPanel, String textToShow)
     {
