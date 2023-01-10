@@ -7,6 +7,8 @@ import panels.*;
 import javax.swing.*;
 import java.util.Scanner;
 
+import static app.Database.payPenalty;
+
 public class App {
     // permission level 0 - not logged in
     // permission level 1 - logged in as user
@@ -79,8 +81,21 @@ public class App {
     }
 
     private void BrowseBooks() {
-        BrowseBooksPanel2 browseBooksPanel2 = new BrowseBooksPanel2(permissionLevel);
-        browseBooksPanel2.getCancelButton().addActionListener(e -> disposeSubPanel(browseBooksPanel2));
+        userId=0;
+        BrowseBookPanel3 browseBookPanel3 = new BrowseBookPanel3(userId);
+        browseBookPanel3.getCancelButton().addActionListener(e -> disposeSubPanel(browseBookPanel3));
+        browseBookPanel3.getSearchButton().addActionListener(e -> {
+            browseBookPanel3.fillLibraryInfo();
+
+        });
+        browseBookPanel3.getAcceptButton().addActionListener(e -> {
+            browseBookPanel3.reserv(userId);
+
+        });
+        browseBookPanel3.getPayButton().addActionListener(e->{
+            payPenalty(userId);
+        });
+
     }
 
     private void ViewLibInfo() {
