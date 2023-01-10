@@ -67,10 +67,10 @@ public class ReturnBooksPanel extends BasePanel {
 
 
     public void fillResultTable(ArrayList<Order> usersOrders) {
-        Vector row = new Vector();
 
         for (Order order: usersOrders)
         {
+            Vector row = new Vector();
             for (Method getter : orderGetterMethods)
             {
                 try {

@@ -39,6 +39,7 @@ public class MainPanel extends JFrame
         viewLibrariesInfo = new JButton("View information about a specific library");
 
         //login.setBorder(BorderFactory.createLineBorder(Color.WHITE, 20));
+        splitPane.setEnabled(false);
         loginPanel.add(loginLabel);
         switch (permissionLevel) {
             case 0 -> {

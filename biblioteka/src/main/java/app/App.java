@@ -247,38 +247,14 @@ public class App {
 
 
     public static void main(String[] args){
-
-//        Database.orderBook(1, 1);
-        Database.borrowBook(1);
-        Database.borrowBook(2);
-        Database.borrowBook(3);
-        UIManager.LookAndFeelInfo[] looks = UIManager.getInstalledLookAndFeels();
-        for(UIManager.LookAndFeelInfo look : looks)
-        {
-            System.out.println(look);
+        try {
+            // Set cross-platform Java L&F (also called "Metal")
+            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
         }
-        //com.seaglasslookandfeel.SeaGlassLookAndFeel.
-//        Database a = new Database();
-//        try {
-//            // Set cross-platform Java L&F (also called "Metal")
-//            UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
-//        }
-//        catch (UnsupportedLookAndFeelException e) {
-//            System.out.println("aha");
-//            // handle exception
-//        }
-//        catch (ClassNotFoundException e) {
-//            System.out.println("bha");
-//            // handle exception
-//        }
-//        catch (InstantiationException e) {
-//            System.out.println("cha");
-//            // handle exception
-//        }
-//        catch (IllegalAccessException e) {
-//            System.out.println("dha");
-//            // handle exception
-//        }
+        catch (Exception e){
+            // will use the default Look and Feel instead
+        }
+
 
         new App();
     }

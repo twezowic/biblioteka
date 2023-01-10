@@ -43,6 +43,8 @@ public class ViewLibInfoPanel extends BasePanel {
         //statusInfo.setlo
         JSplitPane upperSplitPane = new JSplitPane();
         upperSplitPane.setResizeWeight(0.5);
+        //upperSplitPane.add(Box.createHorizontalGlue());
+        upperSplitPane.setAlignmentX(LEFT_ALIGNMENT);
         upperSplitPane.setOrientation(HORIZONTAL_SPLIT);
         upperSplitPane.setLeftComponent(libraryName);
         upperSplitPane.setRightComponent(statusInfo);
@@ -56,9 +58,9 @@ public class ViewLibInfoPanel extends BasePanel {
         scrollPane = new JScrollPane(libraryInfo);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(50,50,50,50));
         getAcceptButton().setText("View Library Data");
-        getUpperPanel().setLayout(new BoxLayout(getUpperPanel(),BoxLayout.Y_AXIS));
         getUpperPanel().add(upperSplitPane);
         getUpperPanel().add(scrollPane);
+        getUpperPanel().setLayout(new BoxLayout(getUpperPanel(),BoxLayout.Y_AXIS));
         getLibraryInfoTableModel().setColumnCount(2);
         scrollPane.getColumnHeader().setVisible(false);
         setVisible(true);
