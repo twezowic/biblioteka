@@ -475,7 +475,7 @@ public class Database {
     public static String[] getAuthors()
     {
         ArrayList<String> authors = new ArrayList<>();
-        String sql = "select name || ' ' || surname from AUTHORS;";
+        String sql = "select name || ' ' || surname from AUTHORS";
         try {
             ResultSet rs = Select(sql);
             while (rs.next()) {

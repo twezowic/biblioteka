@@ -76,6 +76,10 @@ public class App {
                     BrowseBooks();
                     mainPanel.dispose();
                 });
+                mainPanel.getModifyAuthor().addActionListener(e ->{
+                    ModifyAuthor();
+                    mainPanel.dispose();
+                });
             }
         }
     }
@@ -212,6 +216,12 @@ public class App {
     private void ModifyAuthor()
     {
         ModifyAuthorPanel modifyAuthorPanel = new ModifyAuthorPanel();
+        modifyAuthorPanel.getAcceptButton().addActionListener(e->{
+            Database.modifyAuthor(
+                    modifyAuthorPanel.getChooseAuthors().getSelectedItem().toString(),
+                    modifyAuthorPanel.getAuthorBirthYear().getText(),
+                    modifyAuthorPanel.getAuthorNation().getText());
+        });
         modifyAuthorPanel.getCancelButton().addActionListener(e -> disposeSubPanel(modifyAuthorPanel));
     }
 

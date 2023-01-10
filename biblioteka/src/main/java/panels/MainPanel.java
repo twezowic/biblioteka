@@ -17,6 +17,7 @@ public class MainPanel extends JFrame
     public JButton returnBook;
     public JButton registerBook;
     public JButton reserveBook;
+    public JButton modifyAuthor;
     private String username;
     private JButton registerButton;
     public MainPanel(int permissionLevel, String username)
@@ -61,9 +62,13 @@ public class MainPanel extends JFrame
                 login.setEnabled(true);
                 returnBook = new JButton("Return a specific book to the database");
                 registerBook = new JButton("register a new book");
-                centralPanel.add(returnBook); centralPanel.add(registerBook);
-                centralPanel.setLayout(new GridLayout(4, 1, 100, 100));
+                modifyAuthor = new JButton("modify authors information");
+                centralPanel.add(returnBook);
+                centralPanel.add(registerBook);
+                centralPanel.add(modifyAuthor);
+                centralPanel.setLayout(new GridLayout(5, 1, 100, 100));
                 loginPanel.setLayout(new GridLayout(1, 2, 300, 100));
+
             }
         }
         loginPanel.add(login);
