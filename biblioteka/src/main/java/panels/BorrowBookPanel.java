@@ -15,14 +15,14 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Vector;
 @Getter
-public class BrowseBookPanel4 extends BasePanel{
+public class BorrowBookPanel extends BasePanel{
 
         private JTextField searchData;
         private InteractiveJTextField inputUserID;
         private JTable resultTable;
         private DefaultTableModel resultTableModel;
         private Vector<Method> orderGetterMethods;
-        public BrowseBookPanel4() {
+        public BorrowBookPanel() {
 
 
 
@@ -94,10 +94,13 @@ public class BrowseBookPanel4 extends BasePanel{
             orderGetterMethods = new Vector();
             for(Field field: fields)
             {
-                resultTableModel.addColumn(field.getName());
+
                 try
                 {
+                    if (!(field.getName().equals("dateBorrow")) && !(field.getName().equals("dateReturn"))) {
+                        resultTableModel.addColumn(field.getName());
                     orderGetterMethods.add(Order.class.getDeclaredMethod("get" + field.getName().substring(0, 1).toUpperCase() + field.getName().substring(1)));
+                }
                 }
                 catch(NoSuchMethodException e) {}
             }
