@@ -15,14 +15,14 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Vector;
 @Getter
-public class BrowseBookPanel4 extends BasePanel{
+public class BorrowBookPanel extends BasePanel{
 
         private JTextField searchData;
         private InteractiveJTextField inputUserID;
         private JTable resultTable;
         private DefaultTableModel resultTableModel;
         private Vector<Method> orderGetterMethods;
-        public BrowseBookPanel4() {
+        public BorrowBookPanel() {
 
 
 

@@ -86,6 +86,12 @@ public class App {
     private void AddCopy() {
         AddingCopy addingCopy=new AddingCopy();
         addingCopy.getCancelButton().addActionListener(e -> disposeSubPanel(addingCopy));
+        addingCopy.getAcceptButton().addActionListener(e->{
+
+            Database.addCopy(addingCopy.ReturnSelectedBookId(),addingCopy.ReturnSelectedLibraryId());
+            handleMessagePanel(addingCopy, "Successful add book copy");
+                }
+                );
     }
 
     private void BrowseBooks() {
@@ -125,26 +131,26 @@ public class App {
         });
     }
     private void BorowBook() { // @TODO probably will be removed with browseBooksPanel inheriting it's purpose
-        BrowseBookPanel4 browseBookPanel4 = new BrowseBookPanel4();
+        BorrowBookPanel borrowBookPanel = new BorrowBookPanel();
 
-        browseBookPanel4.getCancelButton().addActionListener(e -> disposeSubPanel(browseBookPanel4));
-        browseBookPanel4.getInputUserID().addActionListener(e -> {
-            browseBookPanel4.getResultTableModel().setRowCount(0);
-            String userID = browseBookPanel4.getInputUserID().getText().trim();
+        borrowBookPanel.getCancelButton().addActionListener(e -> disposeSubPanel(borrowBookPanel));
+        borrowBookPanel.getInputUserID().addActionListener(e -> {
+            borrowBookPanel.getResultTableModel().setRowCount(0);
+            String userID = borrowBookPanel.getInputUserID().getText().trim();
             Scanner sc = new Scanner(userID);
             if(sc.hasNextInt()){
-                browseBookPanel4.setSearchDataText(userID);
-                browseBookPanel4.getAcceptButton().setEnabled(true);
-                browseBookPanel4.fillResultTable(Database.getOrders(Integer.parseInt(userID), "Rezerwacja"));
+                borrowBookPanel.setSearchDataText(userID);
+                borrowBookPanel.getAcceptButton().setEnabled(true);
+                borrowBookPanel.fillResultTable(Database.getOrders(Integer.parseInt(userID), "Rezerwacja"));
             }
             else{
-                browseBookPanel4.getAcceptButton().setEnabled(false);
-                handleMessagePanel(browseBookPanel4,"The User ID has to be a number");
+                borrowBookPanel.getAcceptButton().setEnabled(false);
+                handleMessagePanel(borrowBookPanel,"The User ID has to be a number");
             }
         });
-        browseBookPanel4.getAcceptButton().addActionListener(e -> {
-            Database.borrowBook(Integer.valueOf(browseBookPanel4.getResultTable().getValueAt(browseBookPanel4.getResultTable().getSelectedRow(),0).toString()));
-            handleMessagePanel(browseBookPanel4,"Successful borrowed book");
+        borrowBookPanel.getAcceptButton().addActionListener(e -> {
+            Database.borrowBook(Integer.valueOf(borrowBookPanel.getResultTable().getValueAt(borrowBookPanel.getResultTable().getSelectedRow(),0).toString()));
+            handleMessagePanel(borrowBookPanel,"Successful borrowed book");
         });
 
         //ViewLibInfoPanel ViewLibInfoPanel = new ViewLibInfoPanel();

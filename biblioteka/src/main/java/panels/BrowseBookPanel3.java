@@ -209,6 +209,11 @@ public class BrowseBookPanel3  extends BasePanel {
  //           statusInfo.setText("you successful reserv "+libraryInfo.getValueAt(libraryInfo.getSelectedRow(),0)
         String libname = libNameInput.getSelectedItem().toString();
         ArrayList<Copy> a=Database.getAvailableCopies(Integer.valueOf(libraryInfo.getValueAt(libraryInfo.getSelectedRow(),6).toString()));
+        if (a.size()==0)
+        {
+            statusInfo.setText("no available copy in libraries ");
+            return;
+        }
         for (int i=0;i<a.size();i++)
         {
             if (a.get(i).getLibraryName().equals(libname))
