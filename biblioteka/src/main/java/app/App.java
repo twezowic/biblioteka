@@ -303,27 +303,3 @@ public class App {
     }
 
 }
-
-
-//TODO dodać do wszystkich ekranów kokńczenie aplikacji oraz to:
-// mainPanel.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-//TODO zmienić
-
-//library_info:
-//nie wykonywanie akcji gdy nie zmienimy biblioteki
-//
-//wyszukiwanie książek
-//-nie wszyskie okna się wyświetlają
-//-guzik search nie jest widoczny na małym oknie
-//-dodać wiersz pokazującą co jest w danej kolumnie
-//-użyć getGenres do book genre
-//-nie powinno dać się rezerwować bez zalogowania
-//-nie potrzebne są po dwa okna na każdą cechę?
-//-chyba lepiej bibliotekę dać już dla kopii którą się wybiera
-//
-//
-//prawie wszystkie:
-//-dodać żeby wyświetlało się na pełny ekran
-//
-//dodawanie książki:
-//-usunąć bookID, jest generowany automatycznie tworzyć klasę z id = 0
