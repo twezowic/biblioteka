@@ -88,17 +88,9 @@ public class App {
         userId=0;
         BrowseBookPanel3 browseBookPanel3 = new BrowseBookPanel3(userId);
         browseBookPanel3.getCancelButton().addActionListener(e -> disposeSubPanel(browseBookPanel3));
-        browseBookPanel3.getSearchButton().addActionListener(e -> {
-            browseBookPanel3.fillLibraryInfo();
-
-        });
-        browseBookPanel3.getAcceptButton().addActionListener(e -> {
-            browseBookPanel3.reserv(userId);
-
-        });
-        browseBookPanel3.getPayButton().addActionListener(e->{
-            Database.payPenalty(userId);
-        });
+        browseBookPanel3.getSearchButton().addActionListener(e -> browseBookPanel3.fillLibraryInfo());
+        browseBookPanel3.getAcceptButton().addActionListener(e -> browseBookPanel3.reserv(userId));
+        browseBookPanel3.getPayButton().addActionListener(e-> Database.payPenalty(userId));
 
     }
 
@@ -279,8 +271,6 @@ public class App {
         catch (Exception e){
             // will use the default Look and Feel instead
         }
-
-
         new App();
     }
     private void handleMessagePanel(JFrame callingPanel, String textToShow)
@@ -298,6 +288,7 @@ public class App {
 //TODO dodać do wszystkich ekranów kokńczenie aplikacji oraz to:
 // mainPanel.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 //TODO zmienić
+
 //library_info:
 //nie wykonywanie akcji gdy nie zmienimy biblioteki
 //
@@ -318,8 +309,3 @@ public class App {
 //
 //dodawanie książki:
 //-usunąć bookID, jest generowany automatycznie tworzyć klasę z id = 0
-//
-//zwracanie książki:
-//-zablokować suwanie kolumn
-//i poza tym nie modyfikujemy nigdzie autora
-//a mamy taką funkcję i można by to dodać do pracownika
