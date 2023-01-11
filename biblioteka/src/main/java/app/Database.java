@@ -231,7 +231,7 @@ public class Database {
         ArrayList<Order> orders = new ArrayList<>();
         String sql = "select o.order_id, oh.status, o.DATE_BORROW, o.DATE_RETURN, b.TITLE " +
                 "from ORDERS_HISTORY oh join orders o on(oh.order_id=o.order_id) " +
-                "join COPIES c on (c.copy_id=o.order_id) " +
+                "join COPIES c on (c.copy_id=o.copy_id) " +
                 "join BOOKS b on (c.book_id=b.book_id) " +
                 "where oh.user_id =" + userID;
         if (!mode.isEmpty()) {

@@ -186,7 +186,6 @@ public class App {
         choosePenaltyPanel.getAcceptButton().addActionListener(e -> {
             returnBookPanel.getResultTableModel().removeRow(returnBookPanel.getResultTable().getSelectedRow());
             Database.returnBook(orderID, 0);
-            returnBookPanel.getResultTableModel().removeRow(selectedRow);
             if(returnBookPanel.getResultTableModel().getRowCount() == 0)
             {
                 returnBookPanel.getAcceptButton().setEnabled(false);
