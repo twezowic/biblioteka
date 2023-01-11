@@ -32,7 +32,6 @@ public class App {
             Login();
             mainPanel.dispose();
         });
-        //
         switch(permissionLevel){
             case 0 ->{
                 mainPanel.login.setText("Login");
@@ -243,7 +242,8 @@ public class App {
             LoginPanel loginPanel = new LoginPanel();
             loginPanel.getAcceptButton().addActionListener(e -> {
                 int [] data = Database.validateLoginData(loginPanel.getUsername().getText(), loginPanel.getPassword().getPassword());
-                switch (data[0]) {
+                switch (data[0])
+                {
                     case 0 -> {// show window couldn't log in
                         permissionLevel = 0;
                         handleMessagePanel(loginPanel, "Login failed: invalid data");
@@ -282,10 +282,10 @@ public class App {
 
 
     public static void main(String[] args){
-        if (args.length != 0 && args[0].equals("reset"))
-        {
-            Database.initializeData();
-        }
+//        if (args.length != 0 && args[0].equals("reset"))
+//        {
+//            Database.initializeData();
+//        }
         try {
             // Set cross-platform Java L&F (also called "Metal")
             UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");

@@ -21,12 +21,11 @@ public class ChoosePenaltyPanel extends BasePanel {
     Vector<Integer> penaltyIDVec;
     public ChoosePenaltyPanel(ArrayList<Penalty> penalties)
     {
-        //JTextField explanationText = new JTextField("Choose if a user should receive a penalty while returning this book");
-        //explanationText.setEditable(false);
+        JLabel explanationText = new JLabel("Choose if a user should receive a penalty while returning this book");
         addPenaltyButton = new JButton("Add the penalty to the user");
         //explanationText.setPreferredSize(new Dimension(100, 100));
         getAcceptButton().setText("Return the book without any penalty");
-        getBottomPanel().add(addPenaltyButton);
+
         //getBottomPanel().setLayout(new GridLayout(1,3,100, 100));
         Vector<String> namesVector = new Vector<String>();
         penaltyIDVec = new Vector<>();
@@ -41,13 +40,18 @@ public class ChoosePenaltyPanel extends BasePanel {
         penaltyBox = new JComboBox(namesVector);
         penaltyBox.setToolTipText("choose if a user should receive a penalty");
         penaltyBox.setRenderer(new ToolTipComboBoxRenderer());
+
+        penaltyBox.setBorder(BorderFactory.createEmptyBorder(50,50,50,50));
+//        penaltyBox.setPreferredSize(new Dimension(100, 100));
+
+        getUpperPanel().add(explanationText);
+        getUpperPanel().add(penaltyBox);
+        getUpperPanel().add(addPenaltyButton);
+        getUpperPanel().setLayout(new BoxLayout(getUpperPanel(),BoxLayout.Y_AXIS));
         //penaltyBox.setPreferredSize(new Dimension(500, 500));
         //getUpperPanel().setLayout(new GridLayout(2,1,100,100));
-        //getUpperPanel().setLayout(new BoxLayout(getUpperPanel(),BoxLayout.Y_AXIS));
         //getUpperPanel().add(explanationText);
-        getUpperPanel().add(penaltyBox);
         setVisible(true);
-
     }
 
     class ToolTipComboBoxRenderer extends BasicComboBoxRenderer {
