@@ -17,7 +17,6 @@ public class MainPanel extends JFrame
     public JButton returnBook;
     public JButton registerBook;
     public JButton reserveBook;
-    public JButton modifyAuthor;
     private String username;
     private JButton registerButton;
     private JButton borrowBooks;
@@ -68,12 +67,10 @@ public class MainPanel extends JFrame
                 login.setEnabled(true);
                 returnBook = new JButton("Return a specific book to the database");
                 registerBook = new JButton("register a new book");
-                modifyAuthor = new JButton("modify authors information");
                 borrowBooks = new JButton("borrow Books");
                 addCopy = new JButton("add Copy of Books");
                 centralPanel.add(returnBook);
                 centralPanel.add(registerBook);
-                centralPanel.add(modifyAuthor);
                 centralPanel.add(borrowBooks);
                 centralPanel.add(addCopy);
                 centralPanel.setLayout(new GridLayout(3, 2, 100, 50));
