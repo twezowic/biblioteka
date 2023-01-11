@@ -68,6 +68,10 @@ public class App {
                     ReturnBook();
                     mainPanel.dispose();
                 });
+                mainPanel.getAddCopy().addActionListener(e->{
+                    AddCopy();
+                    mainPanel.dispose();
+                });
                 mainPanel.getRegisterBook().addActionListener(e -> {
                     RegisterBook();
                     mainPanel.dispose();
@@ -82,6 +86,11 @@ public class App {
                 });
             }
         }
+    }
+
+    private void AddCopy() {
+        AddingCopy addingCopy=new AddingCopy();
+        addingCopy.getCancelButton().addActionListener(e -> disposeSubPanel(addingCopy));
     }
 
     private void BrowseBooks() {

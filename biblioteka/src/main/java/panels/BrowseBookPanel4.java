@@ -94,10 +94,13 @@ public class BrowseBookPanel4 extends BasePanel{
             orderGetterMethods = new Vector();
             for(Field field: fields)
             {
-                resultTableModel.addColumn(field.getName());
+
                 try
                 {
+                    if (!(field.getName().equals("dateBorrow")) && !(field.getName().equals("dateReturn"))) {
+                        resultTableModel.addColumn(field.getName());
                     orderGetterMethods.add(Order.class.getDeclaredMethod("get" + field.getName().substring(0, 1).toUpperCase() + field.getName().substring(1)));
+                }
                 }
                 catch(NoSuchMethodException e) {}
             }
