@@ -127,6 +127,7 @@ public class Database {
         }
         return new int[]{permission, userID};
     }
+
     public static ArrayList<Book> getBooks(String title, String author, String isbn, String genre) {
         ArrayList<Book> books = new ArrayList<>();
         String sql = "select distinct b.*, a.name, a.surname " +
@@ -481,6 +482,11 @@ public class Database {
             System.out.println(e);
         }
         return authors.toArray(new String[authors.size()]);
+    }
+    public static void addCopy(int bookID, int libraryID)
+    {
+        String insert = "insert into Copies Values(Null, " + libraryID + ", " + bookID + ", 1)";
+        dml(insert);
     }
 }
 
