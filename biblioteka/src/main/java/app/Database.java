@@ -127,6 +127,7 @@ public class Database {
         }
         return new int[]{permission, userID};
     }
+
     public static ArrayList<Book> getBooks(String title, String author, String isbn, String genre) {
         ArrayList<Book> books = new ArrayList<>();
         String sql = "select distinct b.*, a.name, a.surname " +
@@ -204,8 +205,6 @@ public class Database {
             String street = rs.getString(4) + ' ' + rs.getInt(5);
             String city = rs.getString(6);
             rs.close();
-//            stmt.close();
-//            con.close();
             sql = "select w.OPENING, w.CLOSING from WORK_TIMES w join LIBRARIES l using (library_id) where library_id = " + libID;
             rs = select(sql);
             while (rs.next()) {
@@ -221,17 +220,11 @@ public class Database {
         }
         return null;
     }
-    public static void modifyAuthor(String name, String date, String nationality) {
-        String update = "UPDATE authors " +
-                "SET birth_date = TO_DATE('" + date + "', 'DD-MM-YYYY'), nationality = '" + nationality + "' " +
-                "WHERE name || ' ' || surname='" + name  + "'";
-        dml(update);
-    }
-    public static ArrayList<Order> getOrders(int userID, String mode) {  //TODO check errors
+    public static ArrayList<Order> getOrders(int userID, String mode) {
         ArrayList<Order> orders = new ArrayList<>();
         String sql = "select o.order_id, oh.status, o.DATE_BORROW, o.DATE_RETURN, b.TITLE " +
                 "from ORDERS_HISTORY oh join orders o on(oh.order_id=o.order_id) " +
-                "join COPIES c on (c.copy_id=o.order_id) " +
+                "join COPIES c on (c.copy_id=o.copy_id) " +
                 "join BOOKS b on (c.book_id=b.book_id) " +
                 "where oh.user_id =" + userID;
         if (!mode.isEmpty()) {
@@ -482,21 +475,9 @@ public class Database {
         }
         return authors.toArray(new String[authors.size()]);
     }
+    public static void addCopy(int bookID, int libraryID)
+    {
+        String insert = "insert into Copies Values(Null, " + libraryID + ", " + bookID + ", 1)";
+        dml(insert);
+    }
 }
-
-//TODO dodawanie kopii do biblioteki
-// tables wyświetlanie, dodawanie, modyfikacja, operacje
-//address - tylko dla biblioteki do wyświetlania
-//authors - automatyczne dodawanie, i modyfikacja
-//books - wyświetlanie, dodawanie
-//copies - dodawanie, rezerwacja
-//libraries - wyświetlanie, brak dodawania
-//orders
-//orders_history
-//penalties - wyswietlanie
-//penalties_history -
-//users - logowanie, dodawanie
-//users_data - logowanie, dodawanie
-//work_times - dla bibliotek
-
-//TODO zmienić getBOOKS aby nie otrzymywać nazwy biblioteki
