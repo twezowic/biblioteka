@@ -8,9 +8,7 @@ import javax.swing.*;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
-import java.util.stream.Collectors;
 @Getter
 
 public class ChoosePenaltyPanel extends BasePanel {
@@ -23,11 +21,10 @@ public class ChoosePenaltyPanel extends BasePanel {
     {
         JLabel explanationText = new JLabel("Choose if a user should receive a penalty while returning this book");
         addPenaltyButton = new JButton("Add the penalty to the user");
-        //explanationText.setPreferredSize(new Dimension(100, 100));
+        explanationText.setPreferredSize(new Dimension(100, 50));
         getAcceptButton().setText("Return the book without any penalty");
 
-        //getBottomPanel().setLayout(new GridLayout(1,3,100, 100));
-        Vector<String> namesVector = new Vector<String>();
+        Vector<String> namesVector = new Vector<>();
         penaltyIDVec = new Vector<>();
         descriptionVec = new Vector<>();
 
@@ -41,16 +38,14 @@ public class ChoosePenaltyPanel extends BasePanel {
         penaltyBox.setToolTipText("choose if a user should receive a penalty");
         penaltyBox.setRenderer(new ToolTipComboBoxRenderer());
 
-        penaltyBox.setBorder(BorderFactory.createEmptyBorder(50,50,50,50));
-//        penaltyBox.setPreferredSize(new Dimension(100, 100));
-
+        penaltyBox.setBorder(BorderFactory.createEmptyBorder(100,100,100,100));
+        explanationText.setAlignmentX(Component.CENTER_ALIGNMENT);
         getUpperPanel().add(explanationText);
+        getUpperPanel().add(Box.createVerticalGlue());
         getUpperPanel().add(penaltyBox);
+        addPenaltyButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         getUpperPanel().add(addPenaltyButton);
         getUpperPanel().setLayout(new BoxLayout(getUpperPanel(),BoxLayout.Y_AXIS));
-        //penaltyBox.setPreferredSize(new Dimension(500, 500));
-        //getUpperPanel().setLayout(new GridLayout(2,1,100,100));
-        //getUpperPanel().add(explanationText);
         setVisible(true);
     }
 

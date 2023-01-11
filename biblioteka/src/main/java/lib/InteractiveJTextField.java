@@ -7,11 +7,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 public class InteractiveJTextField extends JTextField {
-    private String defaultMessage;
     private boolean clearField;
     public InteractiveJTextField(String defaultMessage) {
         super(defaultMessage);
-        this.defaultMessage = defaultMessage;
         this.clearField = true;
         addKeyListener(new KeyAdapter() {
             @Override

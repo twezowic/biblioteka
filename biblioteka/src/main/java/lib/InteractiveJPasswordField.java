@@ -7,13 +7,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 public class InteractiveJPasswordField extends JPasswordField {
-    private String defaultMessage;
     private boolean clearField;
 
     public InteractiveJPasswordField(String defaultMessage) {
         super(defaultMessage);
-        this.defaultMessage = defaultMessage;
-        this.clearField = true;
+        clearField = true;
         setEchoChar('\u0000');
         addKeyListener(new KeyAdapter() {
             @Override

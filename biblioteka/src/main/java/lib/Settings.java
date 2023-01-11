@@ -1,7 +1,5 @@
 package lib;
 
-import lombok.Getter;
-
 import java.awt.*;
 public final class Settings {
 

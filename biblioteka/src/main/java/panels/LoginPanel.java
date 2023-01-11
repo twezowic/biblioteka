@@ -4,7 +4,6 @@ import lombok.Getter;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 @Getter
 public class LoginPanel extends BasePanel{
     private InteractiveJPasswordField password;

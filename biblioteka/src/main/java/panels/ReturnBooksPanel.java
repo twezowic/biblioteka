@@ -23,9 +23,6 @@ public class ReturnBooksPanel extends BasePanel {
     private DefaultTableModel resultTableModel;
     private Vector<Method> orderGetterMethods;
     public ReturnBooksPanel() {
-
-
-
         setPreferredSize(Settings.getInstance().BIG_WINDOW_PREFERRED_SIZE);
         setMinimumSize(Settings.getInstance().BIG_WINDOW_MIN_SIZE);
         setLocation(Settings.getInstance().BIG_WINDOW_LOCATION_X, Settings.getInstance().BIG_WINDOW_LOCATION_Y);

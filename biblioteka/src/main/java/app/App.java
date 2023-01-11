@@ -22,7 +22,7 @@ public class App {
     public void Run()
     {
         MainPanel mainPanel = new MainPanel(permissionLevel, username);
-        // panels for every permission level
+        // listeners for panels that are visible for every permission level
 
         mainPanel.getViewLibrariesInfo().addActionListener(e -> {
             ViewLibInfo();
@@ -32,6 +32,8 @@ public class App {
             Login();
             mainPanel.dispose();
         });
+
+        //listeners for panels that are visible on specific permission level
         switch(permissionLevel){
             case 0 ->{
                 mainPanel.login.setText("Login");
@@ -91,7 +93,7 @@ public class App {
     private void ViewLibInfo() {
         ViewLibInfoPanel viewLibInfo = new ViewLibInfoPanel();
         viewLibInfo.getChooseLibrary().addActionListener(e -> {
-            viewLibInfo.getStatusInfo().setText("Waiting for the Data from the database");
+            viewLibInfo.getStatusInfo().setText("Status: Waiting for the Data from the database");
             viewLibInfo.getStatusInfo().paintImmediately(viewLibInfo.getStatusInfo().getVisibleRect());
             Library answer = Database.getLibraryInfo(viewLibInfo.getChooseLibrary().getSelectedItem().toString());
             viewLibInfo.fillLibraryInfo(answer);
@@ -110,7 +112,7 @@ public class App {
             }
             catch (RuntimeException exc)
             {
-                handleMessagePanel(registerPanel, "Could not a new user account!");
+                handleMessagePanel(registerPanel, "Could not create a new user account!");
             }
             disposeSubPanel(registerPanel);
         });
@@ -138,8 +140,6 @@ public class App {
             handleMessagePanel(browseBookPanel4,"Successful borrowed book");
         });
 
-        //ViewLibInfoPanel ViewLibInfoPanel = new ViewLibInfoPanel();
-        //ViewLibInfoPanel.getCancelButton().addActionListener(e -> disposeSubPanel(ViewLibInfoPanel));
     }
     private void ReturnBook() {
         ReturnBooksPanel returnBookPanel = new ReturnBooksPanel();
@@ -161,12 +161,8 @@ public class App {
         returnBookPanel.getAcceptButton().addActionListener(e -> {
             int selectedRow = returnBookPanel.getResultTable().getSelectedRow();
             int orderID = (Integer)returnBookPanel.getResultTableModel().getValueAt(selectedRow, returnBookPanel.getResultTable().getColumn("OrderID").getModelIndex());
-            //returnBookPanel.getResultTable().getSelectedRows();
-            //int orderID = returnBookPanel.getOrderIdVec().elementAt(returnBookPanel.getResultTable().getSelectedRow());
-            //returnBookPanel.getOrderIdVec().remove(returnBookPanel.getResultTable().getSelectedRow());
 
             finalizeReturnBook(returnBookPanel, orderID, selectedRow);
-            //Database.returnBook(Integer.parseInt(returnBookPanel.getInputUserID().getText()), 1, finalizeReturnBook());
         });
 
     }
@@ -209,7 +205,7 @@ public class App {
 
             Book book =new Book(0,
                     registerBookPanel.getBookTitleInput().getText(),
-                    registerBookPanel.getBookAutorInput().getText(),
+                    registerBookPanel.getBookAuthorInput().getText(),
                     Integer.valueOf(registerBookPanel.getBookPagesInput().getText()),
                     registerBookPanel.getBookISBNInput().getText(),
                     Integer.valueOf(registerBookPanel.getBookYearInput().getText()),
@@ -255,11 +251,10 @@ public class App {
         }
 
     }
-    private int disposeSubPanel(JFrame frameToDispose)
+    private void disposeSubPanel(JFrame frameToDispose)
     {
         frameToDispose.dispose();
         Run();
-        return 1;
     }
 
 
@@ -270,11 +265,11 @@ public class App {
 //            Database.initializeData();
 //        }
         try {
-            // Set cross-platform Java L&F (also called "Metal")
+
             UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
         }
         catch (Exception e){
-            // will use the default Look and Feel instead
+            // will use the default "Metal" Look and Feel instead
         }
         new App();
     }
