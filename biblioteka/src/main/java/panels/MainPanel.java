@@ -20,6 +20,7 @@ public class MainPanel extends JFrame
     public JButton modifyAuthor;
     private String username;
     private JButton registerButton;
+    private JButton borrowBooks;
     public MainPanel(int permissionLevel, String username)
     {
         this.permissionLevel = permissionLevel;
@@ -36,7 +37,7 @@ public class MainPanel extends JFrame
         registerButton = new JButton("register");
 
         login = new JButton("login");
-        browseBooks = new JButton("Browse Books");
+
         viewLibrariesInfo = new JButton("View information about a specific library");
 
         //login.setBorder(BorderFactory.createLineBorder(Color.WHITE, 20));
@@ -44,18 +45,22 @@ public class MainPanel extends JFrame
         loginPanel.add(loginLabel);
         switch (permissionLevel) {
             case 0 -> {
+                browseBooks = new JButton("Browse Books");
                 loginPanel.add(Box.createRigidArea(new Dimension(5,0)));
                 loginLabel.setText("Currently not logged in");
                 loginPanel.add(registerButton);
                 loginPanel.setLayout(new GridLayout(1,3, 50, 50));
                 login.setBackground(Color.YELLOW);
                 centralPanel.setLayout(new GridLayout(2, 1, 100, 100));
+                centralPanel.add(browseBooks);
             }
             case 1 -> {
                 loginLabel.setText("Currently logged in as: " + username);
                 login.setEnabled(true);
                 centralPanel.setLayout(new GridLayout(3, 1,100,100));
                 loginPanel.setLayout(new GridLayout(1, 2, 300, 100));
+                browseBooks = new JButton("Browse Books");
+                centralPanel.add(browseBooks);
             }
             case 2 -> {
                 loginLabel.setText(MessageFormat.format("<html>Permission level - Employee. <br>Currently logged in as: {0}</html>", username));
@@ -63,16 +68,18 @@ public class MainPanel extends JFrame
                 returnBook = new JButton("Return a specific book to the database");
                 registerBook = new JButton("register a new book");
                 modifyAuthor = new JButton("modify authors information");
+                borrowBooks = new JButton("borrow Books");
                 centralPanel.add(returnBook);
                 centralPanel.add(registerBook);
                 centralPanel.add(modifyAuthor);
+                centralPanel.add(borrowBooks);
                 centralPanel.setLayout(new GridLayout(5, 1, 100, 100));
                 loginPanel.setLayout(new GridLayout(1, 2, 300, 100));
 
             }
         }
         loginPanel.add(login);
-        centralPanel.add(browseBooks); centralPanel.add(viewLibrariesInfo);
+         centralPanel.add(viewLibrariesInfo);
 
         splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
         splitPane.setDividerLocation(100);

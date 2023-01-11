@@ -138,6 +138,10 @@ public class BrowseBookPanel3  extends BasePanel {
 
 
         getAcceptButton().setText("reserv");
+        if (userId==0)
+        {
+            getAcceptButton().setVisible(false);
+        }
         getUpperPanel().setLayout(new BoxLayout(getUpperPanel(),BoxLayout.Y_AXIS));
         getUpperPanel().add(upperSplitPane);
         getUpperPanel().add(libraryInfo);
