@@ -5,6 +5,7 @@ import classes.Book;
 import classes.Library;
 import lib.BasePanel;
 import lib.InteractiveJTextField;
+import lib.Settings;
 import lombok.Getter;
 
 import javax.swing.*;
@@ -34,12 +35,16 @@ public class BrowseBookPanel3  extends BasePanel {
     private InteractiveJTextField BookISBNInput;
 
     private JTextArea BookGenre;
-    private InteractiveJTextField BookGenreInput;
+    private JComboBox<String> BookGenreInput;
     private JTextArea libName;
     private InteractiveJTextField libNameInput;
 
 
     public  BrowseBookPanel3(int userId){
+        setPreferredSize(new Dimension(500,800));
+        setMinimumSize(new Dimension(800,1000));
+        setLocation(Settings.getInstance().BIG_WINDOW_LOCATION_X, Settings.getInstance().BIG_WINDOW_LOCATION_Y-100);
+
         if (isPenalty(userId))
         {
             statusInfo = new JTextArea("you must pay yours penalties");
@@ -102,8 +107,9 @@ public class BrowseBookPanel3  extends BasePanel {
         getUpperPanel().add(upperSplitPane7);
 
         BookGenre = new JTextArea("Book Genre:");
+        BookGenreInput = new JComboBox<String>(Database.getGenres().toArray(new String[Database.getGenres().size()]));
         BookGenre.setEditable(false);
-        BookGenreInput = new InteractiveJTextField("Type the Book Genre");
+
         JSplitPane upperSplitPane4 = new JSplitPane();
         upperSplitPane4.setResizeWeight(0.5);
         upperSplitPane4.setOrientation(HORIZONTAL_SPLIT);
@@ -131,31 +137,36 @@ public class BrowseBookPanel3  extends BasePanel {
 
 
 
-
-
-
-
-
-
-
-
-
         getAcceptButton().setText("reserv");
+        if (userId==0)
+        {
+            getAcceptButton().setVisible(false);
+        }
         getUpperPanel().setLayout(new BoxLayout(getUpperPanel(),BoxLayout.Y_AXIS));
         getUpperPanel().add(upperSplitPane);
         getUpperPanel().add(libraryInfo);
         PayButton= new JButton("Pay");
         PayButton.setVisible(false);
-        getUpperPanel().add(PayButton);
+        PayButton.setMinimumSize(minimumSize);
         if (isPenalty(userId))
         {
          PayButton.setVisible(true);
 
         }
+
+
         SearchButton= new JButton("search");
-        getUpperPanel().add(SearchButton);
+        SearchButton.setMinimumSize(minimumSize);
+        JSplitPane upperSplitPane6 = new JSplitPane();
+        upperSplitPane6.setResizeWeight(0.5);
+        upperSplitPane6.setOrientation(HORIZONTAL_SPLIT);
+        upperSplitPane6.setRightComponent(PayButton);
+        upperSplitPane6.setLeftComponent(SearchButton);
+        upperSplitPane6.setEnabled(false);
+        getUpperPanel().add(upperSplitPane6);
         setVisible(true);
-        getLibraryInfoTableModel().setColumnCount(6);
+        getLibraryInfoTableModel().setColumnCount(7);
+
     }
     public void fillLibraryInfo()
     {   String title = BookTitle.getText();
@@ -174,7 +185,7 @@ public class BrowseBookPanel3  extends BasePanel {
         {
             ISBN="";
         }
-        String Genre = BookGenreInput.getText();
+        String Genre = BookGenreInput.getSelectedItem().toString();
         if (Genre.equals("Type the Book Genre"))
         {
             Genre="";
@@ -182,24 +193,32 @@ public class BrowseBookPanel3  extends BasePanel {
         String libname = libNameInput.getText();
         if (libname.equals("Type the library Name"))
         {
-            libname="";
+            libname="Biblioteka Miejska";
         }
-        ArrayList<Book> a= getBooks(title,Autor, ISBN, Genre, libname);
+        ArrayList<Book> a= getBooks(title,Autor, ISBN, Genre);
         getLibraryInfoTableModel().setRowCount(0);
         for (int i=0;i<a.size();i++)
         {
 
             getLibraryInfoTableModel().addRow(new Object[] {a.get(i).getTitle(),a.get(i).getAuthor(),a.get(i).getPages(),
-                    a.get(i).getISBN(),a.get(i).getYear(),a.get(i).getGenre()
+                    a.get(i).getISBN(),a.get(i).getYear(),a.get(i).getGenre(),a.get(i).getBookID()
             });
         }
 
         }
 
     public void reserv(int userId)
-    {
-        //Database.orderBook(userId,0);
-        statusInfo.setText("you successful reserv "+libraryInfo.getValueAt(libraryInfo.getSelectedRow(),0));
+    {try
+        {
+ //           statusInfo.setText("you successful reserv "+libraryInfo.getValueAt(libraryInfo.getSelectedRow(),0));
+        Database.orderBook(userId,Database.getAvailableCopies(Integer.valueOf(libraryInfo.getValueAt(libraryInfo.getSelectedRow(),6).toString())).get(0).getCopyID());
+
+statusInfo.setText("you successful reserv "+libraryInfo.getValueAt(libraryInfo.getSelectedRow(),0));
+        }
+    catch (Exception e){
+        // will use the default Look and Feel instead
+        int a=4;
+    }
     }
     }
 

@@ -72,8 +72,8 @@ public class App {
                     RegisterBook();
                     mainPanel.dispose();
                 });
-                mainPanel.getBrowseBooks().addActionListener(e -> {
-                    BrowseBooks();
+                mainPanel.getBorrowBooks().addActionListener(e -> {
+                    BorowBook();
                     mainPanel.dispose();
                 });
                 mainPanel.getModifyAuthor().addActionListener(e ->{
@@ -120,7 +120,29 @@ public class App {
             disposeSubPanel(registerPanel);
         });
     }
-    private void ReserveBook() { // @TODO probably will be removed with browseBooksPanel inheriting it's purpose
+    private void BorowBook() { // @TODO probably will be removed with browseBooksPanel inheriting it's purpose
+        BrowseBookPanel4 browseBookPanel4 = new BrowseBookPanel4();
+
+        browseBookPanel4.getCancelButton().addActionListener(e -> disposeSubPanel(browseBookPanel4));
+        browseBookPanel4.getInputUserID().addActionListener(e -> {
+            browseBookPanel4.getResultTableModel().setRowCount(0);
+            String userID = browseBookPanel4.getInputUserID().getText().trim();
+            Scanner sc = new Scanner(userID);
+            if(sc.hasNextInt()){
+                browseBookPanel4.setSearchDataText(userID);
+                browseBookPanel4.getAcceptButton().setEnabled(true);
+                browseBookPanel4.fillResultTable(Database.getOrders(Integer.parseInt(userID), false));
+            }
+            else{
+                browseBookPanel4.getAcceptButton().setEnabled(false);
+                handleMessagePanel(browseBookPanel4,"The User ID has to be a number");
+            }
+        });
+        browseBookPanel4.getAcceptButton().addActionListener(e -> {
+            Database.borrowBook(Integer.valueOf(browseBookPanel4.getResultTable().getValueAt(browseBookPanel4.getResultTable().getSelectedRow(),0).toString()));
+            handleMessagePanel(browseBookPanel4,"Successful borrowed book");
+        });
+
         //ViewLibInfoPanel ViewLibInfoPanel = new ViewLibInfoPanel();
         //ViewLibInfoPanel.getCancelButton().addActionListener(e -> disposeSubPanel(ViewLibInfoPanel));
     }
@@ -191,7 +213,7 @@ public class App {
         registerBookPanel.getCancelButton().addActionListener(e -> disposeSubPanel(registerBookPanel));
         registerBookPanel.getAcceptButton().addActionListener(e -> {
 
-            Book book =new Book(Integer.valueOf(registerBookPanel.getBookIdInput().getText()),
+            Book book =new Book(0,
                     registerBookPanel.getBookTitleInput().getText(),
                     registerBookPanel.getBookAutorInput().getText(),
                     Integer.valueOf(registerBookPanel.getBookPagesInput().getText()),
