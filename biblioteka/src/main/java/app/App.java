@@ -69,6 +69,10 @@ public class App {
                     ReturnBook();
                     mainPanel.dispose();
                 });
+                mainPanel.getAddCopy().addActionListener(e->{
+                    AddCopy();
+                    mainPanel.dispose();
+                });
                 mainPanel.getRegisterBook().addActionListener(e -> {
                     RegisterBook();
                     mainPanel.dispose();
@@ -79,6 +83,17 @@ public class App {
                 });
             }
         }
+    }
+
+    private void AddCopy() {
+        AddingCopy addingCopy=new AddingCopy();
+        addingCopy.getCancelButton().addActionListener(e -> disposeSubPanel(addingCopy));
+        addingCopy.getAcceptButton().addActionListener(e->{
+
+            Database.addCopy(addingCopy.ReturnSelectedBookId(),addingCopy.ReturnSelectedLibraryId());
+            handleMessagePanel(addingCopy, "Successful add book copy");
+                }
+                );
     }
 
     private void BrowseBooks() {
@@ -118,26 +133,26 @@ public class App {
         });
     }
     private void BorowBook() { // @TODO probably will be removed with browseBooksPanel inheriting it's purpose
-        BrowseBookPanel4 browseBookPanel4 = new BrowseBookPanel4();
+        BorrowBookPanel borrowBookPanel = new BorrowBookPanel();
 
-        browseBookPanel4.getCancelButton().addActionListener(e -> disposeSubPanel(browseBookPanel4));
-        browseBookPanel4.getInputUserID().addActionListener(e -> {
-            browseBookPanel4.getResultTableModel().setRowCount(0);
-            String userID = browseBookPanel4.getInputUserID().getText().trim();
+        borrowBookPanel.getCancelButton().addActionListener(e -> disposeSubPanel(borrowBookPanel));
+        borrowBookPanel.getInputUserID().addActionListener(e -> {
+            borrowBookPanel.getResultTableModel().setRowCount(0);
+            String userID = borrowBookPanel.getInputUserID().getText().trim();
             Scanner sc = new Scanner(userID);
             if(sc.hasNextInt()){
-                browseBookPanel4.setSearchDataText(userID);
-                browseBookPanel4.getAcceptButton().setEnabled(true);
-                browseBookPanel4.fillResultTable(Database.getOrders(Integer.parseInt(userID), "Rezerwacja"));
+                borrowBookPanel.setSearchDataText(userID);
+                borrowBookPanel.getAcceptButton().setEnabled(true);
+                borrowBookPanel.fillResultTable(Database.getOrders(Integer.parseInt(userID), "Rezerwacja"));
             }
             else{
-                browseBookPanel4.getAcceptButton().setEnabled(false);
-                handleMessagePanel(browseBookPanel4,"The User ID has to be a number");
+                borrowBookPanel.getAcceptButton().setEnabled(false);
+                handleMessagePanel(borrowBookPanel,"The User ID has to be a number");
             }
         });
-        browseBookPanel4.getAcceptButton().addActionListener(e -> {
-            Database.borrowBook(Integer.valueOf(browseBookPanel4.getResultTable().getValueAt(browseBookPanel4.getResultTable().getSelectedRow(),0).toString()));
-            handleMessagePanel(browseBookPanel4,"Successful borrowed book");
+        borrowBookPanel.getAcceptButton().addActionListener(e -> {
+            Database.borrowBook(Integer.valueOf(borrowBookPanel.getResultTable().getValueAt(borrowBookPanel.getResultTable().getSelectedRow(),0).toString()));
+            handleMessagePanel(borrowBookPanel,"Successful borrowed book");
         });
 
     }
@@ -283,27 +298,3 @@ public class App {
     }
 
 }
-
-
-//TODO dodać do wszystkich ekranów kokńczenie aplikacji oraz to:
-// mainPanel.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-//TODO zmienić
-
-//library_info:
-//nie wykonywanie akcji gdy nie zmienimy biblioteki
-//
-//wyszukiwanie książek
-//-nie wszyskie okna się wyświetlają
-//-guzik search nie jest widoczny na małym oknie
-//-dodać wiersz pokazującą co jest w danej kolumnie
-//-użyć getGenres do book genre
-//-nie powinno dać się rezerwować bez zalogowania
-//-nie potrzebne są po dwa okna na każdą cechę?
-//-chyba lepiej bibliotekę dać już dla kopii którą się wybiera
-//
-//
-//prawie wszystkie:
-//-dodać żeby wyświetlało się na pełny ekran
-//
-//dodawanie książki:
-//-usunąć bookID, jest generowany automatycznie tworzyć klasę z id = 0

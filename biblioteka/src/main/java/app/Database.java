@@ -191,7 +191,7 @@ public class Database {
             throw new RuntimeException(e);
         }
     }
-    public static Library getLibraryInfo(String name) { //TODO check after changes
+    public static Library getLibraryInfo(String name) {
         ArrayList<String> opening = new ArrayList<>();
         ArrayList<String> closing = new ArrayList<>();
         String sql = "select l.library_id, l.name, l.phone_number, a.street, a.street_num, a.city " +

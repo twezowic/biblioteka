@@ -2,6 +2,7 @@ package panels;
 
 import app.Database;
 import classes.Book;
+import classes.Copy;
 import lib.BasePanel;
 import lib.InteractiveJTextField;
 import lib.Settings;
@@ -35,7 +36,7 @@ public class BrowseBookPanel3  extends BasePanel {
     private JTextArea BookGenre;
     private JComboBox<String> BookGenreInput;
     private JTextArea libName;
-    private InteractiveJTextField libNameInput;
+    private JComboBox<String> libNameInput;
 
 
     public  BrowseBookPanel3(int userId){
@@ -105,7 +106,9 @@ public class BrowseBookPanel3  extends BasePanel {
         getUpperPanel().add(upperSplitPane7);
 
         BookGenre = new JTextArea("Book Genre:");
-        BookGenreInput = new JComboBox<String>(Database.getGenres().toArray(new String[Database.getGenres().size()]));
+        ArrayList<String> temp= Database.getGenres();
+                temp.add("");
+        BookGenreInput = new JComboBox<String>(temp.toArray(new String[temp.size()]));
         BookGenre.setEditable(false);
 
         JSplitPane upperSplitPane4 = new JSplitPane();
@@ -118,9 +121,10 @@ public class BrowseBookPanel3  extends BasePanel {
         BookGenre.setMinimumSize(minimumSize);
         getUpperPanel().add(upperSplitPane4);
 
-        libName = new JTextArea("library Name:");
+        libName = new JTextArea("lib name:");
         libName.setEditable(false);
-        libNameInput = new InteractiveJTextField("Type the library Name");
+
+        libNameInput = new JComboBox<>(Database.getLibrariesNames());
         JSplitPane upperSplitPane5 = new JSplitPane();
         upperSplitPane5.setResizeWeight(0.5);
         upperSplitPane5.setOrientation(HORIZONTAL_SPLIT);
@@ -138,17 +142,17 @@ public class BrowseBookPanel3  extends BasePanel {
         getAcceptButton().setText("reserv");
         if (userId==0)
         {
-            getAcceptButton().setVisible(false);
+            getAcceptButton().setEnabled(false);
         }
         getUpperPanel().setLayout(new BoxLayout(getUpperPanel(),BoxLayout.Y_AXIS));
         getUpperPanel().add(upperSplitPane);
         getUpperPanel().add(libraryInfo);
         PayButton= new JButton("Pay");
-        PayButton.setVisible(false);
+        PayButton.setEnabled(false);
         PayButton.setMinimumSize(minimumSize);
         if (isPenalty(userId))
         {
-         PayButton.setVisible(true);
+         PayButton.setEnabled(true);
 
         }
         SearchButton= new JButton("search");
@@ -186,11 +190,7 @@ public class BrowseBookPanel3  extends BasePanel {
         {
             Genre="";
         }
-        String libname = libNameInput.getText();
-        if (libname.equals("Type the library Name"))
-        {
-            libname="Biblioteka Miejska";
-        }
+        String libname = libNameInput.getSelectedItem().toString();
         ArrayList<Book> a= getBooks(title,Autor, ISBN, Genre);
         getLibraryInfoTableModel().setRowCount(0);
         for (int i=0;i<a.size();i++)
@@ -206,14 +206,30 @@ public class BrowseBookPanel3  extends BasePanel {
     public void reserv(int userId)
     {try
         {
- //           statusInfo.setText("you successful reserv "+libraryInfo.getValueAt(libraryInfo.getSelectedRow(),0));
-        Database.orderBook(userId,Database.getAvailableCopies(Integer.valueOf(libraryInfo.getValueAt(libraryInfo.getSelectedRow(),6).toString())).get(0).getCopyID());
+ //           statusInfo.setText("you successful reserv "+libraryInfo.getValueAt(libraryInfo.getSelectedRow(),0)
+        String libname = libNameInput.getSelectedItem().toString();
+        ArrayList<Copy> a=Database.getAvailableCopies(Integer.valueOf(libraryInfo.getValueAt(libraryInfo.getSelectedRow(),6).toString()));
+        if (a.size()==0)
+        {
+            statusInfo.setText("no available copy in libraries ");
+            return;
+        }
+        for (int i=0;i<a.size();i++)
+        {
+            if (a.get(i).getLibraryName().equals(libname))
+            {
+                Database.orderBook(userId,a.get(i).getCopyID());
+                statusInfo.setText("you successful reserv "+libraryInfo.getValueAt(libraryInfo.getSelectedRow(),0));
+                return;
+            }
+        }
+       statusInfo.setText("There are no available copy at this library");
 
-statusInfo.setText("you successful reserv "+libraryInfo.getValueAt(libraryInfo.getSelectedRow(),0));
+
+
         }
     catch (Exception e){
         // will use the default Look and Feel instead
-        int a=4;
     }
     }
     }

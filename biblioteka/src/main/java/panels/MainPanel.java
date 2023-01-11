@@ -20,6 +20,7 @@ public class MainPanel extends JFrame
     private String username;
     private JButton registerButton;
     private JButton borrowBooks;
+    private JButton addCopy;
     public MainPanel(int permissionLevel, String username)
     {
         this.permissionLevel = permissionLevel;
@@ -66,10 +67,12 @@ public class MainPanel extends JFrame
                 returnBook = new JButton("Return a specific book to the database");
                 registerBook = new JButton("register a new book");
                 borrowBooks = new JButton("borrow Books");
+                addCopy = new JButton("add Copy of Books");
                 centralPanel.add(returnBook);
                 centralPanel.add(registerBook);
                 centralPanel.add(borrowBooks);
-                centralPanel.setLayout(new GridLayout(4, 1, 100, 100));
+                centralPanel.add(addCopy);
+                centralPanel.setLayout(new GridLayout(3, 2, 100, 50));
                 loginPanel.setLayout(new GridLayout(1, 2, 300, 100));
 
             }
