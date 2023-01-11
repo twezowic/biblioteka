@@ -105,14 +105,17 @@ public class Database {
         }
         return authorID;
     }
-    public static int validateLoginData(String username, char[] password) {
+    public static int[] validateLoginData(String username, char[] password) {
         int permission = 0;
+        int userID = 0;
         try {
-            ResultSet rs = select("select password, is_admin from users_data where login='" + username + "'");
+            ResultSet rs = select("select user_id, password, is_admin from users_data join users using(user_data_id)" +
+                    " where login='" + username + "'");
             if (rs.next()) {
-                if (String.valueOf(password).equals(rs.getString(1)))
-                    if (rs.getInt(2) == 0) {
+                if (String.valueOf(password).equals(rs.getString(2)))
+                    if (rs.getInt(3) == 0) {
                         permission = 1;
+                        userID = rs.getInt(1);
                     } else
                         permission = 2;
             }
@@ -122,22 +125,19 @@ public class Database {
         } catch (Exception e) {
             System.out.println(e);
         }
-        return permission;
+        return new int[]{permission, userID};
     }
-    public static ArrayList<Book> getBooks(String title, String author, String isbn, String genre, String library_name) {
+    public static ArrayList<Book> getBooks(String title, String author, String isbn, String genre) {
         ArrayList<Book> books = new ArrayList<>();
         String sql = "select distinct b.*, a.name, a.surname " +
-                " from copies c join libraries l on (c.LIBRARY_ID = l.LIBRARY_ID)" +
-                " join BOOKS b on (c.BOOK_ID=b.BOOK_ID)" +
-                " join AUTHORS a on (b.AUTHOR_ID=a.AUTHOR_ID) " +
+                " from BOOKS b join AUTHORS a on (b.AUTHOR_ID=a.AUTHOR_ID) " +
                 "where " + addCondition("b.title", title) + " and ";
         if (!author.equals("")) {
             int authorID = checkAuthor(author, false);
             sql += "b.author_id = " + authorID + "and ";
         }
         sql += addCondition("b.ISBN", isbn) + "and " +
-                addCondition("b.genre", genre) + "and " +
-                addCondition("l.name", library_name);
+                addCondition("b.genre", genre);
         try {
             ResultSet rs = select(sql);
             books = getBooksFromResult(rs);
@@ -407,20 +407,20 @@ public class Database {
             con = DriverManager.getConnection(DBURL, DBUSERNAME, DBPASSWORD);
             stmt = con.createStatement();
             String script = IOUtils.toString(new FileInputStream("../ddl.sql"), StandardCharsets.UTF_8);
-            String operations[] = script.split(";");
+            String[] operations = script.split(";");
             for (String operation: operations)
             {
-                if (operation == "Commit")
+                if (operation.equals("Commit"))
                 {
                     break;
                 }
                 stmt.execute(operation);
             }
-            script = IOUtils.toString(new FileInputStream("../dml.sql"), "UTF-8");
+            script = IOUtils.toString(new FileInputStream("../dml.sql"), StandardCharsets.UTF_8);
             operations = script.split(";");
             for (String operation: operations)
             {
-                if (operation == "Commit")
+                if (operation.equals("Commit"))
                 {
                     break;
                 }

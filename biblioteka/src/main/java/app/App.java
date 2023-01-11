@@ -14,7 +14,7 @@ public class App {
     // permission level 1 - logged in as user
     // permission level 2 - logged as employee
     private int permissionLevel = 0;
-    private int userId = 0;
+    private int userID = 0;
     private String username = "";
     public App(){
         Run();
@@ -85,12 +85,12 @@ public class App {
     }
 
     private void BrowseBooks() {
-        userId=0;
-        BrowseBookPanel3 browseBookPanel3 = new BrowseBookPanel3(userId);
+        userID=0;
+        BrowseBookPanel3 browseBookPanel3 = new BrowseBookPanel3(userID);
         browseBookPanel3.getCancelButton().addActionListener(e -> disposeSubPanel(browseBookPanel3));
         browseBookPanel3.getSearchButton().addActionListener(e -> browseBookPanel3.fillLibraryInfo());
-        browseBookPanel3.getAcceptButton().addActionListener(e -> browseBookPanel3.reserv(userId));
-        browseBookPanel3.getPayButton().addActionListener(e-> Database.payPenalty(userId));
+        browseBookPanel3.getAcceptButton().addActionListener(e -> browseBookPanel3.reserv(userID));
+        browseBookPanel3.getPayButton().addActionListener(e-> Database.payPenalty(userID));
 
     }
 
@@ -221,14 +221,15 @@ public class App {
         if (permissionLevel == 0) {
             LoginPanel loginPanel = new LoginPanel();
             loginPanel.getAcceptButton().addActionListener(e -> {
-                //switch (Database.ValidateLoginData(loginPanel.getUsername().getText(), loginPanel.getPassword().getPassword())) {
-                switch (2) {
+                int [] data = Database.validateLoginData(loginPanel.getUsername().getText(), loginPanel.getPassword().getPassword());
+                switch (data[0]) {
                     case 0 -> {// show window couldn't log in
                         permissionLevel = 0;
                         handleMessagePanel(loginPanel, "Login failed: invalid data");
                     }
                     case 1 -> {
                         username = loginPanel.getUsername().getText();
+                        userID = data[1];
                         permissionLevel = 1;
                         disposeSubPanel(loginPanel);
 
@@ -260,10 +261,10 @@ public class App {
 
 
     public static void main(String[] args){
-//        if (args.length != 0 && args[0] == "reset")
-//        {
-//            Database.initializeData();
-//        }
+        if (args.length != 0 && args[0].equals("reset"))
+        {
+            Database.initializeData();
+        }
         try {
             // Set cross-platform Java L&F (also called "Metal")
             UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
