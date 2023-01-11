@@ -85,7 +85,7 @@ public class App {
     }
 
     private void BrowseBooks() {
-        userID=0;
+
         BrowseBookPanel3 browseBookPanel3 = new BrowseBookPanel3(userID);
         browseBookPanel3.getCancelButton().addActionListener(e -> disposeSubPanel(browseBookPanel3));
         browseBookPanel3.getSearchButton().addActionListener(e -> browseBookPanel3.fillLibraryInfo());
@@ -192,7 +192,7 @@ public class App {
         registerBookPanel.getCancelButton().addActionListener(e -> disposeSubPanel(registerBookPanel));
         registerBookPanel.getAcceptButton().addActionListener(e -> {
 
-            Book book =new Book(Integer.valueOf(registerBookPanel.getBookIdInput().getText()),
+            Book book =new Book(0,
                     registerBookPanel.getBookTitleInput().getText(),
                     registerBookPanel.getBookAutorInput().getText(),
                     Integer.valueOf(registerBookPanel.getBookPagesInput().getText()),

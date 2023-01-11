@@ -12,8 +12,7 @@ import static javax.swing.JSplitPane.HORIZONTAL_SPLIT;
 public class RegisterBookPanel extends BasePanel {
     private InteractiveJTextField BookTitleInput;
     private JTextArea BookTitle;
-    private InteractiveJTextField BookIdInput;
-    private JTextArea BookId;
+
     private InteractiveJTextField BookAutorInput;
     private JTextArea BookAutor;
     private InteractiveJTextField BookPagesInput;
@@ -45,19 +44,6 @@ public class RegisterBookPanel extends BasePanel {
         getUpperPanel().setLayout(new BoxLayout(getUpperPanel(),BoxLayout.Y_AXIS));
         getUpperPanel().add(upperSplitPane);
 
-
-        BookId = new JTextArea("BookID");
-        BookId.setEditable(false);
-        BookIdInput = new InteractiveJTextField("Type the BookId");
-        JSplitPane upperSplitPane2 = new JSplitPane();
-        upperSplitPane2.setResizeWeight(0.5);
-        upperSplitPane2.setOrientation(HORIZONTAL_SPLIT);
-        upperSplitPane2.setRightComponent(BookIdInput);
-        upperSplitPane2.setLeftComponent(BookId);
-        upperSplitPane2.setEnabled(false);
-        BookTitleInput.setMinimumSize(minimumSize);
-        BookTitle.setMinimumSize(minimumSize);
-        getUpperPanel().add(upperSplitPane2);
 
 
         BookAutor = new JTextArea("BookAutor:");
