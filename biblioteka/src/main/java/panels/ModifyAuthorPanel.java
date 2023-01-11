@@ -21,7 +21,6 @@ public class ModifyAuthorPanel extends BasePanel {
         setMinimumSize(Settings.getInstance().BIG_WINDOW_MIN_SIZE);
         setLocation(Settings.getInstance().BIG_WINDOW_LOCATION_X, Settings.getInstance().BIG_WINDOW_LOCATION_Y);
 
-
         chooseAuthors = new JComboBox<>(Database.getAuthors());
         AuthorBirthYear = new InteractiveJTextField("Type the birth date of author in format DD-MM-YYYY");
         AuthorNation = new InteractiveJTextField("Type the nation of author");

@@ -227,15 +227,15 @@ public class Database {
                 "WHERE name || ' ' || surname='" + name  + "'";
         dml(update);
     }
-    public static ArrayList<Order> getOrders(int userID, Boolean isBorrowed) {  //TODO check errors
+    public static ArrayList<Order> getOrders(int userID, String mode) {  //TODO check errors
         ArrayList<Order> orders = new ArrayList<>();
         String sql = "select o.order_id, oh.status, o.DATE_BORROW, o.DATE_RETURN, b.TITLE " +
                 "from ORDERS_HISTORY oh join orders o on(oh.order_id=o.order_id) " +
                 "join COPIES c on (c.copy_id=o.order_id) " +
                 "join BOOKS b on (c.book_id=b.book_id) " +
                 "where oh.user_id =" + userID;
-        if (isBorrowed) {
-                sql += " and oh.status = 'Wypozyczona'";
+        if (!mode.isEmpty()) {
+                sql += " and oh.status = '" + mode + "'";
         }
         try {
             ResultSet rs = select(sql);
@@ -355,7 +355,7 @@ public class Database {
                 "where user_id = " + userID;
         dml(update);
     }
-    public static ArrayList<Copy> getAvailableCopies(int bookID) throws SQLException { //TODO dodać obsługę wyjątków brak dostępnych kopii
+    public static ArrayList<Copy> getAvailableCopies(int bookID) throws Exception {
         ArrayList<Copy> copies = new ArrayList<>();
         String sql = "select c.copy_id, l.name from COPIES c join libraries l on (c.library_id=l.library_id)" +
                 "where c.IS_AVAILABLE = 1 and c.book_id = " + bookID;
@@ -368,7 +368,22 @@ public class Database {
         rs.close();
         stmt.close();
         con.close();
-        return copies;
+        if (copies.isEmpty())
+        {
+            throw new Exception("Brak dostępnych kopii.");
+        }
+        else
+        {
+            ArrayList<Copy> processedCopies = new ArrayList<>();
+            for (Copy copy:copies)
+            {
+                if (!copy.equalsName(processedCopies))
+                {
+                    processedCopies.add(copy);
+                }
+            }
+            return processedCopies;
+        }
     }
     public static void registerUser(User user) {
         String check = "select * from users_data where login = '" + user.getLogin() + "'";

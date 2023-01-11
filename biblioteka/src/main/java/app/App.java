@@ -85,7 +85,6 @@ public class App {
     }
 
     private void BrowseBooks() {
-        userID=0;
         BrowseBookPanel3 browseBookPanel3 = new BrowseBookPanel3(userID);
         browseBookPanel3.getCancelButton().addActionListener(e -> disposeSubPanel(browseBookPanel3));
         browseBookPanel3.getSearchButton().addActionListener(e -> browseBookPanel3.fillLibraryInfo());
@@ -135,7 +134,7 @@ public class App {
             if(sc.hasNextInt()){
                 returnBookPanel.setSearchDataText(userID);
                 returnBookPanel.getAcceptButton().setEnabled(true);
-                returnBookPanel.fillResultTable(Database.getOrders(Integer.parseInt(userID), true));
+                returnBookPanel.fillResultTable(Database.getOrders(Integer.parseInt(userID), "Wypozyczona"));
             }
             else{
                 returnBookPanel.getAcceptButton().setEnabled(false);
@@ -244,8 +243,8 @@ public class App {
             loginPanel.getCancelButton().addActionListener(e -> disposeSubPanel(loginPanel));
         }
         else {
-
             permissionLevel=0;
+            userID=0;
             Run();
 
         }
@@ -302,8 +301,6 @@ public class App {
 //-nie potrzebne są po dwa okna na każdą cechę?
 //-chyba lepiej bibliotekę dać już dla kopii którą się wybiera
 //
-//logowanie/rejestrowanie
-//-tworzyć nowe okno i wyświetlać na poprzednim
 //
 //prawie wszystkie:
 //-dodać żeby wyświetlało się na pełny ekran
