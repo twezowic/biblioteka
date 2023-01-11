@@ -131,7 +131,7 @@ public class App {
             if(sc.hasNextInt()){
                 browseBookPanel4.setSearchDataText(userID);
                 browseBookPanel4.getAcceptButton().setEnabled(true);
-                browseBookPanel4.fillResultTable(Database.getOrders(Integer.parseInt(userID), false));
+                browseBookPanel4.fillResultTable(Database.getOrders(Integer.parseInt(userID), "Rezerwacja"));
             }
             else{
                 browseBookPanel4.getAcceptButton().setEnabled(false);

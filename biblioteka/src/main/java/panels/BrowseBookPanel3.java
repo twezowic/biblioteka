@@ -2,7 +2,6 @@ package panels;
 
 import app.Database;
 import classes.Book;
-import classes.Library;
 import lib.BasePanel;
 import lib.InteractiveJTextField;
 import lib.Settings;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import static app.Database.getBooks;
 import static app.Database.isPenalty;
 import static javax.swing.JSplitPane.HORIZONTAL_SPLIT;
-import static javax.swing.JSplitPane.VERTICAL_SPLIT;
 
 @Getter
 public class BrowseBookPanel3  extends BasePanel {
@@ -153,8 +151,6 @@ public class BrowseBookPanel3  extends BasePanel {
          PayButton.setVisible(true);
 
         }
-
-
         SearchButton= new JButton("search");
         SearchButton.setMinimumSize(minimumSize);
         JSplitPane upperSplitPane6 = new JSplitPane();
