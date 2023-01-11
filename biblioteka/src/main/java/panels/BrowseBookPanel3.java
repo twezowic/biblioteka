@@ -40,10 +40,10 @@ public class BrowseBookPanel3  extends BasePanel {
 
 
     public  BrowseBookPanel3(int userId){
-        setPreferredSize(new Dimension(500,800));
-        setMinimumSize(new Dimension(800,1000));
-        setLocation(Settings.getInstance().BIG_WINDOW_LOCATION_X, Settings.getInstance().BIG_WINDOW_LOCATION_Y-100);
 
+        setPreferredSize(Settings.getInstance().BIG_WINDOW_PREFERRED_SIZE);
+        setMinimumSize(Settings.getInstance().BIG_WINDOW_MIN_SIZE);
+        setLocation(Settings.getInstance().BIG_WINDOW_LOCATION_X, Settings.getInstance().BIG_WINDOW_LOCATION_Y);
         if (isPenalty(userId))
         {
             statusInfo = new JTextArea("you must pay yours penalties");

@@ -21,7 +21,6 @@ public class BasePanel extends JFrame {
     private JSplitPane defaultSplitPane;
 
     public BasePanel(){
-        Dimension aha = Toolkit.getDefaultToolkit().getScreenSize();
         cancelButton = new JButton("Cancel");
         acceptButton = new JButton("Accept");
         bottomPanel = new JPanel();
