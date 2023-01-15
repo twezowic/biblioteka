@@ -13,8 +13,8 @@ public class RegisterBookPanel extends BasePanel {
     private InteractiveJTextField BookTitleInput;
     private JTextArea BookTitle;
 
-    private InteractiveJTextField BookAutorInput;
-    private JTextArea BookAutor;
+    private InteractiveJTextField BookAuthorInput;
+    private JTextArea BookAuthor;
     private InteractiveJTextField BookPagesInput;
     private JTextArea BookPages;
     private InteractiveJTextField BookYearInput;
@@ -46,17 +46,17 @@ public class RegisterBookPanel extends BasePanel {
 
 
 
-        BookAutor = new JTextArea("BookAutor:");
-        BookAutor.setEditable(false);
-        BookAutorInput = new InteractiveJTextField("Type the BookAutor");
+        BookAuthor = new JTextArea("BookAuthor:");
+        BookAuthor.setEditable(false);
+        BookAuthorInput = new InteractiveJTextField("Type the BookAuthor");
         JSplitPane upperSplitPane3 = new JSplitPane();
         upperSplitPane3.setResizeWeight(0.5);
         upperSplitPane3.setOrientation(HORIZONTAL_SPLIT);
-        upperSplitPane3.setRightComponent(BookAutorInput);
-        upperSplitPane3.setLeftComponent(BookAutor);
+        upperSplitPane3.setRightComponent(BookAuthorInput);
+        upperSplitPane3.setLeftComponent(BookAuthor);
         upperSplitPane3.setEnabled(false);
-        BookAutorInput.setMinimumSize(minimumSize);
-        BookAutor.setMinimumSize(minimumSize);
+        BookAuthorInput.setMinimumSize(minimumSize);
+        BookAuthor.setMinimumSize(minimumSize);
         getUpperPanel().add(upperSplitPane3);
 
         BookISBN = new JTextArea("BookISBN:");

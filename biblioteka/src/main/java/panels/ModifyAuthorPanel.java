@@ -40,7 +40,7 @@ public class ModifyAuthorPanel extends BasePanel {
         chooseAuthors.setMinimumSize(minimumSize);
         AuthorBirthYear.setMinimumSize(minimumSize);
         AuthorNation.setMinimumSize(minimumSize);
-        getAcceptButton().setText("Modify informations");
+        getAcceptButton().setText("Modify information");
         getUpperPanel().setLayout(new BoxLayout(getUpperPanel(), BoxLayout.Y_AXIS));
 
         setVisible(true);

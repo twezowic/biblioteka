@@ -8,8 +8,6 @@ import java.awt.*;
 
 public class MessagePanel extends BasePanel {
     public MessagePanel(String message){
-        //setSize(Settings.getInstance().MESSAGE_WINDOW_SIZE);
-        //setMaximumSize(Settings.getInstance().MESSAGE_WINDOW_SIZE);
         setPreferredSize(Settings.getInstance().MESSAGE_WINDOW_SIZE);
         setMinimumSize(Settings.getInstance().MESSAGE_WINDOW_SIZE);
         setLocation(Settings.getInstance().MESSAGE_WINDOW_LOCATION_X, Settings.getInstance().MESSAGE_WINDOW_LOCATION_Y);
