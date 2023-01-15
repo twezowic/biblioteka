@@ -276,9 +276,9 @@ public class App {
 
 
     /**
-     * @param args can take the following arguments:<p>
+     * @param args can take one of the following arguments:<p>
      *             res - Creates or replace old database with tables and data<p>
-     *             con - Takes 3 additional arguments with information about url, username and password to change database with which app connects to
+     *             con - Takes 3 additional arguments with information about url, username and password to change database to which app connects to
      */
     public static void main(String[] args){
         if (args[0].equals("con"))
