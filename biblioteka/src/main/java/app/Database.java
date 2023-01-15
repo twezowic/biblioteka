@@ -58,7 +58,7 @@ public class Database {
     /**
      * @param rs result from sql query
      * @return list of books
-     * @throws SQLException
+     * @throws SQLException wrong sql query
      */
     private static ArrayList<Book> getBooksFromResult(ResultSet rs) throws SQLException {
         ArrayList<Book> books = new ArrayList<>();
@@ -79,7 +79,7 @@ public class Database {
     /**
      * @param rs result from sql query
      * @return list of orders
-     * @throws SQLException
+     * @throws SQLException wrong sql query
      */
     private static ArrayList<Order> getOrdersFromResult(ResultSet rs) throws SQLException {
         ArrayList<Order> orders = new ArrayList<>();
@@ -99,9 +99,8 @@ public class Database {
      * Adds author which not already exists in database
      * @param firstName name of author
      * @param lastName surname of author<p>
-     * @throws SQLException
      */
-    private static void addAuthor(String firstName, String lastName) throws SQLException {
+    private static void addAuthor(String firstName, String lastName) {
         String insert = "INSERT INTO Authors Values(Null, '"
                 + firstName + "', '"
                 + lastName + "', Null, Null)";
@@ -146,8 +145,8 @@ public class Database {
     }
 
     /**
-     * @param username
-     * @param password
+     * @param username username to app
+     * @param password password to app
      * @return list of permission and user id <p>
      * Permission modes: <p>
      * 0 - not logged <p>
@@ -182,7 +181,7 @@ public class Database {
      * @param title fragment of the title
      * @param author full name of author
      * @param isbn 13 number International Standard Book Number
-     * @param genre
+     * @param genre genre of the book
      * @return list of books
      */
     public static ArrayList<Book> getBooks(String title, String author, String isbn, String genre) {
@@ -464,7 +463,7 @@ public class Database {
     /**
      * @param bookID searched book
      * @return list of copy of searched book
-     * @throws Exception
+     * @throws Exception book don't have any available copy
      */
     public static ArrayList<Copy> getAvailableCopies(int bookID) throws Exception {
         ArrayList<Copy> copies = new ArrayList<>();
@@ -499,7 +498,7 @@ public class Database {
 
     /**
      * Operation of registering a new user
-     * @param user
+     * @param user new user
      */
     public static void registerUser(User user) {
         String check = "select * from users_data where login = '" + user.getLogin() + "'";
@@ -572,9 +571,9 @@ public class Database {
 
     /**
      * Change to which database app should be connected
-     * @param url
-     * @param user
-     * @param password
+     * @param url url of the database
+     * @param user user to database
+     * @param password password to database
      */
     public static void changeDatabase(String url, String user, String password)
     {
@@ -601,7 +600,7 @@ public class Database {
         } catch (SQLException e) {
             System.out.println(e);
         }
-        return libraries.toArray(new String[libraries.size()]);
+        return libraries.toArray(new String[0]);
     }
 
     /**
@@ -622,13 +621,13 @@ public class Database {
         } catch (SQLException e) {
             System.out.println(e);
         }
-        return authors.toArray(new String[authors.size()]);
+        return authors.toArray(new String[0]);
     }
 
     /**
      * Operation of adding new copy of existing book to the given library
-     * @param bookID
-     * @param libraryID
+     * @param bookID id of the book
+     * @param libraryID id of the library
      */
     public static void addCopy(int bookID, int libraryID)
     {
