@@ -16,6 +16,8 @@ public class App {
     private int permissionLevel = 0;
     private int userID = 0;
     private String username = "";
+
+    private Database database;
     public App(){
         Run();
     }
@@ -278,12 +280,21 @@ public class App {
     }
 
 
-
+    /**
+     * @param args can take the following arguments:<p>
+     *             res - Creates or replace old database with tables and data<p>
+     *             con - Takes 3 additional arguments with information about url, username and password to change database with which app connects to
+     */
     public static void main(String[] args){
-//        if (args.length != 0 && args[0].equals("reset"))
-//        {
-//            Database.initializeData();
-//        }
+        if (args[0].equals("con"))
+        {
+            Database.changeDatabase(args[1], args[2], args[3]);
+            Database.initializeData();
+        }
+        if(args[0].equals("res"))
+        {
+            Database.initializeData();
+        }
         try {
             // Set cross-platform Java L&F (also called "Metal")
             UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
