@@ -533,9 +533,9 @@ public class Database {
     }
 
     private Boolean haveTables() throws SQLException {
-        ResultSet rs = select("Select count(table_Name) from user_Tables");
+        ResultSet rs = select("Select table_Name from user_Tables");
         rs.next();
-        Boolean have = rs.getInt(1) != 0;
+        Boolean have = rs.getString(1).equals("ADDRESSES");
         rs.close();
         return have;
     }
