@@ -206,11 +206,15 @@ public class BrowseBookPanel3  extends BasePanel {
  * @param userId  Id of user which reserv book*/
 
     public void reserv(int userId)
-    {try
     {
 
         String libname = libNameInput.getSelectedItem().toString();
-        ArrayList<Copy> a=Settings.getInstance().database.getAvailableCopies(Integer.valueOf(BooksInfo.getValueAt(BooksInfo.getSelectedRow(),6).toString()));
+        ArrayList<Copy> a= null;
+        try {
+            a = Settings.getInstance().database.getAvailableCopies(Integer.valueOf(BooksInfo.getValueAt(BooksInfo.getSelectedRow(),6).toString()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         if (a.size()==0)
         {
             statusInfo.setText("no available copy in all libraries ");
@@ -230,10 +234,7 @@ public class BrowseBookPanel3  extends BasePanel {
 
 
     }
-    catch (Exception e){
-        // will use the default Look and Feel instead
     }
-    }
-}
+
 
 
