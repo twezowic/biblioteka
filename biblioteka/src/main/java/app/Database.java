@@ -1,7 +1,6 @@
 package app;
 
 import classes.*;
-import lib.Settings;
 import org.apache.commons.io.IOUtils;
 
 import java.io.FileInputStream;
@@ -9,17 +8,19 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.ArrayList;
+
 public class Database {
-    private String DBURL;
-    private String DBUSERNAME;
-    private String DBPASSWORD;
+    private final String DBURL;
+    private final String DBUSERNAME;
+    private final String DBPASSWORD;
     private Connection con;
     private Statement stmt;
 
-    public Database(String dburl, String dbusername, String dbpassword) {
-    DBURL = dburl;
-    DBUSERNAME = dbusername;
-    DBPASSWORD = dbpassword;
+    public Database(String url, String user, String password)
+    {
+        DBURL = url;
+        DBUSERNAME = user;
+        DBPASSWORD = password;
     }
 
     /**
@@ -491,15 +492,6 @@ public class Database {
         }
         else
         {
-//            ArrayList<Copy> processedCopies = new ArrayList<>();
-//            for (Copy copy:copies)
-//            {
-//                if (!copy.equalsName(processedCopies))
-//                {
-//                    processedCopies.add(copy);
-//                }
-//            }
-//            return processedCopies;
             return copies;
         }
     }
