@@ -675,25 +675,3 @@ public class Database {
     }
 
 }
-class DatabaseBuilder{
-    private String DBURL = "jdbc:oracle:thin:@//ora4.ii.pw.edu.pl:1521/pdb1.ii.pw.edu.pl";
-    private String DBUSERNAME = "z32";
-    private String DBPASSWORD = "dprwka";
-    DatabaseBuilder setDBURL(String dburl) {
-        DBURL = dburl;
-        return this;
-    }
-
-    DatabaseBuilder setDBUSERNAME(String  dbusername) {
-        DBUSERNAME = dbusername;
-        return this;
-    }
-    DatabaseBuilder setDBPASSWORD(String dbpassword) {
-        DBPASSWORD = dbpassword;
-        return this;
-    }
-    void build() {
-        Settings.getInstance().database = new Database(DBURL, DBUSERNAME, DBPASSWORD);
-    }
-
-}
