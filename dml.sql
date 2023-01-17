@@ -11,6 +11,8 @@ DELETE FROM work_times;
 DELETE FROM libraries;
 DELETE FROM addresses;
 
+ALTER SESSION SET nls_date_format = "YY/MM/DD";
+
 
 INSERT INTO addresses VALUES (Null, 'Piotrkowska', 100, 'Lodz');
 INSERT INTO addresses VALUES (Null,'Warszawska', 50, 'Warszawa');
