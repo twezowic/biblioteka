@@ -543,11 +543,24 @@ public class Database {
     /**
      * Creates new or replace old database with tables and some data
      */
-    public void initializeData() {
+    public void initializeData(Boolean isNew) {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             con = DriverManager.getConnection(DBURL, DBUSERNAME, DBPASSWORD);
             stmt = con.createStatement();
+            if (!isNew)
+            {
+                String drop = IOUtils.toString(new FileInputStream("../drop.sql"), StandardCharsets.UTF_8);
+                String[] operations = drop.split(";");
+                for (String operation: operations)
+                {
+                    if (operation.equals("Commit"))
+                    {
+                        break;
+                    }
+                    stmt.execute(operation);
+                }
+            }
             String script = IOUtils.toString(new FileInputStream("../ddl.sql"), StandardCharsets.UTF_8);
             String[] operations = script.split(";");
             for (String operation: operations)

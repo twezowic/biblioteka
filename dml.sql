@@ -1,18 +1,4 @@
-DELETE FROM penalties_history;
-DELETE FROM penalties;
-DELETE FROM orders_history;
-DELETE FROM orders;
-DELETE FROM USERS;
-DELETE FROM users_data;
-DELETE FROM copies;
-DELETE FROM books;
-DELETE FROM authors;
-DELETE FROM work_times;
-DELETE FROM libraries;
-DELETE FROM addresses;
-
-ALTER SESSION SET nls_date_format = "YY/MM/DD";
-
+ALTER SESSION SET nls_date_format = 'YY/MM/DD';
 
 INSERT INTO addresses VALUES (Null, 'Piotrkowska', 100, 'Lodz');
 INSERT INTO addresses VALUES (Null,'Warszawska', 50, 'Warszawa');
