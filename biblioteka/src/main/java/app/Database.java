@@ -634,4 +634,23 @@ public class Database {
         String insert = "insert into Copies Values(Null, " + libraryID + ", " + bookID + ", 1)";
         dml(insert);
     }
+
+    public static int getUserID(String username){
+        int userID = -1;
+        try {
+            ResultSet rs = select("select user_id from users_data join users using(user_data_id)" +
+                    " where login='" + username + "'");
+            if (rs.next()) {
+
+                        userID = rs.getInt(1);
+
+            }
+            rs.close();
+            stmt.close();
+            con.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return userID;
+    };
 }

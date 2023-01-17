@@ -30,7 +30,7 @@ public class BorrowBookPanel extends BasePanel{
             setMinimumSize(Settings.getInstance().BIG_WINDOW_MIN_SIZE);
             setLocation(Settings.getInstance().BIG_WINDOW_LOCATION_X, Settings.getInstance().BIG_WINDOW_LOCATION_Y);
 
-            inputUserID = new InteractiveJTextField("Type the user ID of the person, who came, only numbers allowed!");
+            inputUserID = new InteractiveJTextField("Type the user ID or username  of the person, who came");
             searchData = new JTextField();
             resultTableModel = new DefaultTableModel() {
                 @Override
