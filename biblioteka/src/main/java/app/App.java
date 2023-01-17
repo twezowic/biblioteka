@@ -58,10 +58,6 @@ public class App {
 //                    ReserveBook();
 //                    mainPanel.frame.dispose();
 //                });
-                mainPanel.login.addActionListener(e -> {
-                    Login();
-                    mainPanel.dispose();
-                });
 
             }
             case 2 -> {
@@ -93,16 +89,18 @@ public class App {
         addingCopy.getAcceptButton().addActionListener(e->{
 
             Database.addCopy(addingCopy.ReturnSelectedBookId(),addingCopy.ReturnSelectedLibraryId());
-            handleMessagePanel(addingCopy, "Successful add book copy");
+            handleMessagePanel(addingCopy, " Adding a book copy successful");
                 }
                 );
     }
 
     private void BrowseBooks() {
         BrowseBookPanel3 browseBookPanel3 = new BrowseBookPanel3(userID);
-        browseBookPanel3.getCancelButton().addActionListener(e -> disposeSubPanel(browseBookPanel3));
+        browseBookPanel3.getCancelButton().addActionListener(e ->
+                disposeSubPanel(browseBookPanel3));
         browseBookPanel3.getSearchButton().addActionListener(e -> browseBookPanel3.fillLibraryInfo());
-        browseBookPanel3.getAcceptButton().addActionListener(e -> browseBookPanel3.reserv(userID));
+        browseBookPanel3.getAcceptButton().addActionListener(e ->
+                browseBookPanel3.reserv(userID));
         browseBookPanel3.getPayButton().addActionListener(e-> Database.payPenalty(userID));
 
     }
@@ -271,9 +269,7 @@ public class App {
             permissionLevel=0;
             userID=0;
             Run();
-
         }
-
     }
     private void disposeSubPanel(JFrame frameToDispose)
     {

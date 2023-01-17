@@ -484,15 +484,16 @@ public class Database {
         }
         else
         {
-            ArrayList<Copy> processedCopies = new ArrayList<>();
-            for (Copy copy:copies)
-            {
-                if (!copy.equalsName(processedCopies))
-                {
-                    processedCopies.add(copy);
-                }
-            }
-            return processedCopies;
+//            ArrayList<Copy> processedCopies = new ArrayList<>();
+//            for (Copy copy:copies)
+//            {
+//                if (!copy.equalsName(processedCopies))
+//                {
+//                    processedCopies.add(copy);
+//                }
+//            }
+//            return processedCopies;
+            return copies;
         }
     }
 
