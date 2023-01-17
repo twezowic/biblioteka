@@ -19,7 +19,7 @@ public class AddingCopy extends BasePanel {
     private JComboBox<String> chooseBook;
     private ArrayList<Book> a;
     /**
-     * create panel
+     * create panel witch allowed adding copy to specific library
      */
     public AddingCopy() {
 
@@ -44,7 +44,7 @@ public class AddingCopy extends BasePanel {
 
         setVisible(true);
     }
-    /*
+    /**
     * @return Selected book id
     * */
 
@@ -59,7 +59,7 @@ public class AddingCopy extends BasePanel {
         }
         return -1;
     }
-    /*
+    /**
      * @return Selected library id
      * */
     public int ReturnSelectedLibraryId() {

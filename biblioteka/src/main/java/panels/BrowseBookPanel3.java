@@ -38,7 +38,8 @@ public class BrowseBookPanel3  extends BasePanel {
     private JTextArea libName;
     private JComboBox<String> libNameInput;
 
-    /*create panel alowing  searching for books paying penalties and reservation of book*/
+    /**
+     * create panel alowing  searching for books paying penalties and reservation of book*/
     public  BrowseBookPanel3(int userId){
 
         setPreferredSize(Settings.getInstance().BIG_WINDOW_PREFERRED_SIZE);
@@ -168,7 +169,7 @@ public class BrowseBookPanel3  extends BasePanel {
         getBooksInfoTableModel().setColumnCount(7);
 
     }
-/*fill table with searched book*/
+/**fill table with  books matching reqiuremnent*/
     public void fillBooksInfo()
     {   String title = BookTitle.getText();
         if (title.equals("Type the name of book you are loking for"))
@@ -203,7 +204,9 @@ public class BrowseBookPanel3  extends BasePanel {
         }
 
     }
-/*make reserrvation by making new order*/
+/**make reserrvation by making new order
+ * @param userId  Id of user which reserv book*/
+
     public void reserv(int userId)
     {try
     {

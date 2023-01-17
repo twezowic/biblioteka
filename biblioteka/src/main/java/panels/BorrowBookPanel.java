@@ -64,8 +64,9 @@ public class BorrowBookPanel extends BasePanel{
 
         }
 
-/*
-* fill table with data */
+/**
+* fill table with data
+@param usersOrders list of order witch are still waitnig to be borrow */
         public void fillResultTable(ArrayList<Order> usersOrders) {
 
             for (Order order: usersOrders)
@@ -83,11 +84,11 @@ public class BorrowBookPanel extends BasePanel{
                     }
                 }
                 resultTableModel.addRow(row);
-                //resultTableModel.addRow(new Object[]{order.getStatus(), order.getDateBorrow(), order.getDateReturn(), order.getBookTitle()});
             }
         }
 /*
 make visual effect by changing text
+@param  username username
 * */
         public void setSearchDataText(String username)
         {

@@ -24,7 +24,7 @@ public class RegisterBookPanel extends BasePanel {
 
     private InteractiveJTextField BookISBNInput;
     private JTextArea BookISBN;
-    /*create panel which register new book */
+    /**create panel which register new book */
     public RegisterBookPanel() {
         BookTitle = new JTextArea("BookTitle:");
         BookTitle.setEditable(false);
