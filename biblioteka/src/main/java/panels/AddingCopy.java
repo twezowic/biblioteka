@@ -3,14 +3,14 @@ package panels;
 
 import app.Database;
 import classes.Book;
-import classes.Order;
+
 import lib.BasePanel;
 
 import javax.swing.*;
 
-import java.lang.reflect.Field;
+
 import java.util.ArrayList;
-import java.util.Vector;
+
 
 import static javax.swing.JSplitPane.HORIZONTAL_SPLIT;
 
@@ -18,7 +18,9 @@ public class AddingCopy extends BasePanel {
     private JComboBox<String> chooseLibrary;
     private JComboBox<String> chooseBook;
     private ArrayList<Book> a;
-
+    /**
+     * create panel
+     */
     public AddingCopy() {
 
         chooseLibrary = new JComboBox<>(Database.getLibrariesNames());
@@ -42,6 +44,10 @@ public class AddingCopy extends BasePanel {
 
         setVisible(true);
     }
+    /*
+    * @return Selected book id
+    * */
+
     public int ReturnSelectedBookId()
     {
         for (int i=0;i<a.size();i++)
@@ -53,6 +59,9 @@ public class AddingCopy extends BasePanel {
         }
         return -1;
     }
+    /*
+     * @return Selected library id
+     * */
     public int ReturnSelectedLibraryId() {
         return  Database.getLibraryInfo(chooseLibrary.getSelectedItem().toString()).getLibraryID();
            }

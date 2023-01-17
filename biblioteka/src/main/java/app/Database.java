@@ -634,7 +634,9 @@ public class Database {
         String insert = "insert into Copies Values(Null, " + libraryID + ", " + bookID + ", 1)";
         dml(insert);
     }
-
+    /**
+     * @return userid when given his username
+     */
     public static int getUserID(String username){
         int userID = -1;
         try {
