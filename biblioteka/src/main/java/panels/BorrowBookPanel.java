@@ -22,6 +22,9 @@ public class BorrowBookPanel extends BasePanel{
         private JTable resultTable;
         private DefaultTableModel resultTableModel;
         private Vector<Method> orderGetterMethods;
+        /*
+        create panel which allow borrowing book
+        * */
         public BorrowBookPanel() {
 
 
@@ -61,7 +64,8 @@ public class BorrowBookPanel extends BasePanel{
 
         }
 
-
+/*
+* fill table with data */
         public void fillResultTable(ArrayList<Order> usersOrders) {
 
             for (Order order: usersOrders)
@@ -82,12 +86,14 @@ public class BorrowBookPanel extends BasePanel{
                 //resultTableModel.addRow(new Object[]{order.getStatus(), order.getDateBorrow(), order.getDateReturn(), order.getBookTitle()});
             }
         }
-
+/*
+make visual effect by changing text
+* */
         public void setSearchDataText(String username)
         {
             searchData.setText("your typed user ID: " + username);
         }
-
+    /*make column names*/
         private void fillResultTableColumnNames()
         {
             Field[] fields = Order.class.getDeclaredFields();

@@ -18,8 +18,8 @@ import static javax.swing.JSplitPane.HORIZONTAL_SPLIT;
 public class BrowseBookPanel3  extends BasePanel {
 
     private InteractiveJTextField BookTitle;
-    private JTable libraryInfo;
-    private DefaultTableModel LibraryInfoTableModel;
+    private JTable BooksInfo;
+    private DefaultTableModel BooksInfoTableModel;
     private JTextArea statusInfo;
     private JButton PayButton;
     private JButton SearchButton;
@@ -35,7 +35,7 @@ public class BrowseBookPanel3  extends BasePanel {
     private JTextArea libName;
     private JComboBox<String> libNameInput;
 
-
+    /*create panel alowing  searching for books paying penalties and reservation of book*/
     public  BrowseBookPanel3(int userId){
 
         setPreferredSize(Settings.getInstance().BIG_WINDOW_PREFERRED_SIZE);
@@ -52,16 +52,16 @@ public class BrowseBookPanel3  extends BasePanel {
 
         statusInfo.setEditable(false);
         BookTitle = new InteractiveJTextField("Type the name of book you are loking for");
-        LibraryInfoTableModel = new DefaultTableModel() {
+        BooksInfoTableModel = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        libraryInfo = new JTable(LibraryInfoTableModel);
+        BooksInfo = new JTable(BooksInfoTableModel);
         BookTitle.setPreferredSize(new Dimension(300, 100));
         statusInfo.setPreferredSize(new Dimension(300, 100));
-        libraryInfo.setPreferredSize(new Dimension(500, 500));
+        BooksInfo.setPreferredSize(new Dimension(500, 500));
 
         JSplitPane upperSplitPane = new JSplitPane();
 
@@ -143,13 +143,13 @@ public class BrowseBookPanel3  extends BasePanel {
         }
         getUpperPanel().setLayout(new BoxLayout(getUpperPanel(),BoxLayout.Y_AXIS));
         getUpperPanel().add(upperSplitPane);
-        getUpperPanel().add(libraryInfo);
+        getUpperPanel().add(BooksInfo);
         PayButton= new JButton("Pay");
         PayButton.setEnabled(false);
         PayButton.setMinimumSize(minimumSize);
         if (Settings.getInstance().database.isPenalty(userId))
         {
-         PayButton.setEnabled(true);
+            PayButton.setEnabled(true);
 
         }
         SearchButton= new JButton("search");
@@ -162,10 +162,11 @@ public class BrowseBookPanel3  extends BasePanel {
         upperSplitPane6.setEnabled(false);
         getUpperPanel().add(upperSplitPane6);
         setVisible(true);
-        getLibraryInfoTableModel().setColumnCount(7);
+        getBooksInfoTableModel().setColumnCount(7);
 
     }
-    public void fillLibraryInfo()
+/*fill table with searched book*/
+    public void fillBooksInfo()
     {   String title = BookTitle.getText();
         if (title.equals("Type the name of book you are loking for"))
         {
@@ -188,27 +189,28 @@ public class BrowseBookPanel3  extends BasePanel {
             Genre="";
         }
         String libname = libNameInput.getSelectedItem().toString();
+
         ArrayList<Book> a= Settings.getInstance().database.getBooks(title,Autor, ISBN, Genre);
-        getLibraryInfoTableModel().setRowCount(0);
+        getBooksInfoTableModel().setRowCount(0);
         for (int i=0;i<a.size();i++)
         {
 
-            getLibraryInfoTableModel().addRow(new Object[] {a.get(i).getTitle(),a.get(i).getAuthor(),a.get(i).getPages(),
+            getBooksInfoTableModel().addRow(new Object[] {a.get(i).getTitle(),a.get(i).getAuthor(),a.get(i).getPages(),
                     a.get(i).getISBN(),a.get(i).getYear(),a.get(i).getGenre(),a.get(i).getBookID()
             });
         }
 
-        }
-
+    }
+/*make reserrvation by making new order*/
     public void reserv(int userId)
     {try
-        {
- //           statusInfo.setText("you successful reserv "+libraryInfo.getValueAt(libraryInfo.getSelectedRow(),0)
+    {
+
         String libname = libNameInput.getSelectedItem().toString();
-        ArrayList<Copy> a=Settings.getInstance().database.getAvailableCopies(Integer.valueOf(libraryInfo.getValueAt(libraryInfo.getSelectedRow(),6).toString()));
+        ArrayList<Copy> a=Settings.getInstance().database.getAvailableCopies(Integer.valueOf(BooksInfo.getValueAt(BooksInfo.getSelectedRow(),6).toString()));
         if (a.size()==0)
         {
-            statusInfo.setText("no available copy in libraries ");
+            statusInfo.setText("no available copy in all libraries ");
             return;
         }
         for (int i=0;i<a.size();i++)
@@ -216,19 +218,19 @@ public class BrowseBookPanel3  extends BasePanel {
             if (a.get(i).getLibraryName().equals(libname))
             {
                 Settings.getInstance().database.orderBook(userId,a.get(i).getCopyID());
-                statusInfo.setText("you successful reserv "+libraryInfo.getValueAt(libraryInfo.getSelectedRow(),0));
+                statusInfo.setText("you successful reserv "+BooksInfo.getValueAt(BooksInfo.getSelectedRow(),0));
                 return;
             }
         }
-       statusInfo.setText("There are no available copy at this library");
+        statusInfo.setText("There are no available copy at this library");
 
 
 
-        }
+    }
     catch (Exception e){
         // will use the default Look and Feel instead
     }
     }
-    }
+}
 
 
