@@ -540,15 +540,20 @@ public class Database {
         }
     }
 
+    private Boolean haveTables() throws SQLException {
+        ResultSet rs = select("Select count(table_Name) from user_Tables");
+        return rs.getInt(1) != 0;
+    }
+
     /**
      * Creates new or replace old database with tables and some data
      */
-    public void initializeData(Boolean isNew) {
+    public void initializeData() {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             con = DriverManager.getConnection(DBURL, DBUSERNAME, DBPASSWORD);
             stmt = con.createStatement();
-            if (!isNew)
+            if (haveTables())
             {
                 String drop = IOUtils.toString(new FileInputStream("../drop.sql"), StandardCharsets.UTF_8);
                 String[] operations = drop.split(";");

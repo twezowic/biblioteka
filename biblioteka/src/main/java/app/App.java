@@ -285,12 +285,12 @@ public class App {
             if (args[0].equals("res"))
             {
                 new DatabaseBuilder().build();
-                Settings.getInstance().database.initializeData(false);
+                Settings.getInstance().database.initializeData();
             }
             else if (args[0].equals("con"))
             {
                 new DatabaseBuilder().setDBURL(args[1]).setDBUSERNAME(args[2]).setDBPASSWORD(args[3]).build();
-                Settings.getInstance().database.initializeData(true);
+                Settings.getInstance().database.initializeData();
             }
         }
 
