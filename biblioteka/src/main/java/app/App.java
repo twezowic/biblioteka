@@ -3,6 +3,7 @@ package app;
 import classes.Book;
 import classes.Library;
 import classes.User;
+import lib.Settings;
 import panels.*;
 
 import javax.swing.*;
@@ -16,8 +17,6 @@ public class App {
     private int permissionLevel = 0;
     private int userID = 0;
     private String username = "";
-
-    private Database database;
     public App(){
         Run();
     }
@@ -88,7 +87,7 @@ public class App {
         addingCopy.getCancelButton().addActionListener(e -> disposeSubPanel(addingCopy));
         addingCopy.getAcceptButton().addActionListener(e->{
 
-            Database.addCopy(addingCopy.ReturnSelectedBookId(),addingCopy.ReturnSelectedLibraryId());
+            Settings.getInstance().database.addCopy(addingCopy.ReturnSelectedBookId(),addingCopy.ReturnSelectedLibraryId());
             handleMessagePanel(addingCopy, " Adding a book copy successful");
                 }
                 );
@@ -99,8 +98,7 @@ public class App {
         browseBookPanel3.getCancelButton().addActionListener(e -> disposeSubPanel(browseBookPanel3));
         browseBookPanel3.getSearchButton().addActionListener(e -> browseBookPanel3.fillBooksInfo());
         browseBookPanel3.getAcceptButton().addActionListener(e -> browseBookPanel3.reserv(userID));
-        browseBookPanel3.getPayButton().addActionListener(e-> Database.payPenalty(userID));
-
+        browseBookPanel3.getPayButton().addActionListener(e-> Settings.getInstance().database.payPenalty(userID));
     }
 
     private void ViewLibInfo() {
@@ -108,7 +106,7 @@ public class App {
         viewLibInfo.getChooseLibrary().addActionListener(e -> {
             viewLibInfo.getStatusInfo().setText("Status: Waiting for the Data from the database");
             viewLibInfo.getStatusInfo().paintImmediately(viewLibInfo.getStatusInfo().getVisibleRect());
-            Library answer = Database.getLibraryInfo(viewLibInfo.getChooseLibrary().getSelectedItem().toString());
+            Library answer = Settings.getInstance().database.getLibraryInfo(viewLibInfo.getChooseLibrary().getSelectedItem().toString());
             viewLibInfo.fillLibraryInfo(answer);
             viewLibInfo.getStatusInfo().setText("Status: Waiting for change");
         });
@@ -121,7 +119,7 @@ public class App {
             User newUser = new User(registerPanel.getPersonsName().getText(), registerPanel.getSurname().getText(),
                     registerPanel.getLogin().getText(), registerPanel.getPassword().getText());
             try {
-                Database.registerUser(newUser);
+                Settings.getInstance().database.registerUser(newUser);
             }
             catch (RuntimeException exc)
             {
@@ -141,14 +139,14 @@ public class App {
             if(sc.hasNextInt()){
                 borrowBookPanel.setSearchDataText(userID);
                 borrowBookPanel.getAcceptButton().setEnabled(true);
-                borrowBookPanel.fillResultTable(Database.getOrders(Integer.parseInt(userID), "Rezerwacja"));
+                borrowBookPanel.fillResultTable(Settings.getInstance().database.getOrders(Integer.parseInt(userID), "Rezerwacja"));
             }
             else{
                 try {
-                    borrowBookPanel.setSearchDataText(Integer.toString(Database.getUserID(userID)));
+                    borrowBookPanel.setSearchDataText(Integer.toString(Settings.getInstance().database.getUserID(userID)));
                     borrowBookPanel.getAcceptButton().setEnabled(true);
 
-                    borrowBookPanel.fillResultTable(Database.getOrders(Database.getUserID(userID), "Rezerwacja"));
+                    borrowBookPanel.fillResultTable(Settings.getInstance().database.getOrders(Settings.getInstance().database.getUserID(userID), "Rezerwacja"));
                 }
                 catch (RuntimeException exc ) {
                     handleMessagePanel(borrowBookPanel, "The Username not found");
@@ -156,7 +154,7 @@ public class App {
             }
         });
         borrowBookPanel.getAcceptButton().addActionListener(e -> {
-            Database.borrowBook(Integer.valueOf(borrowBookPanel.getResultTable().getValueAt(borrowBookPanel.getResultTable().getSelectedRow(),0).toString()));
+            Settings.getInstance().database.borrowBook(Integer.valueOf(borrowBookPanel.getResultTable().getValueAt(borrowBookPanel.getResultTable().getSelectedRow(),0).toString()));
             handleMessagePanel(borrowBookPanel,"Successful borrowed book");
         });
 
@@ -171,7 +169,7 @@ public class App {
             if(sc.hasNextInt()){
                 returnBookPanel.setSearchDataText(userID);
                 returnBookPanel.getAcceptButton().setEnabled(true);
-                returnBookPanel.fillResultTable(Database.getOrders(Integer.parseInt(userID), "Wypozyczona"));
+                returnBookPanel.fillResultTable(Settings.getInstance().database.getOrders(Integer.parseInt(userID), "Wypozyczona"));
             }
             else{
                 returnBookPanel.getAcceptButton().setEnabled(false);
@@ -189,14 +187,14 @@ public class App {
     private void finalizeReturnBook(ReturnBooksPanel returnBookPanel, int orderID, int selectedRow) //@TODO
     {
         returnBookPanel.setEnabled(false);
-        ChoosePenaltyPanel choosePenaltyPanel = new ChoosePenaltyPanel(Database.getPenalties());
+        ChoosePenaltyPanel choosePenaltyPanel = new ChoosePenaltyPanel(Settings.getInstance().database.getPenalties());
         choosePenaltyPanel.getCancelButton().addActionListener(e -> {
             choosePenaltyPanel.dispose();
             returnBookPanel.setEnabled(true);
         });
         choosePenaltyPanel.getAcceptButton().addActionListener(e -> {
             returnBookPanel.getResultTableModel().removeRow(returnBookPanel.getResultTable().getSelectedRow());
-            Database.returnBook(orderID, 0);
+            Settings.getInstance().database.returnBook(orderID, 0);
             if(returnBookPanel.getResultTableModel().getRowCount() == 0)
             {
                 returnBookPanel.getAcceptButton().setEnabled(false);
@@ -208,7 +206,7 @@ public class App {
             returnBookPanel.getResultTableModel().removeRow(returnBookPanel.getResultTable().getSelectedRow());
             int chosenPenaltyID = choosePenaltyPanel.getPenaltyIDVec().elementAt(
                     choosePenaltyPanel.getPenaltyBox().getSelectedIndex());
-            Database.returnBook(orderID, chosenPenaltyID);
+            Settings.getInstance().database.returnBook(orderID, chosenPenaltyID);
             returnBookPanel.getResultTableModel().removeRow(selectedRow);
             if(returnBookPanel.getResultTableModel().getRowCount() == 0)
             {
@@ -230,7 +228,7 @@ public class App {
                     registerBookPanel.getBookISBNInput().getText(),
                     Integer.valueOf(registerBookPanel.getBookYearInput().getText()),
                     registerBookPanel.getBookGenreInput().getText());
-            Database.addBook(book);
+            Settings.getInstance().database.addBook(book);
             disposeSubPanel(registerBookPanel);
 
         });
@@ -240,7 +238,7 @@ public class App {
         if (permissionLevel == 0) {
             LoginPanel loginPanel = new LoginPanel();
             loginPanel.getAcceptButton().addActionListener(e -> {
-                int [] data = Database.validateLoginData(loginPanel.getUsername().getText(), loginPanel.getPassword().getPassword());
+                int [] data = Settings.getInstance().database.validateLoginData(loginPanel.getUsername().getText(), loginPanel.getPassword().getPassword());
                 switch (data[0])
                 {
                     case 0 -> {// show window couldn't log in
@@ -282,14 +280,22 @@ public class App {
      *             con - Takes 3 additional arguments with information about url, username and password to change database to which app connects to
      */
     public static void main(String[] args){
-        if(args.length==0 || args[0].equals("res"))
+        if(args.length > 0)
         {
-            Database.initializeData();
+            if (args[0].equals("res"))
+            {
+                new DatabaseBuilder().build();
+                Settings.getInstance().database.initializeData();
+            }
+            else if (args[0].equals("con"))
+            {
+                new DatabaseBuilder().setDBURL(args[1]).setDBUSERNAME(args[2]).setDBPASSWORD(args[3]).build();
+                Settings.getInstance().database.initializeData();
+            }
         }
-        else if (args[0].equals("con"))
-        {
-            Database.changeDatabase(args[1], args[2], args[3]);
-            Database.initializeData();
+
+        else {
+            new DatabaseBuilder().build();
         }
 
         try {
