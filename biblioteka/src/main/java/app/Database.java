@@ -542,7 +542,12 @@ public class Database {
 
     private Boolean haveTables() throws SQLException {
         ResultSet rs = select("Select count(table_Name) from user_Tables");
-        return rs.getInt(1) != 0;
+        rs.next();
+        Boolean have = rs.getInt(1) != 0;
+        rs.close();
+        stmt.close();
+        con.close();
+        return have;
     }
 
     /**
