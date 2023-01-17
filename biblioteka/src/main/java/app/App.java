@@ -297,7 +297,6 @@ public class App {
         else {
             new DatabaseBuilder().build();
         }
-
         try {
 
             UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
