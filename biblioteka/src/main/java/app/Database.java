@@ -635,6 +635,10 @@ public class Database {
         dml(insert);
     }
 
+    /**
+     * @param username username
+     * @return user id
+     */
     public static int getUserID(String username){
         int userID = -1;
         try {

@@ -288,7 +288,7 @@ public class App {
      *             con - Takes 3 additional arguments with information about url, username and password to change database to which app connects to
      */
     public static void main(String[] args){
-        if(args.length==0 || args[0].equals("res"))
+        if(args[0].equals("res"))
         {
             Database.initializeData();
         }
