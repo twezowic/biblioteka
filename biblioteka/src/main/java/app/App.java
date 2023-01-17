@@ -99,7 +99,6 @@ public class App {
         browseBookPanel3.getSearchButton().addActionListener(e -> browseBookPanel3.fillBooksInfo());
         browseBookPanel3.getAcceptButton().addActionListener(e -> browseBookPanel3.reserv(userID));
         browseBookPanel3.getPayButton().addActionListener(e-> Settings.getInstance().database.payPenalty(userID));
-
     }
 
     private void ViewLibInfo() {
@@ -281,17 +280,22 @@ public class App {
      *             con - Takes 3 additional arguments with information about url, username and password to change database to which app connects to
      */
     public static void main(String[] args){
-        if(args.length > 0) {
-            if (args[0].equals("res")) {
+        if(args.length > 0)
+        {
+            if (args[0].equals("res"))
+            {
                 new DatabaseBuilder().build();
                 Settings.getInstance().database.initializeData();
-            } else if (args[0].equals("con")) {
+            }
+            else if (args[0].equals("con"))
+            {
                 new DatabaseBuilder().setDBURL(args[1]).setDBUSERNAME(args[2]).setDBPASSWORD(args[3]).build();
                 Settings.getInstance().database.initializeData();
             }
-            else {
-                new DatabaseBuilder().build();
-            }
+        }
+
+        else {
+            new DatabaseBuilder().build();
         }
 
         try {
