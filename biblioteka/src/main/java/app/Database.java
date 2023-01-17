@@ -545,8 +545,6 @@ public class Database {
         rs.next();
         Boolean have = rs.getInt(1) != 0;
         rs.close();
-        stmt.close();
-        con.close();
         return have;
     }
 
