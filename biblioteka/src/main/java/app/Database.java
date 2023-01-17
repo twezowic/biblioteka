@@ -601,19 +601,6 @@ public class Database {
     }
 
     /**
-     * Change to which database app should be connected
-     * @param url url of the database
-     * @param user user to database
-     * @param password password to database
-     */
-    public void changeDatabase(String url, String user, String password)
-    {
-        DBURL = url;
-        DBUSERNAME = user;
-        DBPASSWORD = password;
-    }
-
-    /**
      * @return list of unique libraries
      */
     public String[] getLibrariesNames()
@@ -687,7 +674,7 @@ public class Database {
             System.out.println(e);
         }
         return userID;
-    };
+    }
 
 }
 class DatabaseBuilder{
