@@ -1,6 +1,7 @@
 package app;
 
 import classes.*;
+import lib.Settings;
 import org.apache.commons.io.IOUtils;
 
 import java.io.FileInputStream;
@@ -9,17 +10,23 @@ import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.ArrayList;
 public class Database {
-    private static String DBURL = "jdbc:oracle:thin:@//ora4.ii.pw.edu.pl:1521/pdb1.ii.pw.edu.pl";
-    private static String DBUSERNAME = "z32";
-    private static String DBPASSWORD = "dprwka";
-    private static Connection con;
-    private static Statement stmt;
+    private String DBURL;
+    private String DBUSERNAME;
+    private String DBPASSWORD;
+    private Connection con;
+    private Statement stmt;
+
+    public Database(String dburl, String dbusername, String dbpassword) {
+    DBURL = dburl;
+    DBUSERNAME = dbusername;
+    DBPASSWORD = dbpassword;
+    }
 
     /**
      * @param sql sql query
      * @return Result of sql query, connection need to be closed after extracting result
      */
-    private static ResultSet select(String sql) {
+    private ResultSet select(String sql) {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             con = DriverManager.getConnection(DBURL, DBUSERNAME, DBPASSWORD);
@@ -33,7 +40,7 @@ public class Database {
     /**
      * @param dml insert or update operation to be executed in database
      */
-    private static void dml(String dml) {
+    private void dml(String dml) {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             con = DriverManager.getConnection(DBURL, DBUSERNAME, DBPASSWORD);
@@ -51,7 +58,7 @@ public class Database {
      * @param data fragment of searched data
      * @return condition for sql query
      */
-    private static String addCondition(String condName, String data) {
+    private String addCondition(String condName, String data) {
         return condName + " like '%" + data + "%'";
     }
 
@@ -60,7 +67,7 @@ public class Database {
      * @return list of books
      * @throws SQLException wrong sql query
      */
-    private static ArrayList<Book> getBooksFromResult(ResultSet rs) throws SQLException {
+    private ArrayList<Book> getBooksFromResult(ResultSet rs) throws SQLException {
         ArrayList<Book> books = new ArrayList<>();
         while (rs.next()) {
             int bookID = rs.getInt(1);
@@ -81,7 +88,7 @@ public class Database {
      * @return list of orders
      * @throws SQLException wrong sql query
      */
-    private static ArrayList<Order> getOrdersFromResult(ResultSet rs) throws SQLException {
+    private ArrayList<Order> getOrdersFromResult(ResultSet rs) throws SQLException {
         ArrayList<Order> orders = new ArrayList<>();
         while (rs.next()) {
             int orderID = rs.getInt(1);
@@ -100,7 +107,7 @@ public class Database {
      * @param firstName name of author
      * @param lastName surname of author<p>
      */
-    private static void addAuthor(String firstName, String lastName) {
+    private void addAuthor(String firstName, String lastName) {
         String insert = "INSERT INTO Authors Values(Null, '"
                 + firstName + "', '"
                 + lastName + "', Null, Null)";
@@ -112,7 +119,7 @@ public class Database {
      * @param canAdd determine can the function add new author if one don't exist
      * @return id of author
      */
-    private static int checkAuthor(String fullName, Boolean canAdd) {
+    private int checkAuthor(String fullName, Boolean canAdd) {
         int authorID = -1;
         String[] nameParts = fullName.split(" ");
         if (nameParts.length != 2) {
@@ -153,7 +160,7 @@ public class Database {
      * 1 - user <p>
      * 2 - admin <p>
      */
-    public static int[] validateLoginData(String username, char[] password) {
+    public int[] validateLoginData(String username, char[] password) {
         int permission = 0;
         int userID = 0;
         try {
@@ -184,7 +191,7 @@ public class Database {
      * @param genre genre of the book
      * @return list of books
      */
-    public static ArrayList<Book> getBooks(String title, String author, String isbn, String genre) {
+    public ArrayList<Book> getBooks(String title, String author, String isbn, String genre) {
         ArrayList<Book> books = new ArrayList<>();
         String sql = "select distinct b.*, a.name, a.surname " +
                 " from BOOKS b join AUTHORS a on (b.AUTHOR_ID=a.AUTHOR_ID) " +
@@ -210,7 +217,7 @@ public class Database {
     /**
      * @param book book to be added to database
      */
-    public static void addBook(Book book) {
+    public void addBook(Book book) {
         String insert = "INSERT INTO Books Values(Null, '" +
                 book.getTitle() + "', " +
                 checkAuthor(book.getAuthor(), true) + ", " +
@@ -224,7 +231,7 @@ public class Database {
     /**
      * @return list of unique genres from all books
      */
-    public static ArrayList<String> getGenres() {
+    public ArrayList<String> getGenres() {
         ArrayList<String> genres = new ArrayList<>();
         String sql = "select distinct genre from books";
         try {
@@ -246,7 +253,7 @@ public class Database {
      * @param userID id of user to be checked
      * @return true if user has penalty, false otherwise
      */
-    public static Boolean isPenalty(int userID) {
+    public Boolean isPenalty(int userID) {
         String sql = "select count(*) from penalties_history where USER_ID =" + userID + " and is_paid = 0";
         try {
             ResultSet rs = select(sql);
@@ -265,7 +272,7 @@ public class Database {
      * @param name full name of the library
      * @return searched library
      */
-    public static Library getLibraryInfo(String name) {
+    public Library getLibraryInfo(String name) {
         ArrayList<String> opening = new ArrayList<>();
         ArrayList<String> closing = new ArrayList<>();
         String sql = "select l.library_id, l.name, l.phone_number, a.street, a.street_num, a.city " +
@@ -304,7 +311,7 @@ public class Database {
      *             "Zwrocona" - returned
      * @return list of all orders of user
      */
-    public static ArrayList<Order> getOrders(int userID, String mode) {
+    public ArrayList<Order> getOrders(int userID, String mode) {
         ArrayList<Order> orders = new ArrayList<>();
         String sql = "select o.order_id, oh.status, o.DATE_BORROW, o.DATE_RETURN, b.TITLE " +
                 "from ORDERS_HISTORY oh join orders o on(oh.order_id=o.order_id) " +
@@ -331,7 +338,7 @@ public class Database {
      * @param userID id of the user who reserve book
      * @param copyID id of the copy of the book
      */
-    public static void orderBook(int userID, int copyID) {
+    public void orderBook(int userID, int copyID) {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             con = DriverManager.getConnection(DBURL, DBUSERNAME, DBPASSWORD);
@@ -361,7 +368,7 @@ public class Database {
      * Operation of borrowing the book
      * @param orderID id of the order
      */
-    public static void borrowBook(int orderID) {
+    public void borrowBook(int orderID) {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             con = DriverManager.getConnection(DBURL, DBUSERNAME, DBPASSWORD);
@@ -387,7 +394,7 @@ public class Database {
      * @param penaltyID determines if the penalty is imposed<p>
      *                  if 0 none, otherwise corresponding to id
      */
-    public static void returnBook(int orderID, int penaltyID) {
+    public void returnBook(int orderID, int penaltyID) {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             con = DriverManager.getConnection(DBURL, DBUSERNAME, DBPASSWORD);
@@ -427,7 +434,7 @@ public class Database {
     /**
      * @return list of type of penalties in libraries
      */
-    public static ArrayList<Penalty> getPenalties() {
+    public ArrayList<Penalty> getPenalties() {
         ArrayList<Penalty> penalties = new ArrayList<>();
         String sql = "select * from penalties";
         try {
@@ -453,7 +460,7 @@ public class Database {
      * Operation to pay penalty
      * @param userID id of the user
      */
-    public static void payPenalty(int userID) {
+    public void payPenalty(int userID) {
         String update = "Update penalties_history " +
                 "set is_paid = 1 " +
                 "where user_id = " + userID;
@@ -465,7 +472,7 @@ public class Database {
      * @return list of copy of searched book
      * @throws Exception book don't have any available copy
      */
-    public static ArrayList<Copy> getAvailableCopies(int bookID) throws Exception {
+    public ArrayList<Copy> getAvailableCopies(int bookID) throws Exception {
         ArrayList<Copy> copies = new ArrayList<>();
         String sql = "select c.copy_id, l.name from COPIES c join libraries l on (c.library_id=l.library_id)" +
                 "where c.IS_AVAILABLE = 1 and c.book_id = " + bookID;
@@ -501,7 +508,7 @@ public class Database {
      * Operation of registering a new user
      * @param user new user
      */
-    public static void registerUser(User user) {
+    public void registerUser(User user) {
         String check = "select * from users_data where login = '" + user.getLogin() + "'";
         String insert = "Insert into Users_data Values(Null, '" + user.getLogin() +
                 "', '" + user.getPassword() + "', 0)";
@@ -536,7 +543,7 @@ public class Database {
     /**
      * Creates new or replace old database with tables and some data
      */
-    public static void initializeData() {
+    public void initializeData() {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             con = DriverManager.getConnection(DBURL, DBUSERNAME, DBPASSWORD);
@@ -576,7 +583,7 @@ public class Database {
      * @param user user to database
      * @param password password to database
      */
-    public static void changeDatabase(String url, String user, String password)
+    public void changeDatabase(String url, String user, String password)
     {
         DBURL = url;
         DBUSERNAME = user;
@@ -586,7 +593,7 @@ public class Database {
     /**
      * @return list of unique libraries
      */
-    public static String[] getLibrariesNames()
+    public String[] getLibrariesNames()
     {
         ArrayList<String> libraries = new ArrayList<>();
         String sql = "select name from libraries";
@@ -607,7 +614,7 @@ public class Database {
     /**
      * @return list of unique authors
      */
-    public static String[] getAuthors()
+    public String[] getAuthors()
     {
         ArrayList<String> authors = new ArrayList<>();
         String sql = "select name || ' ' || surname from AUTHORS";
@@ -630,13 +637,13 @@ public class Database {
      * @param bookID id of the book
      * @param libraryID id of the library
      */
-    public static void addCopy(int bookID, int libraryID)
+    public void addCopy(int bookID, int libraryID)
     {
         String insert = "insert into Copies Values(Null, " + libraryID + ", " + bookID + ", 1)";
         dml(insert);
     }
 
-    public static int getUserID(String username){
+    public int getUserID(String username){
         int userID = -1;
         try {
             ResultSet rs = select("select user_id from users_data join users using(user_data_id)" +
@@ -654,4 +661,27 @@ public class Database {
         }
         return userID;
     };
+
+}
+class DatabaseBuilder{
+    private String DBURL = "jdbc:oracle:thin:@//ora4.ii.pw.edu.pl:1521/pdb1.ii.pw.edu.pl";
+    private String DBUSERNAME = "z32";
+    private String DBPASSWORD = "dprwka";
+    DatabaseBuilder setDBURL(String dburl) {
+        DBURL = dburl;
+        return this;
+    }
+
+    DatabaseBuilder setDBUSERNAME(String  dbusername) {
+        DBUSERNAME = dbusername;
+        return this;
+    }
+    DatabaseBuilder setDBPASSWORD(String dbpassword) {
+        DBPASSWORD = dbpassword;
+        return this;
+    }
+    void build() {
+        Settings.getInstance().database = new Database(DBURL, DBUSERNAME, DBPASSWORD);
+    }
+
 }

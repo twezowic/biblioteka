@@ -25,7 +25,7 @@ public class ViewLibInfoPanel extends BasePanel {
         setLocation(Settings.getInstance().BIG_WINDOW_LOCATION_X, Settings.getInstance().BIG_WINDOW_LOCATION_Y);
 
         statusInfo = new JLabel("Status: Waiting for change");
-        chooseLibrary = new JComboBox<>(Database.getLibrariesNames());
+        chooseLibrary = new JComboBox<>(Settings.getInstance().database.getLibrariesNames());
         LibraryInfoTableModel = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -60,7 +60,7 @@ public class ViewLibInfoPanel extends BasePanel {
         scrollPane.getColumnHeader().setVisible(false);
         setVisible(true);
 
-        fillLibraryInfo(Database.getLibraryInfo(chooseLibrary.getSelectedItem().toString()));
+        fillLibraryInfo(Settings.getInstance().database.getLibraryInfo(chooseLibrary.getSelectedItem().toString()));
     }
 
     public void fillLibraryInfo(Library library)

@@ -12,9 +12,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.ArrayList;
-
-import static app.Database.getBooks;
-import static app.Database.isPenalty;
 import static javax.swing.JSplitPane.HORIZONTAL_SPLIT;
 
 @Getter
@@ -44,7 +41,7 @@ public class BrowseBookPanel3  extends BasePanel {
         setPreferredSize(Settings.getInstance().BIG_WINDOW_PREFERRED_SIZE);
         setMinimumSize(Settings.getInstance().BIG_WINDOW_MIN_SIZE);
         setLocation(Settings.getInstance().BIG_WINDOW_LOCATION_X, Settings.getInstance().BIG_WINDOW_LOCATION_Y);
-        if (isPenalty(userId))
+        if (Settings.getInstance().database.isPenalty(userId))
         {
             statusInfo = new JTextArea("you must pay yours penalties");
         }
@@ -106,7 +103,7 @@ public class BrowseBookPanel3  extends BasePanel {
         getUpperPanel().add(upperSplitPane7);
 
         BookGenre = new JTextArea("Book Genre:");
-        ArrayList<String> temp= Database.getGenres();
+        ArrayList<String> temp= Settings.getInstance().database.getGenres();
                 temp.add("");
         BookGenreInput = new JComboBox<String>(temp.toArray(new String[temp.size()]));
         BookGenre.setEditable(false);
@@ -124,7 +121,7 @@ public class BrowseBookPanel3  extends BasePanel {
         libName = new JTextArea("lib name:");
         libName.setEditable(false);
 
-        libNameInput = new JComboBox<>(Database.getLibrariesNames());
+        libNameInput = new JComboBox<>(Settings.getInstance().database.getLibrariesNames());
         JSplitPane upperSplitPane5 = new JSplitPane();
         upperSplitPane5.setResizeWeight(0.5);
         upperSplitPane5.setOrientation(HORIZONTAL_SPLIT);
@@ -150,7 +147,7 @@ public class BrowseBookPanel3  extends BasePanel {
         PayButton= new JButton("Pay");
         PayButton.setEnabled(false);
         PayButton.setMinimumSize(minimumSize);
-        if (isPenalty(userId))
+        if (Settings.getInstance().database.isPenalty(userId))
         {
          PayButton.setEnabled(true);
 
@@ -191,7 +188,7 @@ public class BrowseBookPanel3  extends BasePanel {
             Genre="";
         }
         String libname = libNameInput.getSelectedItem().toString();
-        ArrayList<Book> a= getBooks(title,Autor, ISBN, Genre);
+        ArrayList<Book> a= Settings.getInstance().database.getBooks(title,Autor, ISBN, Genre);
         getLibraryInfoTableModel().setRowCount(0);
         for (int i=0;i<a.size();i++)
         {
@@ -208,7 +205,7 @@ public class BrowseBookPanel3  extends BasePanel {
         {
  //           statusInfo.setText("you successful reserv "+libraryInfo.getValueAt(libraryInfo.getSelectedRow(),0)
         String libname = libNameInput.getSelectedItem().toString();
-        ArrayList<Copy> a=Database.getAvailableCopies(Integer.valueOf(libraryInfo.getValueAt(libraryInfo.getSelectedRow(),6).toString()));
+        ArrayList<Copy> a=Settings.getInstance().database.getAvailableCopies(Integer.valueOf(libraryInfo.getValueAt(libraryInfo.getSelectedRow(),6).toString()));
         if (a.size()==0)
         {
             statusInfo.setText("no available copy in libraries ");
@@ -218,7 +215,7 @@ public class BrowseBookPanel3  extends BasePanel {
         {
             if (a.get(i).getLibraryName().equals(libname))
             {
-                Database.orderBook(userId,a.get(i).getCopyID());
+                Settings.getInstance().database.orderBook(userId,a.get(i).getCopyID());
                 statusInfo.setText("you successful reserv "+libraryInfo.getValueAt(libraryInfo.getSelectedRow(),0));
                 return;
             }
