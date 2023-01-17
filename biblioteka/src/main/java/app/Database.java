@@ -484,15 +484,16 @@ public class Database {
         }
         else
         {
-            ArrayList<Copy> processedCopies = new ArrayList<>();
-            for (Copy copy:copies)
-            {
-                if (!copy.equalsName(processedCopies))
-                {
-                    processedCopies.add(copy);
-                }
-            }
-            return processedCopies;
+//            ArrayList<Copy> processedCopies = new ArrayList<>();
+//            for (Copy copy:copies)
+//            {
+//                if (!copy.equalsName(processedCopies))
+//                {
+//                    processedCopies.add(copy);
+//                }
+//            }
+//            return processedCopies;
+            return copies;
         }
     }
 
@@ -634,8 +635,10 @@ public class Database {
         String insert = "insert into Copies Values(Null, " + libraryID + ", " + bookID + ", 1)";
         dml(insert);
     }
+
     /**
-     * @return userid when given his username
+     * @param username username
+     * @return user id
      */
     public static int getUserID(String username){
         int userID = -1;

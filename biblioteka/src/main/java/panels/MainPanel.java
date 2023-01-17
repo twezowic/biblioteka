@@ -34,7 +34,7 @@ public class MainPanel extends JFrame
         JPanel centralPanel = new JPanel();
         JPanel loginPanel = new JPanel();
         JLabel loginLabel = new JLabel();
-        registerButton = new JButton("register");
+        registerButton = new JButton("Register");
 
         login = new JButton("login");
 
@@ -44,7 +44,7 @@ public class MainPanel extends JFrame
         loginPanel.add(loginLabel);
         switch (permissionLevel) {
             case 0 -> {
-                browseBooks = new JButton("Browse Books");
+                browseBooks = new JButton("Browse books");
                 loginPanel.add(Box.createRigidArea(new Dimension(5,0)));
                 loginLabel.setText("Currently not logged in");
                 loginPanel.add(registerButton);
@@ -58,21 +58,21 @@ public class MainPanel extends JFrame
                 login.setEnabled(true);
                 centralPanel.setLayout(new GridLayout(3, 1,100,100));
                 loginPanel.setLayout(new GridLayout(1, 2, 300, 100));
-                browseBooks = new JButton("Browse Books");
+                browseBooks = new JButton("Browse books");
                 centralPanel.add(browseBooks);
             }
             case 2 -> {
                 loginLabel.setText(MessageFormat.format("<html>Permission level - Employee. <br>Currently logged in as: {0}</html>", username));
                 login.setEnabled(true);
                 returnBook = new JButton("Return a specific book to the database");
-                registerBook = new JButton("register a new book");
-                borrowBooks = new JButton("borrow Books");
-                addCopy = new JButton("add Copy of Books");
+                registerBook = new JButton("Register a new book");
+                borrowBooks = new JButton("Borrow a reserved books to the user");
+                addCopy = new JButton("Add a Copy of a book");
                 centralPanel.add(returnBook);
                 centralPanel.add(registerBook);
                 centralPanel.add(borrowBooks);
                 centralPanel.add(addCopy);
-                centralPanel.setLayout(new GridLayout(3, 2, 100, 50));
+                centralPanel.setLayout(new GridLayout(5, 1, 100, 50));
                 loginPanel.setLayout(new GridLayout(1, 2, 300, 100));
 
             }

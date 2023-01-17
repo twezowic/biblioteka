@@ -58,10 +58,6 @@ public class App {
 //                    ReserveBook();
 //                    mainPanel.frame.dispose();
 //                });
-                mainPanel.login.addActionListener(e -> {
-                    Login();
-                    mainPanel.dispose();
-                });
 
             }
             case 2 -> {
@@ -93,7 +89,7 @@ public class App {
         addingCopy.getAcceptButton().addActionListener(e->{
 
             Database.addCopy(addingCopy.ReturnSelectedBookId(),addingCopy.ReturnSelectedLibraryId());
-            handleMessagePanel(addingCopy, "Successful add book copy");
+            handleMessagePanel(addingCopy, " Adding a book copy successful");
                 }
                 );
     }
@@ -271,9 +267,7 @@ public class App {
             permissionLevel=0;
             userID=0;
             Run();
-
         }
-
     }
     private void disposeSubPanel(JFrame frameToDispose)
     {
