@@ -9,12 +9,16 @@ import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.ArrayList;
 public class Database {
-    private static final String DBURL = "jdbc:oracle:thin:@//ora4.ii.pw.edu.pl:1521/pdb1.ii.pw.edu.pl";
-    private static final String DBUSERNAME = "z32";
-    private static final String DBPASSWORD = "dprwka";
+    private static String DBURL = "jdbc:oracle:thin:@//ora4.ii.pw.edu.pl:1521/pdb1.ii.pw.edu.pl";
+    private static String DBUSERNAME = "z32";
+    private static String DBPASSWORD = "dprwka";
     private static Connection con;
     private static Statement stmt;
 
+    /**
+     * @param sql sql query
+     * @return Result of sql query, connection need to be closed after extracting result
+     */
     private static ResultSet select(String sql) {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -25,6 +29,10 @@ public class Database {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * @param dml insert or update operation to be executed in database
+     */
     private static void dml(String dml) {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -37,9 +45,21 @@ public class Database {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * @param condName name of data type in database
+     * @param data fragment of searched data
+     * @return condition for sql query
+     */
     private static String addCondition(String condName, String data) {
         return condName + " like '%" + data + "%'";
     }
+
+    /**
+     * @param rs result from sql query
+     * @return list of books
+     * @throws SQLException wrong sql query
+     */
     private static ArrayList<Book> getBooksFromResult(ResultSet rs) throws SQLException {
         ArrayList<Book> books = new ArrayList<>();
         while (rs.next()) {
@@ -55,6 +75,12 @@ public class Database {
         }
         return books;
     }
+
+    /**
+     * @param rs result from sql query
+     * @return list of orders
+     * @throws SQLException wrong sql query
+     */
     private static ArrayList<Order> getOrdersFromResult(ResultSet rs) throws SQLException {
         ArrayList<Order> orders = new ArrayList<>();
         while (rs.next()) {
@@ -68,12 +94,24 @@ public class Database {
         }
         return orders;
     }
-    private static void addAuthor(String firstName, String lastName) throws SQLException {
+
+    /**
+     * Adds author which not already exists in database
+     * @param firstName name of author
+     * @param lastName surname of author<p>
+     */
+    private static void addAuthor(String firstName, String lastName) {
         String insert = "INSERT INTO Authors Values(Null, '"
                 + firstName + "', '"
                 + lastName + "', Null, Null)";
         dml(insert);
     }
+
+    /**
+     * @param fullName full name of the author
+     * @param canAdd determine can the function add new author if one don't exist
+     * @return id of author
+     */
     private static int checkAuthor(String fullName, Boolean canAdd) {
         int authorID = -1;
         String[] nameParts = fullName.split(" ");
@@ -105,6 +143,16 @@ public class Database {
         }
         return authorID;
     }
+
+    /**
+     * @param username username to app
+     * @param password password to app
+     * @return list of permission and user id <p>
+     * Permission modes: <p>
+     * 0 - not logged <p>
+     * 1 - user <p>
+     * 2 - admin <p>
+     */
     public static int[] validateLoginData(String username, char[] password) {
         int permission = 0;
         int userID = 0;
@@ -128,6 +176,14 @@ public class Database {
         return new int[]{permission, userID};
     }
 
+    /**
+     * Searching for books with given parameters, they can be empty
+     * @param title fragment of the title
+     * @param author full name of author
+     * @param isbn 13 number International Standard Book Number
+     * @param genre genre of the book
+     * @return list of books
+     */
     public static ArrayList<Book> getBooks(String title, String author, String isbn, String genre) {
         ArrayList<Book> books = new ArrayList<>();
         String sql = "select distinct b.*, a.name, a.surname " +
@@ -150,6 +206,10 @@ public class Database {
         }
         return books;
     }
+
+    /**
+     * @param book book to be added to database
+     */
     public static void addBook(Book book) {
         String insert = "INSERT INTO Books Values(Null, '" +
                 book.getTitle() + "', " +
@@ -160,6 +220,10 @@ public class Database {
                 book.getGenre() + "')";
         dml(insert);
     }
+
+    /**
+     * @return list of unique genres from all books
+     */
     public static ArrayList<String> getGenres() {
         ArrayList<String> genres = new ArrayList<>();
         String sql = "select distinct genre from books";
@@ -177,6 +241,11 @@ public class Database {
         }
         return genres;
     }
+
+    /**
+     * @param userID id of user to be checked
+     * @return true if user has penalty, false otherwise
+     */
     public static Boolean isPenalty(int userID) {
         String sql = "select count(*) from penalties_history where USER_ID =" + userID + " and is_paid = 0";
         try {
@@ -191,6 +260,11 @@ public class Database {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * @param name full name of the library
+     * @return searched library
+     */
     public static Library getLibraryInfo(String name) {
         ArrayList<String> opening = new ArrayList<>();
         ArrayList<String> closing = new ArrayList<>();
@@ -220,6 +294,16 @@ public class Database {
         }
         return null;
     }
+
+    /**
+     * @param userID id of the user
+     * @param mode determines which orders are searched:<p>
+     *             "" - all<p>
+     *             "Rezerwacja" - reserved<p>
+     *             "Wypozyczona" - borrowed<p>
+     *             "Zwrocona" - returned
+     * @return list of all orders of user
+     */
     public static ArrayList<Order> getOrders(int userID, String mode) {
         ArrayList<Order> orders = new ArrayList<>();
         String sql = "select o.order_id, oh.status, o.DATE_BORROW, o.DATE_RETURN, b.TITLE " +
@@ -241,6 +325,12 @@ public class Database {
         }
         return orders;
     }
+
+    /**
+     * Operation of reserving the book
+     * @param userID id of the user who reserve book
+     * @param copyID id of the copy of the book
+     */
     public static void orderBook(int userID, int copyID) {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -266,6 +356,11 @@ public class Database {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * Operation of borrowing the book
+     * @param orderID id of the order
+     */
     public static void borrowBook(int orderID) {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -285,6 +380,13 @@ public class Database {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * Operation of returning the book
+     * @param orderID id of the order
+     * @param penaltyID determines if the penalty is imposed<p>
+     *                  if 0 none, otherwise corresponding to id
+     */
     public static void returnBook(int orderID, int penaltyID) {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -321,6 +423,10 @@ public class Database {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * @return list of type of penalties in libraries
+     */
     public static ArrayList<Penalty> getPenalties() {
         ArrayList<Penalty> penalties = new ArrayList<>();
         String sql = "select * from penalties";
@@ -342,12 +448,23 @@ public class Database {
         }
         return penalties;
     }
+
+    /**
+     * Operation to pay penalty
+     * @param userID id of the user
+     */
     public static void payPenalty(int userID) {
         String update = "Update penalties_history " +
                 "set is_paid = 1 " +
                 "where user_id = " + userID;
         dml(update);
     }
+
+    /**
+     * @param bookID searched book
+     * @return list of copy of searched book
+     * @throws Exception book don't have any available copy
+     */
     public static ArrayList<Copy> getAvailableCopies(int bookID) throws Exception {
         ArrayList<Copy> copies = new ArrayList<>();
         String sql = "select c.copy_id, l.name from COPIES c join libraries l on (c.library_id=l.library_id)" +
@@ -379,6 +496,11 @@ public class Database {
             return copies;
         }
     }
+
+    /**
+     * Operation of registering a new user
+     * @param user new user
+     */
     public static void registerUser(User user) {
         String check = "select * from users_data where login = '" + user.getLogin() + "'";
         String insert = "Insert into Users_data Values(Null, '" + user.getLogin() +
@@ -410,6 +532,10 @@ public class Database {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * Creates new or replace old database with tables and some data
+     */
     public static void initializeData() {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -441,7 +567,25 @@ public class Database {
         } catch (SQLException | ClassNotFoundException | IOException e) {
             throw new RuntimeException(e);
         }
+
     }
+
+    /**
+     * Change to which database app should be connected
+     * @param url url of the database
+     * @param user user to database
+     * @param password password to database
+     */
+    public static void changeDatabase(String url, String user, String password)
+    {
+        DBURL = url;
+        DBUSERNAME = user;
+        DBPASSWORD = password;
+    }
+
+    /**
+     * @return list of unique libraries
+     */
     public static String[] getLibrariesNames()
     {
         ArrayList<String> libraries = new ArrayList<>();
@@ -457,8 +601,12 @@ public class Database {
         } catch (SQLException e) {
             System.out.println(e);
         }
-        return libraries.toArray(new String[libraries.size()]);
+        return libraries.toArray(new String[0]);
     }
+
+    /**
+     * @return list of unique authors
+     */
     public static String[] getAuthors()
     {
         ArrayList<String> authors = new ArrayList<>();
@@ -474,11 +622,36 @@ public class Database {
         } catch (SQLException e) {
             System.out.println(e);
         }
-        return authors.toArray(new String[authors.size()]);
+        return authors.toArray(new String[0]);
     }
+
+    /**
+     * Operation of adding new copy of existing book to the given library
+     * @param bookID id of the book
+     * @param libraryID id of the library
+     */
     public static void addCopy(int bookID, int libraryID)
     {
         String insert = "insert into Copies Values(Null, " + libraryID + ", " + bookID + ", 1)";
         dml(insert);
     }
+
+    public static int getUserID(String username){
+        int userID = -1;
+        try {
+            ResultSet rs = select("select user_id from users_data join users using(user_data_id)" +
+                    " where login='" + username + "'");
+            if (rs.next()) {
+
+                        userID = rs.getInt(1);
+
+            }
+            rs.close();
+            stmt.close();
+            con.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return userID;
+    };
 }
