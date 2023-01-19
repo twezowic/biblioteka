@@ -197,12 +197,15 @@ public class Database {
         String sql = "select distinct b.*, a.name, a.surname " +
                 " from BOOKS b join AUTHORS a on (b.AUTHOR_ID=a.AUTHOR_ID) " +
                 "where " + addCondition("b.title", title) + " and ";
-        if (!author.equals("")) {
+        if (!author.isEmpty()) {
             int authorID = checkAuthor(author, false);
             sql += "b.author_id = " + authorID + "and ";
         }
-        sql += addCondition("b.ISBN", isbn) + "and " +
-                addCondition("b.genre", genre);
+        if (!isbn.isEmpty())
+        {
+            sql += "b.ISBN = "  + isbn + " and ";
+        }
+        sql += addCondition("b.genre", genre);
         try {
             ResultSet rs = select(sql);
             books = getBooksFromResult(rs);
@@ -336,11 +339,12 @@ public class Database {
 
     /**
      * Operation of reserving the book
-     * @param userID id of the user who reserve book
+     * @param user name of the user who reserve book
      * @param copyID id of the copy of the book
      */
-    public void orderBook(int userID, int copyID) {
+    public void orderBook(String user, int copyID) {
         try {
+            int userID = getUserID(user);
             Class.forName("oracle.jdbc.driver.OracleDriver");
             con = DriverManager.getConnection(DBURL, DBUSERNAME, DBPASSWORD);
             stmt = con.createStatement();
@@ -532,13 +536,6 @@ public class Database {
         }
     }
 
-    private Boolean haveTables() throws SQLException {
-        ResultSet rs = select("Select table_Name from user_Tables where table_name = 'ADDRESSES'");
-        Boolean have = rs.next();
-        rs.close();
-        return have;
-    }
-
     /**
      * Creates new or replace old database with tables and some data
      */
@@ -547,19 +544,14 @@ public class Database {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             con = DriverManager.getConnection(DBURL, DBUSERNAME, DBPASSWORD);
             stmt = con.createStatement();
-            if (haveTables())
-            {
-                String drop = IOUtils.toString(new FileInputStream("../drop.sql"), StandardCharsets.UTF_8);
-                String[] operations = drop.split(";");
-                for (String operation: operations)
-                {
-                    if (operation.equals("Commit"))
-                    {
-                        break;
-                    }
-                    stmt.execute(operation);
-                }
-            }
+            CallableStatement stmtcall = con.prepareCall("Begin " +
+                    "for c in (select table_name from user_tables) loop " +
+                    "execute immediate ('drop table '||c.table_name||' cascade constraints'); " +
+                    "end loop; " +
+                    "End;");
+            stmtcall.execute();
+            stmtcall.close();
+
             String script = IOUtils.toString(new FileInputStream("../ddl.sql"), StandardCharsets.UTF_8);
             String[] operations = script.split(";");
             for (String operation: operations)
@@ -652,9 +644,7 @@ public class Database {
             ResultSet rs = select("select user_id from users_data join users using(user_data_id)" +
                     " where login='" + username + "'");
             if (rs.next()) {
-
                         userID = rs.getInt(1);
-
             }
             rs.close();
             stmt.close();

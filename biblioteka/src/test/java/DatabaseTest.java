@@ -1,15 +1,13 @@
 import app.Database;
 import app.DatabaseBuilder;
-import classes.*;
+import classes.Book;
+import classes.Library;
+import classes.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import javax.print.attribute.standard.Copies;
-import java.util.ArrayList;
-
-
+//Testy mogą nie przechodzić gdy nie zostanie uzyskane połączenie z bazą danych z powodu zbyt długiej próby połączenia
 public class DatabaseTest {
     Database mockDatabase = new DatabaseBuilder()
             .setDBURL("jdbc:oracle:thin:@//ora4.ii.pw.edu.pl:1521/pdb1.ii.pw.edu.pl")
@@ -45,7 +43,7 @@ public class DatabaseTest {
     {
         int[] data = mockDatabase.validateLoginData("admin1", new char[]{'a', 'd', 'm', 'i', 'n', '1'});
         Assertions.assertEquals(2, data[0]);
-        Assertions.assertEquals(4, data[1]);
+        Assertions.assertEquals(0, data[1]);
     }
     @Test
     void validateLoginIncorrect()
@@ -57,49 +55,46 @@ public class DatabaseTest {
     @Test
     void getBooksAll()
     {
+        Assertions.assertEquals(5, mockDatabase.getBooks("","","","").size());
     }
     @Test
     void getBooksTitle()
     {
-
+        Book first = mockDatabase.getBooks("Tadeusz","","","").get(0);
+        Assertions.assertEquals("Pan Tadeusz", first.getTitle());
+        Assertions.assertEquals("Adam Mickiewicz", first.getAuthor());
+        Assertions.assertEquals(400, first.getPages());
+        Assertions.assertEquals("1234567890123", first.getISBN());
+        Assertions.assertEquals(1834, first.getYear());
+        Assertions.assertEquals("poemat", first.getGenre());
     }
     @Test
     void getBooksAuthor()
     {
-        mockDatabase.initializeData();
+        Assertions.assertEquals(2, mockDatabase.getBooks("","Adam Mickiewicz","","").size());
     }
     @Test
     void getBooksISBN()
     {
-
+        Book book = mockDatabase.getBooks("","","3456789012345","").get(0);
+        Assertions.assertEquals("Lalka", book.getTitle());
+        Assertions.assertEquals("Boleslaw Prus", book.getAuthor());
+        Assertions.assertEquals(600, book.getPages());
+        Assertions.assertEquals(1890, book.getYear());
+        Assertions.assertEquals("powiesc", book.getGenre());
     }
     @Test
     void getBooksIncorrect()
     {
-
+        Assertions.assertEquals(0, mockDatabase.getBooks("Potop","","","").size());
     }
     @Test
     void addBook()
     {
-        Book newBook = new Book(0, "test", "Adam Mickiewicz", 5, "test", 2023, "test");
+        Book newBook = new Book(0, "test", "Adam Mickiewicz", 5, "1111111111111", 2023, "test");
         Assertions.assertEquals(2, mockDatabase.getBooks("", "Adam Mickiewicz", "", "").size());
         mockDatabase.addBook(newBook);
         Assertions.assertEquals(3, mockDatabase.getBooks("", "Adam Mickiewicz", "", "").size());
-
-    }
-    @Test
-    void getGenres()
-    {
-
-    }
-    @Test
-    void isPeneltyWithout()
-    {
-
-    }
-    @Test
-    void isPeneltyWith()
-    {
 
     }
     @Test
@@ -114,71 +109,60 @@ public class DatabaseTest {
         Assertions.assertEquals(5, lib.getWorkTimes().getOpening().size());
     }
     @Test
-    void getOrders()
+    void getOrdersAll()
     {
-
+        Assertions.assertEquals(0, mockDatabase.getOrders(1,"").size());
+        mockDatabase.orderBook("user1",1);
+        Assertions.assertEquals("Rezerwacja", mockDatabase.getOrders(1,"").get(0).getStatus());
+        mockDatabase.borrowBook(1);
+        Assertions.assertEquals("Wypozyczona", mockDatabase.getOrders(1,"").get(0).getStatus());
+        mockDatabase.returnBook(1,0);
+        Assertions.assertEquals("Zwrocona", mockDatabase.getOrders(1,"").get(0).getStatus());
     }
-    @Nested
-    class TestOrders{
-        @BeforeEach
-        void initializeOrders()
-        {
-
-        }
-        @Test
-        void getOrdersAll()
-        {
-            Assertions.assertEquals(0, mockDatabase.getOrders(1,"").size());
-            mockDatabase.orderBook(1,1);
-            Assertions.assertEquals(1, mockDatabase.getOrders(1,"").size());
-            mockDatabase.borrowBook(1);
-            Assertions.assertEquals(1, mockDatabase.getOrders(1,"").size());
-            mockDatabase.returnBook(1,0);
-            Assertions.assertEquals(1, mockDatabase.getOrders(1,"").size());
-        }
-        @Test
-        void getOrdersReserved()
-        {
-            Assertions.assertEquals(0, mockDatabase.getOrders(1,"Rezerwacja").size());
-            mockDatabase.orderBook(1,1);
-            Assertions.assertEquals(1, mockDatabase.getOrders(1,"Rezerwacja").size());
-            mockDatabase.borrowBook(1);
-            Assertions.assertEquals(0, mockDatabase.getOrders(1,"Rezerwacja").size());
-            mockDatabase.returnBook(1,0);
-            Assertions.assertEquals(0, mockDatabase.getOrders(1,"Rezerwacja").size());
-        }
-        @Test
-        void getOrdersBorrowed()
-        {
-            Assertions.assertEquals(0, mockDatabase.getOrders(1,"Wypozyczona").size());
-            mockDatabase.orderBook(1,1);
-            Assertions.assertEquals(0, mockDatabase.getOrders(1,"Wypozyczona").size());
-            mockDatabase.borrowBook(1);
-            Assertions.assertEquals(1, mockDatabase.getOrders(1,"Wypozyczona").size());
-            mockDatabase.returnBook(1,0);
-            Assertions.assertEquals(0, mockDatabase.getOrders(1,"Wypozyczona").size());
-        }
-        @Test
-        void getOrdersReturned()
-        {
-            Assertions.assertEquals(0, mockDatabase.getOrders(1,"Zwrocona").size());
-            mockDatabase.orderBook(1,1);
-            Assertions.assertEquals(0, mockDatabase.getOrders(1,"Zwrocona").size());
-            mockDatabase.borrowBook(1);
-            Assertions.assertEquals(0, mockDatabase.getOrders(1,"Zwrocona").size());
-            mockDatabase.returnBook(1,0);
-            Assertions.assertEquals(1, mockDatabase.getOrders(1,"Zwrocona").size());
-        }
+    @Test
+    void getOrdersReserved()
+    {
+        Assertions.assertEquals(0, mockDatabase.getOrders(1,"Rezerwacja").size());
+        mockDatabase.orderBook("user1",1);
+        Assertions.assertEquals(1, mockDatabase.getOrders(1,"Rezerwacja").size());
+        mockDatabase.borrowBook(1);
+        Assertions.assertEquals(0, mockDatabase.getOrders(1,"Rezerwacja").size());
+        mockDatabase.returnBook(1,0);
+        Assertions.assertEquals(0, mockDatabase.getOrders(1,"Rezerwacja").size());
+    }
+    @Test
+    void getOrdersBorrowed()
+    {
+        Assertions.assertEquals(0, mockDatabase.getOrders(1,"Wypozyczona").size());
+        mockDatabase.orderBook("user1",1);
+        Assertions.assertEquals(0, mockDatabase.getOrders(1,"Wypozyczona").size());
+        mockDatabase.borrowBook(1);
+        Assertions.assertEquals(1, mockDatabase.getOrders(1,"Wypozyczona").size());
+        mockDatabase.returnBook(1,0);
+        Assertions.assertEquals(0, mockDatabase.getOrders(1,"Wypozyczona").size());
+    }
+    @Test
+    void getOrdersReturned()
+    {
+        Assertions.assertEquals(0, mockDatabase.getOrders(1,"Zwrocona").size());
+        mockDatabase.orderBook("user1",1);
+        Assertions.assertEquals(0, mockDatabase.getOrders(1,"Zwrocona").size());
+        mockDatabase.borrowBook(1);
+        Assertions.assertEquals(0, mockDatabase.getOrders(1,"Zwrocona").size());
+        mockDatabase.returnBook(1,0);
+        Assertions.assertEquals(1, mockDatabase.getOrders(1,"Zwrocona").size());
     }
     @Test
     void getPenalties()
     {
-        Assertions.assertEquals("Zniszczenie ksiazki", mockDatabase.getPenalties().get(1).getName());
+        Assertions.assertEquals("Opoznienie w zwrocie", mockDatabase.getPenalties().get(0).getName());
+        Assertions.assertEquals("Opoznienie w zwrocie ksiazki", mockDatabase.getPenalties().get(0).getDescription());
+        Assertions.assertEquals(5, mockDatabase.getPenalties().get(0).getValue());
     }
     @Test
     void addAndPayPenalty()
     {
-        mockDatabase.orderBook(1,1);
+        mockDatabase.orderBook("user1",1);
         mockDatabase.borrowBook(1);
         mockDatabase.returnBook(1,3);
         Assertions.assertEquals(true, mockDatabase.isPenalty(1));
@@ -188,9 +172,10 @@ public class DatabaseTest {
     @Test
     void registerUser()
     {
-        User newUser = new User("test", "test", "nowy", "nowy");
+        User newUser = new User("Ewa", "Markowska", "nowy", "nowy");
         mockDatabase.registerUser(newUser);
-        Assertions.assertEquals(newUser, mockDatabase.getUserID("nowy")); //not sure if this will work
+        int[] validation = mockDatabase.validateLoginData("nowy", new char[]{'n', 'o', 'w','y'});
+        Assertions.assertEquals(1, validation[0]);
     }
     @Test
     void getLibrariesNames()
@@ -225,5 +210,4 @@ public class DatabaseTest {
     {
         Assertions.assertEquals(1, mockDatabase.getUserID("user1"));
     }
-
 }

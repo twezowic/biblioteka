@@ -1,6 +1,5 @@
 package panels;
 
-import app.Database;
 import classes.Book;
 import classes.Copy;
 import lib.BasePanel;
@@ -12,6 +11,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.ArrayList;
+
 import static javax.swing.JSplitPane.HORIZONTAL_SPLIT;
 
 @Getter
@@ -203,9 +203,9 @@ public class BrowseBookPanel3  extends BasePanel {
 
     }
 /**make reserrvation by making new order
- * @param userId  Id of user which reserv book*/
+ * @param user  name of user which reserv book*/
 
-    public void reserv(int userId)
+    public void reserv(String user)
     {
 
         String libname = libNameInput.getSelectedItem().toString();
@@ -224,7 +224,7 @@ public class BrowseBookPanel3  extends BasePanel {
         {
             if (a.get(i).getLibraryName().equals(libname))
             {
-                Settings.getInstance().database.orderBook(userId,a.get(i).getCopyID());
+                Settings.getInstance().database.orderBook(user,a.get(i).getCopyID());
                 statusInfo.setText("you successful reserv "+BooksInfo.getValueAt(BooksInfo.getSelectedRow(),0));
                 return;
             }

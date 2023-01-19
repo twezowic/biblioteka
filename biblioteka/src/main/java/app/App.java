@@ -97,7 +97,7 @@ public class App {
         BrowseBookPanel3 browseBookPanel3 = new BrowseBookPanel3(userID);
         browseBookPanel3.getCancelButton().addActionListener(e -> disposeSubPanel(browseBookPanel3));
         browseBookPanel3.getSearchButton().addActionListener(e -> browseBookPanel3.fillBooksInfo());
-        browseBookPanel3.getAcceptButton().addActionListener(e -> browseBookPanel3.reserv(userID));
+        browseBookPanel3.getAcceptButton().addActionListener(e -> browseBookPanel3.reserv(username));
         browseBookPanel3.getPayButton().addActionListener(e-> Settings.getInstance().database.payPenalty(userID));
     }
 
