@@ -120,7 +120,7 @@ public class Database {
      * @param canAdd determine can the function add new author if one don't exist
      * @return id of author
      */
-    private int checkAuthor(String fullName, Boolean canAdd) {
+    public int checkAuthor(String fullName, Boolean canAdd) {
         int authorID = -1;
         String[] nameParts = fullName.split(" ");
         if (nameParts.length != 2) {
