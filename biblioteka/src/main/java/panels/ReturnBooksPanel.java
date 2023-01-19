@@ -76,7 +76,6 @@ public class ReturnBooksPanel extends BasePanel {
                 }
             }
             resultTableModel.addRow(row);
-            //resultTableModel.addRow(new Object[]{order.getStatus(), order.getDateBorrow(), order.getDateReturn(), order.getBookTitle()});
         }
     }
 
@@ -85,6 +84,9 @@ public class ReturnBooksPanel extends BasePanel {
         searchData.setText("your typed user ID: " + username);
     }
 
+    /**
+     * Uses reflection to get data from Order class, to later display it
+     */
     private void fillResultTableColumnNames()
     {
         Field[] fields = Order.class.getDeclaredFields();

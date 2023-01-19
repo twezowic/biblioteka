@@ -2,6 +2,10 @@ package lib;
 
 import app.Database;
 import java.awt.*;
+
+/**
+ * class for static data
+ */
 public final class Settings {
 
     public static Settings INSTANCE;

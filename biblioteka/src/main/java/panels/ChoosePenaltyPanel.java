@@ -49,6 +49,9 @@ public class ChoosePenaltyPanel extends BasePanel {
         setVisible(true);
     }
 
+    /**
+     * All this class does, is make it possible to get penalties description while hovering over them in JComboBox
+     */
     class ToolTipComboBoxRenderer extends BasicComboBoxRenderer {
         @Override
         public Component getListCellRendererComponent(JList list, Object value,

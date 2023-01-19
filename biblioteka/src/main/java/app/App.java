@@ -20,6 +20,10 @@ public class App {
     public App(){
         Run();
     }
+
+    /**
+     * opens the MainPanel and handles the listeners
+     */
     public void Run()
     {
         MainPanel mainPanel = new MainPanel(permissionLevel, username);
@@ -53,10 +57,6 @@ public class App {
                     BrowseBooks();
                     mainPanel.dispose();
                 });
-//                mainPanel.reserveBook.addActionListener(e -> {
-//                    ReserveBook();
-//                    mainPanel.frame.dispose();
-//                });
 
             }
             case 2 -> {
@@ -128,7 +128,7 @@ public class App {
             disposeSubPanel(registerPanel);
         });
     }
-    private void BorowBook() { // @TODO probably will be removed with browseBooksPanel inheriting it's purpose
+    private void BorowBook() {
         BorrowBookPanel borrowBookPanel = new BorrowBookPanel();
 
         borrowBookPanel.getCancelButton().addActionListener(e -> disposeSubPanel(borrowBookPanel));
@@ -159,6 +159,7 @@ public class App {
         });
 
     }
+
     private void ReturnBook() {
         ReturnBooksPanel returnBookPanel = new ReturnBooksPanel();
         returnBookPanel.getCancelButton().addActionListener(e -> disposeSubPanel(returnBookPanel));
@@ -184,7 +185,15 @@ public class App {
         });
 
     }
-    private void finalizeReturnBook(ReturnBooksPanel returnBookPanel, int orderID, int selectedRow) //@TODO
+
+    /**
+     * @param returnBookPanel panel who called this function
+     * @param orderID
+     * @param selectedRow row to remove from JTable
+     *                    Handles the choosePenaltyPanel, calls the database method to return the book and removes
+     *                    one row from Jtable
+     */
+    private void finalizeReturnBook(ReturnBooksPanel returnBookPanel, int orderID, int selectedRow)
     {
         returnBookPanel.setEnabled(false);
         ChoosePenaltyPanel choosePenaltyPanel = new ChoosePenaltyPanel(Settings.getInstance().database.getPenalties());
@@ -192,7 +201,7 @@ public class App {
             choosePenaltyPanel.dispose();
             returnBookPanel.setEnabled(true);
         });
-        choosePenaltyPanel.getAcceptButton().addActionListener(e -> {
+        choosePenaltyPanel.getAcceptButton().addActionListener(e -> {// will not add any penalties to the user
             returnBookPanel.getResultTableModel().removeRow(returnBookPanel.getResultTable().getSelectedRow());
             Settings.getInstance().database.returnBook(orderID, 0);
             if(returnBookPanel.getResultTableModel().getRowCount() == 0)
@@ -202,7 +211,7 @@ public class App {
             choosePenaltyPanel.dispose();
             returnBookPanel.setEnabled(true);
         });
-        choosePenaltyPanel.getAddPenaltyButton().addActionListener(e -> {
+        choosePenaltyPanel.getAddPenaltyButton().addActionListener(e -> { // will add penalty to the user
             returnBookPanel.getResultTableModel().removeRow(returnBookPanel.getResultTable().getSelectedRow());
             int chosenPenaltyID = choosePenaltyPanel.getPenaltyIDVec().elementAt(
                     choosePenaltyPanel.getPenaltyBox().getSelectedIndex());
@@ -234,6 +243,9 @@ public class App {
         });
     }
 
+    /**
+     *  gets information from database if login was successful.
+     */
     private void Login() {
         if (permissionLevel == 0) {
             LoginPanel loginPanel = new LoginPanel();
@@ -267,6 +279,10 @@ public class App {
             Run();
         }
     }
+
+    /**
+     * @param frameToDispose can only be used if you want to open MainPanel after closing your current one.
+     */
     private void disposeSubPanel(JFrame frameToDispose)
     {
         frameToDispose.dispose();

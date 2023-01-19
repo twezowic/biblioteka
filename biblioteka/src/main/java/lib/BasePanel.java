@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 @Getter
-public class BasePanel extends JFrame {
+public abstract class BasePanel extends JFrame {
     private JButton cancelButton;
     private JButton acceptButton;
     private JPanel bottomPanel;

@@ -63,10 +63,13 @@ public class ViewLibInfoPanel extends BasePanel {
         fillLibraryInfo(Settings.getInstance().database.getLibraryInfo(chooseLibrary.getSelectedItem().toString()));
     }
 
+    /**
+     * @param library Library from database method
+     *                fills the JTable with info from library object
+     */
     public void fillLibraryInfo(Library library)
     {
         getLibraryInfoTableModel().setRowCount(0);
-        //getLibraryInfoTableModel().addRow(new Object[] {"Library name: ", "tak"});
 
 
         getLibraryInfoTableModel().addRow(new Object[] {"Library name: ", library.getName()});
