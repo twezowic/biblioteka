@@ -134,19 +134,19 @@ public class App {
         borrowBookPanel.getCancelButton().addActionListener(e -> disposeSubPanel(borrowBookPanel));
         borrowBookPanel.getInputUserID().addActionListener(e -> {
             borrowBookPanel.getResultTableModel().setRowCount(0);
-            String userID = borrowBookPanel.getInputUserID().getText().trim();
-            Scanner sc = new Scanner(userID);
+            String userData = borrowBookPanel.getInputUserID().getText().trim();
+            Scanner sc = new Scanner(userData);
             if(sc.hasNextInt()){
-                borrowBookPanel.setSearchDataText(userID);
+                borrowBookPanel.setSearchDataText(userData);
                 borrowBookPanel.getAcceptButton().setEnabled(true);
-                borrowBookPanel.fillResultTable(Settings.getInstance().database.getOrders(Integer.parseInt(userID), "Rezerwacja"));
+                borrowBookPanel.fillResultTable(Settings.getInstance().database.getOrders(Integer.parseInt(userData), "Rezerwacja"));
             }
             else{
                 try {
-                    borrowBookPanel.setSearchDataText(Integer.toString(Settings.getInstance().database.getUserID(userID)));
+                    borrowBookPanel.setSearchDataText(Integer.toString(Settings.getInstance().database.getUserID(userData)));
                     borrowBookPanel.getAcceptButton().setEnabled(true);
 
-                    borrowBookPanel.fillResultTable(Settings.getInstance().database.getOrders(Settings.getInstance().database.getUserID(userID), "Rezerwacja"));
+                    borrowBookPanel.fillResultTable(Settings.getInstance().database.getOrders(Settings.getInstance().database.getUserID(userData), "Rezerwacja"));
                 }
                 catch (RuntimeException exc ) {
                     handleMessagePanel(borrowBookPanel, "The Username not found");
