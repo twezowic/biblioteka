@@ -1,0 +1,15 @@
+INSERT INTO ORDERS values(null,1, DATE '2023-01-06', DATE '2015-05-06');
+INSERT INTO ORDERS_HISTORY values(null,1,1, 'Zwrocona');
+INSERT INTO ORDERS values(null,2, DATE '2023-01-06', DATE '2015-05-06');
+INSERT INTO ORDERS_HISTORY values(null,2,1, 'Zwrocona');
+INSERT INTO ORDERS values(null,3, DATE '2023-01-06', null);
+INSERT INTO ORDERS_HISTORY values(null,3,1, 'Wypozyczona');
+INSERT INTO ORDERS values(null,1, DATE '2023-01-06', null);
+INSERT INTO ORDERS_HISTORY values(null,4,2, 'Rezerwacja');
+INSERT INTO ORDERS values(null,4, DATE '2023-01-06', DATE '2015-05-06');
+INSERT INTO ORDERS_HISTORY values(null,5,3, 'Zwrocona');
+
+INSERT INTO PENALTIES_HISTORY values(1,1,1,0);
+INSERT INTO PENALTIES_HISTORY values(2,2,1,0);
+
+commit;
